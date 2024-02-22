@@ -1,53 +1,33 @@
-import React, { useState } from 'react';
-import { Paper, Text, TextInput, Button, Box, DatePicker } from '@mantine/core';
 
-const RegistrationPage = () => {
-  const [selectedDate, setSelectedDate] = useState(null);
+"use client";
+import { Container, Paper, Text, TextInput, PasswordInput, Button, Group } from '@mantine/core';
+import { DatePicker } from '@mantine/dates';
+import dayjs from 'dayjs';
 
-  const handleRegistration = () => {
-    // Handle registration logic here
-    console.log('Registering...');
+export default function Register() {
+  const handleSubmit = (event) => {
+    event.preventDefault();
+    // Here you would handle the form submission, e.g., send data to an API
+    alert('Form submitted');
   };
 
   return (
-    <Box style={{ backgroundColor: '#F0F4F7', minHeight: '100vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-      <Paper padding="md" radius="md" style={{ maxWidth: 400 }}>
-        <Paper padding="md" radius="md" style={{ backgroundColor: '#FFF', marginBottom: 20 }}>
-          <Text align="center" size="lg" weight={700} style={{ marginBottom: 10 }}>
-            Registration
-          </Text>
-          <div style={{ marginBottom: 10 }}>
-            <label style={{ display: 'block', marginBottom: 5 }}>Email</label>
-            <TextInput placeholder="Enter your email" type="email" fullWidth />
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            <label style={{ display: 'block', marginBottom: 5 }}>Display Name</label>
-            <TextInput placeholder="Enter your display name" fullWidth />
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            <label style={{ display: 'block', marginBottom: 5 }}>Username</label>
-            <TextInput placeholder="Enter your username" fullWidth />
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            <label style={{ display: 'block', marginBottom: 5 }}>Password</label>
-            <TextInput placeholder="Enter your password" type="password" fullWidth />
-          </div>
-          <div style={{ marginBottom: 10 }}>
-            <label style={{ display: 'block', marginBottom: 5 }}>Date of Birth</label>
-            <DatePicker
-              placeholder="Select your date of birth"
-              value={selectedDate}
-              onChange={(date) => setSelectedDate(date)}
-              fullWidth
-            />
-          </div>
-          <Button fullWidth onClick={handleRegistration}>
-            Register
-          </Button>
-        </Paper>
+    <Container size="xs" my={40}>
+      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <Text size="lg" weight={500} align="center">
+          Register
+        </Text>
+        <form onSubmit={handleSubmit}>
+          <TextInput label="EMAIL" required mt="md" />
+          <TextInput label= "DISPLAY NAME" mt = "md"/>
+          <PasswordInput label="PASSWORD"  required mt="md" />
+         
+          <Group position="right" mt="xl">
+            <Button type="submit" fullWidth >Continue </Button>
+          </Group>
+        </form>
       </Paper>
-    </Box>
+    </Container>
   );
-};
+}
 
-export default RegistrationPage;

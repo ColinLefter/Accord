@@ -1,0 +1,6 @@
+{
+  "dependencies": {
+    "@mantine/dates": "^7.5.3",
+    "dayjs": "^1.11.10"
+  }
+}
