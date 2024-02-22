@@ -1,4 +1,4 @@
-// File: /Users/colinlefter/Desktop/COSC-310-Group-Project/app/page.tsx
+// File: C:\Users\toby0\Documents\UBC\COSC 310\Discord Clone\COSC-310-Group-Project\Application\Frontend\app\page.tsx
 import * as entry from '../../../app/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 
