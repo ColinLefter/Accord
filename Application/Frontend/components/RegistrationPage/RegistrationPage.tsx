@@ -86,7 +86,7 @@ function RegistrationPage(){
       </Title>
       <Container size="xs" my={40}>
         <Paper withBorder shadow="md" p={30} mt={30} radius="md">
-          <Text size="lg">
+          <Text size="lg" ta='center' fw={700}>
             Create an account
           </Text>
           <form onSubmit={handleSubmit} onChange={handleChange}>
@@ -98,7 +98,7 @@ function RegistrationPage(){
             {/*If the password does not match, a warning line will show up prompt the user to enter their password again*/}
             {isPasswordNotMatched && <Text mt="xs" size="xs" c={"red"}>Please enter the same password you entered above!</Text>}
             
-            <Text mt="md" size="sm" >
+            <Text mt="md" size="sm" fw={500} >
               DATE OF BIRTH - not required
             </Text>
             <Group  grow mt="xs">
