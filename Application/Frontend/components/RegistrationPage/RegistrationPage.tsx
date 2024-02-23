@@ -16,14 +16,22 @@ function RegistrationPage(){
     password: "",
     confirmedPassword: "",
   });
+  const [isPasswordNotMatched, setIsPasswordNotMatched] = useState(false)
 
   //handle submit and handle change method
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(formData);
+    //check if password matched the confirmed password or not if not prompt the warning
+    if(formData.confirmedPassword !== formData.password){
+        setIsPasswordNotMatched(currentIsPasswordNotMatched => true);
+    }
+    else{
+      setIsPasswordNotMatched(currentIsPasswordNotMatched => false);
+      console.log(formData)
+    }
     //alert('Form submitted');
   };
-  const handleChange = (evt) => {
+  const handleChange = (evt: any) => {
     const changedField = evt.target.name;
     const newValue = evt.target.value;
     setFormData((currData) => {
@@ -60,12 +68,13 @@ function RegistrationPage(){
           Create an account
         </Text>
         <form onSubmit={handleSubmit} onChange={handleChange}>
-          <TextInput label="EMAIL" required mt="md" type='email' name="email" value={formData.email}/>
-          <TextInput label="PHONE NUMBER (type in 10 digits of your phone number)" required mt="md" type='tel' name="tel" value={formData.tel} pattern="[0-9]{10}"/>
+          <TextInput label="EMAIL" required mt="md" type="email" name="email" value={formData.email}/>
+          <TextInput label="PHONE NUMBER (type in 10 digits of your phone number)" required mt="md" type="tel" name="tel" value={formData.tel} pattern="[0-9]{10}"/>
           <TextInput label="DISPLAY NAME" required mt="md" name="userName" value={formData.userName}/>
           <PasswordInput label="PASSWORD" required mt="md" name="password" value={formData.password}/>
           <PasswordInput label="CONFIRM PASSWORD" required mt="md" name="confirmedPassword" value={formData.confirmedPassword}/>
-          {}
+          {/*If the password does not match, a warning line will show up prompt the user to enter their password again*/}
+          {isPasswordNotMatched && <Text mt="xs" size="xs" c={"red"}>Please enter the same password you entered above!</Text>}
           
           <Text mt="md" size="sm" >
             DATE OF BIRTH - not required
