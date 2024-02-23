@@ -6,8 +6,8 @@ import RegistrationPage from '../components/RegistrationPage/RegistrationPage'
 export default function HomePage() {
   return (
     <>
-      {/* <Welcome />
-      <ColorSchemeToggle /> */}
+      {/* <Welcome /> */}
+      {/* <ColorSchemeToggle /> */}
       {/* <Registration/> */}
       <RegistrationPage/>
     </>
