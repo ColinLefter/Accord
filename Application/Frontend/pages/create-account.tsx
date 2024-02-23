@@ -1,6 +1,6 @@
-import { RegistrationForm } from '@/components/RegistrationForm/RegistrationForm';
+import { Registration } from '@/components/Accounts/Registration';
 import { Button, Text } from '@mantine/core';
-import { Logo } from '@/components/Logo/Logo';
+import { Logo } from '@/components/Logo';
 
 export default function CreateAccount() {
   return (
@@ -13,7 +13,7 @@ export default function CreateAccount() {
           <Button className="bg-black text-black">Log in</Button>
         </div>
       </div>
-      <RegistrationForm/>
+      <Registration/>
     </div>
   );
 }

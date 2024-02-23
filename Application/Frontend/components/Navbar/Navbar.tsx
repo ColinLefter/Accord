@@ -29,6 +29,8 @@ import {
 } from '@tabler/icons-react';
 import classes from './Navbar.module.css';
 import Link from 'next/link';
+import { Logo } from '@/components/Logo';
+import { ColorSchemeToggle } from '@/components/ColorSchemeToggle/ColorSchemeToggle';
 
 const mockdata = [
   {
@@ -70,9 +72,7 @@ export function Navbar() {
     <Box pb={120}>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
-        <Text variant="gradient" fw={500} className="text-xl" component="span" gradient={{ from: 'pink', to: 'yellow' }}>
-          Accord
-        </Text>
+          <Logo/>
           <Group h="100%" gap={0} visibleFrom="sm">
             <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
               <HoverCard.Target>
@@ -113,14 +113,18 @@ export function Navbar() {
                         Their food sources have decreased, and their numbers
                       </Text>
                     </div>
-                    <Button variant="default">Get started</Button>
+                    <Link href="/log-in"><Button variant="default">Get started</Button></Link>
                   </Group>
                 </div>
               </HoverCard.Dropdown>
             </HoverCard>
           </Group>
 
-          <Link href="/log-in"><Button variant="default">Log in</Button></Link>
+          <Group>
+            <ColorSchemeToggle/>
+            <Link href="/log-in"><Button variant="default">Log in</Button></Link>
+          </Group>
+          
 
           <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
         </Group>
@@ -153,10 +157,7 @@ export function Navbar() {
 
           <Divider my="sm" />
 
-          <Group justify="center" grow pb="xl" px="md">
-            <Button variant="default">Log in</Button>
-            <Button>Sign up</Button>
-          </Group>
+          <Button variant="default">Log in</Button>
         </ScrollArea>
       </Drawer>
     </Box>

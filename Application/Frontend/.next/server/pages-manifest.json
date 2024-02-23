@@ -2,7 +2,7 @@
   "/_app": "pages/_app.js",
   "/_error": "pages/_error.js",
   "/_document": "pages/_document.js",
-  "/create-account": "pages/create-account.js",
+  "/": "pages/index.js",
   "/log-in": "pages/log-in.js",
-  "/": "pages/index.js"
+  "/create-account": "pages/create-account.js"
 }
