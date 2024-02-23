@@ -1,6 +1,5 @@
-"use client";
 /* 
-The Registration page mostly use the styling from mantine API
+The Login page mostly use the styling from mantine API
 - useState formData:
   + formData is an object with 2 string attributes: userName, password
   + formData has a setFormData() function to update it
@@ -64,7 +63,7 @@ export function Login(){
 
               <div>
                 <Text ta='center' mt='md' style={{ fontSize: '16px' }}>
-                  Don't have an account? <Link href="/create-account"><Text variant="gradient" gradient={{ from: 'pink', to: 'yellow' }} style={{display: 'inline-block'}} fw={500}>Create one today</Text></Link>
+                  Don't have an account? <Link href="/create-account">Create one today</Link>
                 </Text>
               </div>
               

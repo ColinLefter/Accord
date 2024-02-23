@@ -1,6 +1,7 @@
 import { Registration } from '@/components/Accounts/Registration';
 import { Button, Text } from '@mantine/core';
 import { Logo } from '@/components/Logo';
+import Link from 'next/link';
 
 export default function CreateAccount() {
   return (
@@ -10,7 +11,7 @@ export default function CreateAccount() {
           <Logo/>
         </div>
         <div style={{ position: 'absolute', top: 0, right: 0, padding: '20px', marginRight: '11px'}}>
-          <Button className="bg-black text-black">Log in</Button>
+          <Link href="/log-in"><Button className="bg-black text-black">Log in</Button></Link>
         </div>
       </div>
       <Registration/>
