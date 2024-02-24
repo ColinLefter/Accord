@@ -62,8 +62,8 @@ export function Login(){
               <PasswordInput label="Password" required mt="md" name="password" value={formData.password} onChange={handleChange}/>
 
               <div>
-                <Text ta='center' mt='md' style={{ fontSize: '16px' }}>
-                  Don't have an account? <Link href="/create-account">Create one today</Link>
+                <Text ta='center' mt='md' style={{ fontSize: '16px' }} >
+                  Don't have an account? <Link href="/create-account"> <span style={{ color: 'turquoise', cursor: 'pointer' }}>Create one today</span></Link>
                 </Text>
               </div>
               

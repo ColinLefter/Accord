@@ -10,9 +10,7 @@ export default function LoginPage() {
         <div style={{ position: 'absolute', top: 0, left: 0, padding: '20px', marginLeft: '11px' }}>
           <Logo/>
         </div>
-        <div style={{ position: 'absolute', top: 0, right: 0, padding: '20px', marginRight: '11px'}}>
-          <Button className="bg-black">Log in</Button>
-        </div>
+
       </div>
       <Login/>
     </div>
