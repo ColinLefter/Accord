@@ -39,6 +39,9 @@ export function Registration() {
     tel: "",
     password: "",
     confirmedPassword: "",
+    month: "",
+    day: "",
+    year: ""
   });
   const [isPasswordNotMatched, setIsPasswordNotMatched] = useState(false);
 
@@ -171,18 +174,21 @@ export function Registration() {
                 data={months}
                 onChange={handleChange}
                 required
+                searchable
               />
               <Select
                 placeholder="Day"
                 data={days}
                 onChange={handleChange}
                 required
+                searchable
               />
               <Select
                 placeholder="Year"
                 data={years}
                 onChange={handleChange}
                 required
+                searchable
               />
             </Group>
 
