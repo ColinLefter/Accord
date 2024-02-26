@@ -1,7 +1,9 @@
+import bson
+
 class Message():
-  def __init__(self, id: int, message_timestamp: str, sentBy: str, message: str):
+  def __init__(self, id: int, date: bson.datetime.datetime, sentBy: str, message: str):
     self.id = id
-    self.message_timestamp = message_timestamp
+    self.date = date
     self.sentBy = sentBy
     self.message = message
   

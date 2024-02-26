@@ -19,7 +19,7 @@ class AccountManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-class Account(AbstractBaseUser):
+class Accounts(AbstractBaseUser):
   username = models.CharField(max_length=50, unique=True) # unique usernames only
   password = models.CharField(max_length=50)
   email = models.EmailField(unique=True)
@@ -33,22 +33,22 @@ class Account(AbstractBaseUser):
   def __str__(self): 
     return str(self.username) # In this case usernames are guaranteed to be unique
 
-class Server(models.Model):
+class Servers(models.Model):
   server_name = models.CharField(max_length=50)
-  member_usernames = models.ManyToManyField(Account, related_name="server_memberships") # Related name is used so you can do Account.server_memberships.all()
+  member_usernames = models.ManyToManyField(Accounts, related_name="server_memberships") # Related name is used so you can do Account.server_memberships.all()
   
   def __str__(self): # printing any Account object will give you the id of that object that acts as the primary key
     return str(self.id)
 
-class Chat(models.Model):
-  member_usernames = models.ManyToManyField(Account, related_name="chat_memberships") # Related name is used so you can do Account.chat_memberships.all()
+class Chats(models.Model):
+  member_usernames = models.ManyToManyField(Accounts, related_name="chat_memberships") # Related name is used so you can do Account.chat_memberships.all()
   
   def __str__(self):
     return str(self.id)
 
-class Message(models.Model):
+class Messages(models.Model):
   message_timestamp = models.DateTimeField()
-  chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="messages")
+  chat = models.ForeignKey(Chats, on_delete=models.CASCADE, related_name="messages")
   sentBy = models.CharField(max_length=50)
   message = models.CharField(max_length=500)
   
