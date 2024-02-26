@@ -40,7 +40,7 @@ export function Registration() {
     password: "",
     confirmedPassword: "",
     month: "",
-    day: "",
+    date: "",
     year: ""
   });
   const [isPasswordNotMatched, setIsPasswordNotMatched] = useState(false);
@@ -68,10 +68,34 @@ export function Registration() {
       };
     });
   };
+  const handleMonthChange = (Month: any) => {
+    setFormData((currData) => {
+      return {
+        ...currData,
+        month: Month,
+      };
+    });
+  }
+  const handleDateChange = (Date: any) => {
+    setFormData((currData) => {
+      return {
+        ...currData,
+        date: Date,
+      };
+    });
+  }
+  const handleYearChange = (Year: any) => {
+    setFormData((currData) => {
+      return {
+        ...currData,
+        year: Year,
+      };
+    });
+  }
 
   // Months array
   const months = Array.from({ length: 12 }, (_, index) => ({
-    value: `${index + 1}`,
+    value: new Date(0, index).toLocaleString("default", { month: "long" }),
     label: new Date(0, index).toLocaleString("default", { month: "long" }),
   }));
 
@@ -172,21 +196,26 @@ export function Registration() {
               <Select
                 placeholder="Month"
                 data={months}
-                onChange={handleChange}
+                value={formData.month}
+                onChange={(event) => handleMonthChange(event)}
                 required
                 searchable
+                name="month"
               />
               <Select
                 placeholder="Day"
                 data={days}
-                onChange={handleChange}
+                value={formData.date}
+                onChange={(event) => handleDateChange(event)}
                 required
                 searchable
+                className="day"
               />
               <Select
                 placeholder="Year"
                 data={years}
-                onChange={handleChange}
+                value={formData.year}
+                onChange={(event) => handleYearChange(event)}
                 required
                 searchable
               />
