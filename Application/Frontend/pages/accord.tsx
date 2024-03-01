@@ -1,4 +1,4 @@
-export function Accord() {
+export default function Accord() {
   return (
     <div>
       <h1>Accord</h1>
