@@ -1,5 +1,5 @@
 """
-WSGI config for PythonBackend project.
+WSGI config for AccordApp project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 
@@ -11,6 +11,6 @@ import os
 
 from django.core.wsgi import get_wsgi_application
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "PythonBackend.settings")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "AccordApp.settings")
 
 application = get_wsgi_application()

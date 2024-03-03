@@ -16,8 +16,8 @@ import {
   ScrollArea,
   rem,
   useMantineTheme,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import {
   IconNotification,
   IconCode,
@@ -26,27 +26,29 @@ import {
   IconFingerprint,
   IconCoin,
   IconChevronDown,
-} from '@tabler/icons-react';
-import classes from './Navbar.module.css';
-import Link from 'next/link';
-import { Logo } from '@/components/Logo';
-import { ColorSchemeToggle } from '@/components/ColorSchemeToggle/ColorSchemeToggle';
+} from "@tabler/icons-react";
+import classes from "./Navbar.module.css";
+import Link from "next/link";
+import { Logo } from "@/components/Logo";
+import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 
 const mockdata = [
   {
     icon: IconCode,
-    title: 'Direct Messaging',
-    description: 'Message your friends in real-time.',
+    title: "Direct Messaging",
+    description: "Message your friends in real-time.",
   },
   {
     icon: IconCoin,
-    title: 'Discussion Threads',
-    description: 'Create or join a Discussion Thread to hold group conversations.',
-  }
+    title: "Discussion Threads",
+    description:
+      "Create or join a Discussion Thread to hold group conversations.",
+  },
 ];
 
 export function Navbar() {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
+    useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const theme = useMantineTheme();
 
@@ -54,7 +56,10 @@ export function Navbar() {
     <UnstyledButton className={classes.subLink} key={item.title}>
       <Group wrap="nowrap" align="flex-start">
         <ThemeIcon size={34} variant="default" radius="md">
-          <item.icon style={{ width: rem(22), height: rem(22) }} color={theme.colors.blue[6]} />
+          <item.icon
+            style={{ width: rem(22), height: rem(22) }}
+            color={theme.colors.blue[6]}
+          />
         </ThemeIcon>
         <div>
           <Text size="sm" fw={500}>
@@ -72,9 +77,15 @@ export function Navbar() {
     <Box pb={120}>
       <header className={classes.header}>
         <Group justify="space-between" h="100%">
-          <Logo/>
+          <Logo />
           <Group h="100%" gap={0} visibleFrom="sm">
-            <HoverCard width={600} position="bottom" radius="md" shadow="md" withinPortal>
+            <HoverCard
+              width={600}
+              position="bottom"
+              radius="md"
+              shadow="md"
+              withinPortal
+            >
               <HoverCard.Target>
                 <a href="#" className={classes.link}>
                   <Center inline>
@@ -89,7 +100,7 @@ export function Navbar() {
                 </a>
               </HoverCard.Target>
 
-              <HoverCard.Dropdown style={{ overflow: 'hidden' }}>
+              <HoverCard.Dropdown style={{ overflow: "hidden" }}>
                 <Group justify="space-between" px="md">
                   <Text fw={500}>Features</Text>
                   <Anchor href="#" fz="xs">
@@ -110,10 +121,12 @@ export function Navbar() {
                         Get started
                       </Text>
                       <Text size="xs" c="dimmed">
-                        Their food sources have decreased, and their numbers
+                        Start chatting with your friends on the browser TODAY!
                       </Text>
                     </div>
-                    <Link href="/log-in"><Button variant="default">Get started</Button></Link>
+                    <Link href="/log-in">
+                      <Button name ="Get started">Get started</Button>
+                    </Link>
                   </Group>
                 </div>
               </HoverCard.Dropdown>
@@ -121,12 +134,17 @@ export function Navbar() {
           </Group>
 
           <Group>
-            <ColorSchemeToggle/>
-            <Link href="/log-in"><Button variant="default">Log in</Button></Link>
+            <ColorSchemeToggle />
+            <Link href="/log-in">
+              <Button variant="default">Log in</Button>
+            </Link>
           </Group>
-          
 
-          <Burger opened={drawerOpened} onClick={toggleDrawer} hiddenFrom="sm" />
+          <Burger
+            opened={drawerOpened}
+            onClick={toggleDrawer}
+            hiddenFrom="sm"
+          />
         </Group>
       </header>
 
