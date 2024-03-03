@@ -121,11 +121,11 @@ export function Navbar() {
                         Get started
                       </Text>
                       <Text size="xs" c="dimmed">
-                        Their food sources have decreased, and their numbers
+                        Start chatting with your friends on the browser TODAY!
                       </Text>
                     </div>
                     <Link href="/log-in">
-                      <Button variant="default">Get started</Button>
+                      <Button name ="Get started">Get started</Button>
                     </Link>
                   </Group>
                 </div>

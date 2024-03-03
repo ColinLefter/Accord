@@ -27,21 +27,6 @@ export default function CreateAccount() {
         >
           <Logo />
         </div>
-        <div
-          style={{
-            position: "absolute",
-            top: 0,
-            right: 0,
-            padding: "20px",
-            marginRight: "11px",
-          }}
-        >
-          <Link href="/log-in" style={{ textDecoration: "none" }}>
-            <Button className="bg-black text-black">
-              <Text size="sm">Log in</Text>
-            </Button>
-          </Link>
-        </div>
       </div>
       <Registration />
     </div>

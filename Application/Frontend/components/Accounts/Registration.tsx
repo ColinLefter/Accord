@@ -30,8 +30,10 @@ import {
   Title,
 } from "@mantine/core";
 import { FormEvent, useState } from "react";
+import Link from "next/link";
 
 export function Registration() {
+  
   //The useState for the formData object
   const [formData, setFormData] = useState({
     userName: "",
@@ -114,6 +116,22 @@ export function Registration() {
 
   return (
     <>
+      <div
+          style={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            padding: "20px",
+            marginRight: "11px",
+          }}
+        >
+          <Link href="/log-in" style={{ textDecoration: "none" }}>
+            <Button className="bg-black text-black">
+              <Text size="sm">Log in</Text>
+            </Button>
+          </Link>
+      </div>
+      
       <Title ta="center" mt={100}>
         <Text
           inherit
@@ -230,5 +248,7 @@ export function Registration() {
         </Paper>
       </Container>
     </>
+
+    
   );
 }
