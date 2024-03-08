@@ -56,7 +56,7 @@ export function FriendsTab(props: TextInputProps) {
                     alt="Colin Lefter"
                     radius="xl"
                     />
-                    <Text size="sm">Colin Lefter</Text>
+                    <Text size="sm">Colin Lefter 1</Text>
                 </Group>
             </div>
 
@@ -67,7 +67,7 @@ export function FriendsTab(props: TextInputProps) {
                     alt="Colin Lefter"
                     radius="xl"
                     />
-                    <Text size="sm">Colin Lefter</Text>
+                    <Text size="sm">Colin Lefter 2</Text>
                 </Group>
             </div>
 
@@ -78,7 +78,7 @@ export function FriendsTab(props: TextInputProps) {
                     alt="Colin Lefter"
                     radius="xl"
                     />
-                    <Text size="sm">Colin Lefter</Text>
+                    <Text size="sm">Colin Lefter 3</Text>
                 </Group>
             </div>
         </div>
