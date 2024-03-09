@@ -1,5 +1,6 @@
 import React from 'react';
-import { Avatar, Text, Group, Paper } from '@mantine/core';
+import { Avatar, Text, Group, Paper, ScrollArea, Stack, Title } from '@mantine/core';
+
 
 interface Friend {
   name: string;
@@ -20,16 +21,30 @@ const FriendItem: React.FC<Friend> = ({ name, avatar }) => {
 };
 
 const friendsList: Friend[] = [
-  { name: 'Kyo', avatar: 'path_to_kyo_avatar.jpg', status: 'online' },
+  { name: 'Kyo', avatar: '/images/icons8-discord-48.png', status: 'online' },
   // ... other friends
 ];
 
 function Sidebar() {
   return (
-    <div style={{ width: '250px', height: '100%', backgroundColor: '#2C2E33' }}>
-      {friendsList.map((friend) => (
-        <FriendItem key={friend.name} {...friend} />
-      ))}
+    <div style={{ width: '250px', height: '100vh', backgroundColor: '#2C2E33' }}>
+      <ScrollArea style={{ height: '100%' }}>
+        <Stack  style={{ padding: '10px' }}>
+          {/* Static sections like 'Friends', 'Nitro', 'Shop', can be added here */}
+          <Title order={5} style={{ color: 'white', marginBottom: '10px' }}>Friends</Title>
+          {/* Other sections */}
+
+          {/* Direct Messages title */}
+          <Title order={5} style={{ color: 'white', marginTop: '20px' }}>DIRECT MESSAGES</Title>
+
+          {/* List of friends */}
+          {friendsList.map(friend => (
+            <FriendItem key={friend.name} {...friend} />
+          ))}
+
+          {/* Rest of the sidebar content */}
+        </Stack>
+      </ScrollArea>
     </div>
   );
 }
