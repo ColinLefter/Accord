@@ -1,6 +1,8 @@
 
 import { ServerList } from "@/components/LeftSidebar/ServerList";
 import { Text } from "@mantine/core";
+import Sidebar from "@/components/FriendProfile/friendsIcon";
+
 
 export default function Accord() {
   return (
@@ -13,7 +15,8 @@ export default function Accord() {
         >
           Accord
         </Text>
-      <ServerList/>
+      <Sidebar/>
+
     </div>
   );
 }
