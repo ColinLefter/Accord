@@ -4,6 +4,7 @@ Including any components on this page will result in them being visible across a
 */
 import "@mantine/core/styles.css";
 // import "../global.css";
+import "../custom.css";
 import { AppProps } from "next/app";
 import { MantineProvider } from "@mantine/core";
 
