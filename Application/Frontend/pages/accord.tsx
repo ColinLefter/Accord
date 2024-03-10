@@ -1,6 +1,5 @@
-import { AppShell, Burger, Group, Stack, Skeleton, ScrollArea, Button, Text, Tooltip, Container } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
-import { CloseButton } from '@mantine/core';
+import { AppShell, Burger, Group, Stack, Skeleton, ScrollArea, Button, Text, Tooltip, useComputedColorScheme, ActionIcon } from '@mantine/core';
+import { IconAdjustments, IconPlus } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
 import { Logo } from "@/components/Logo";
 import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
@@ -11,16 +10,18 @@ export default function Accord() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
 
+  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true })
+
   return (
     <AppShell
-      header={{ height: 40 }}
+      header={{ height: 50 }}
       navbar={{
         width: 300,
         breakpoint: 'sm',
         collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
       }}
       padding="md"
-      aside={{ width: 200, breakpoint: 'sm' }}
+      aside={{ width: 120, breakpoint: 'sm' }}
     >
     <AppShell.Header>
       <Group justify="space-between" className="center">
@@ -38,7 +39,9 @@ export default function Accord() {
           <Group justify="space-between">
             <Text py="md">Direct Messages</Text>
             <Tooltip label="Send DM">
-              <CloseButton icon={<IconPlus size={15} stroke={2} color="black" />} />
+              <ActionIcon variant="default" aria-label="Plus">
+                <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
+              </ActionIcon>
             </Tooltip>
           </Group>
           {Array(60)
