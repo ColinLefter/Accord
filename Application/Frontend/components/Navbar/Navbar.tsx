@@ -46,6 +46,30 @@ const mockdata = [
   },
 ];
 
+/**
+ * Navbar serves as the primary navigation component displayed on the homepage. It integrates
+ * several interactive elements to facilitate user navigation across different sections of the
+ * application. The Navbar includes a logo that redirects to the homepage, a features dropdown
+ * for accessing various application features, a color scheme toggle, and a login button.
+ * In smaller viewports, it transforms into a responsive drawer for better accessibility.
+ *
+ * Key Features:
+ * - Dynamic rendering of navigation links based on predefined mock data.
+ * - Responsive design that adapts to various screen sizes, transitioning into a drawer menu
+ *   for mobile views.
+ * - HoverCard component displaying a two-column grid of feature links.
+ * - Theme-aware icons and color scheme toggle for enhanced user experience.
+ *
+ * @fileoverview This component structures the top navigation bar, handles responsive behavior,
+ * and integrates primary navigation and interactive elements like the logo, feature links,
+ * color scheme toggle, and login controls.
+ *
+ * Behavior:
+ * - On larger screens, feature links are accessible via a hoverable dropdown.
+ * - On smaller screens, a burger menu toggles a drawer for navigation.
+ * - The ColorSchemeToggle allows users to switch between light and dark modes.
+ * - Direct navigation to the login page is provided for user authentication.
+ */
 export function Navbar() {
   const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
     useDisclosure(false);
