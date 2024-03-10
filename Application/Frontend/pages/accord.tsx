@@ -22,6 +22,18 @@ import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 
 import classes from "@/components/tabstyling.module.css";
 
+/**
+ * Represents the central structure of the application interface, organizing the layout into
+ * header, navbar, main content, and aside sections. This component serves as the main framework
+ * for displaying the user interface, facilitating user navigation, and presenting relevant
+ * content within different sections of the application.
+ *
+ * The AppShell component integrates various subcomponents like Burger, Logo, ColorSchemeToggle,
+ * FriendsTab, FooterProfile, and others to create a cohesive user experience. It utilizes the
+ * Tabs component to offer different views (Friends and Profile) within the main section.
+ * Additionally, it handles responsive toggles for mobile and desktop views and applies the
+ * appropriate color scheme based on user preferences or system settings.
+ */
 export default function Accord() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
