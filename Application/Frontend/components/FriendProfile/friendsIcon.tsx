@@ -22,6 +22,9 @@ const FriendItem: React.FC<Friend> = ({ name, avatar }) => {
 
 const friendsList: Friend[] = [
   { name: 'Kyo', avatar: '/images/icons8-discord-48.png', status: 'online' },
+  { name: 'Thunder', avatar: '/images/icons8-discord-48.png', status: 'online' },
+  { name: 'HOC', avatar: '/images/icons8-discord-48.png', status: 'online' },
+  { name: 'BAO', avatar: '/images/icons8-discord-48.png', status: 'online' }
   // ... other friends
 ];
 
