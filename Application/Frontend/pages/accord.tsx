@@ -5,6 +5,8 @@ import { Logo } from "@/components/Logo";
 import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
+import { MessagingInterface } from "@/components/Messaging/MessagingInterface";
+import React, { useState } from 'react';
 
 import classes from "@/components/tabstyling.module.css";
 
@@ -23,8 +25,16 @@ import classes from "@/components/tabstyling.module.css";
 export default function Accord() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
-  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true })
+  // note: we are manually handling the currently selected tab via states
+  const handleTabSelection = (value: string) => {
+    setActiveView(value);
+  };
+
+  const handleMessageIconClick = () => {
+    setActiveView('message');
+  };
 
   return (
     <AppShell
