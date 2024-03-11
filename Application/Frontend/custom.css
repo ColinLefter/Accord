@@ -7,3 +7,7 @@
 .on-hover {
   background: "black";
 }
+
+.messaging-container {
+  height: calc(100vh - 82px); /* or any specific height */
+}
