@@ -1,6 +1,7 @@
 import "@mantine/core/styles.css";
 import { AppProps } from "next/app";
 import { MantineProvider } from "@mantine/core";
+import "../custom.css";
 
 /**
  * This is the custom App component for the Next.js application. It wraps every page and is the
