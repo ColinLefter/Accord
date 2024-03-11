@@ -1,4 +1,8 @@
 import "@mantine/core/styles.css";
+<<<<<<< HEAD
+=======
+import "../custom.css";
+>>>>>>> main
 import { AppProps } from "next/app";
 import { MantineProvider } from "@mantine/core";
 
