@@ -1,23 +1,4 @@
 "use client";
-/* 
-The Registration page mostly use the styling from mantine API
-- useState formData:
-  + formData is an object with 5 string attributes: userName, email, tel, password, confirmedPasword
-  + formData has a setFormData() function to update it
-
-- useState isPasswordNotMatched:
-  + isPasswordNotMatched is a boolean we use to check if the 2 entered password match each other
-  + isPasswordNotMatched has a setIsPasswordNotMatched() function to update it
-
-- function handleChange():
-  + return type: void
-  + whenever a user type anything, handleChange() save that data to formData using setFormData()
-
-- function handleChange():
-  + return type: void
-  + whenever a user click on the continue button, it checks if the 2 entered password match each other, if not change isPasswordNotMatched to true using setIsPasswordNotMatched() function
-  + if match submit formData to the database to progress
-*/
 import {
   Container,
   Paper,
@@ -29,11 +10,32 @@ import {
   Select,
   Title,
 } from "@mantine/core";
-import { FormEvent, useState } from "react";
+import { FormEvent, use, useState } from "react";
 import Link from "next/link";
 
+/**
+ * Registration provides a form allowing new users to create an account. The form captures
+ * user information including email, phone number, username, password, confirmation password,
+ * and date of birth. The form validates the password and confirmation password to ensure they match.
+ * It uses controlled components with `useState` to handle form data and validation state.
+ *
+ * @fileoverview This component is responsible for rendering the registration form and handling its logic,
+ * including data binding, validation (specifically for password matching), and submission.
+ *
+ * State:
+ * - `formData`: An object holding the values entered in the form fields.
+ * - `isPasswordNotMatched`: A boolean indicating whether the passwords entered match.
+ *
+ * Functions:
+ * - `handleSubmit`: Submits the form data if validation passes. It prevents the default form submission behavior,
+ *   checks if the passwords match, and logs the form data.
+ * - `handleChange`: Updates `formData` whenever an input changes.
+ * - `handleMonthChange`, `handleDateChange`, `handleYearChange`: Update respective parts of the date in `formData`.
+ *
+ * The component also renders a navigation link to the login page, enabling users to switch to the login
+ * form if they already have an account.
+ */
 export function Registration() {
-  
   //The useState for the formData object
   const [formData, setFormData] = useState({
     userName: "",
@@ -45,21 +47,52 @@ export function Registration() {
     date: "",
     year: ""
   });
+
+  // To facilitates when the password is not matched - which is also the only criteria
   const [isPasswordNotMatched, setIsPasswordNotMatched] = useState(false);
 
-  //handle submit and handle change function
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  /**
+   * Handles form submission, sending the registration request to the server and processing
+   * the response (to append the newly validated account information) 
+   * to either proceed to the application or show error messages.
+   *
+   * @param event - The form submission event
+   */
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    //check if password matched the confirmed password or not if not prompt the warning
+    // Client-side password confirmation
     if (formData.confirmedPassword !== formData.password) {
       setIsPasswordNotMatched((currentIsPasswordNotMatched) => true);
     } else {
       setIsPasswordNotMatched((currentIsPasswordNotMatched) => false);
-      console.log(formData);
+      // console.log(formData);
+      // Can be re-enabled for bug-fixing
     }
-    //alert('Form submitted');
-    alert(JSON.stringify(formData, null, 2));
+
+    const response = await fetch('/api/registration', { // Establishing a promise
+      method: 'POST', // As we are dealing with authentication, this is the most appropriate method
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData), // The data that is being sent
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Yes!")
+    }
+    // alert('Form submitted');
+    // Can be re-enabled for testing
+    // alert(JSON.stringify(formData, null, 2));
   };
+  
+  /**
+   * Updates form data state on user input.
+   *
+   * @param evt - The input change event
+   */
   const handleChange = (evt: any) => {
     const changedField = evt.target.name;
     const newValue = evt.target.value;
