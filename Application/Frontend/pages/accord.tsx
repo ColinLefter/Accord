@@ -19,6 +19,8 @@ import { Logo } from "@/components/Logo";
 import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
+import { MessagingInterface } from "@/components/Messaging/MessagingInterface";
+import React, { useState } from 'react';
 
 import classes from "@/components/tabstyling.module.css";
 
@@ -37,11 +39,19 @@ import classes from "@/components/tabstyling.module.css";
 export default function Accord() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
+  const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
-  const computedColorScheme = useComputedColorScheme('light', { getInitialValueInEffect: true })
+  // note: we are manually handling the currently selected tab via states
+  const handleTabSelection = (value: string) => {
+    setActiveView(value);
+  };
+
+  const handleMessageIconClick = () => {
+    setActiveView('message');
+  };
 
   return (
-    <Tabs variant="unstyled" classNames={classes}>
+    <Tabs variant="unstyled" classNames={classes} value={activeView}>
       <AppShell
         header={{ height: 50 }}
         navbar={{
@@ -52,27 +62,29 @@ export default function Accord() {
         padding="md"
         aside={{ width: 120, breakpoint: 'sm' }}
       >
-      <AppShell.Header>
-        <Group justify="space-between" className="center" px="md">
-          <Group>
-            <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
-            <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
-            <Logo />
+        <AppShell.Header>
+          <Group justify="space-between" className="center" px="md">
+            <Group>
+              <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
+              <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
+              <Logo />
+            </Group>
+            <ColorSchemeToggle/>
           </Group>
-          <ColorSchemeToggle/>
-        </Group>
-      </AppShell.Header>
+        </AppShell.Header>
         <AppShell.Navbar p="md">
           <AppShell.Section grow>
             <Tabs.List grow>
               <Tabs.Tab
                 value="friends"
+                onClick={() => handleTabSelection('friends')}
                 leftSection={<IconUsers />}
               >
                 Friends
               </Tabs.Tab>
               <Tabs.Tab
                 value="profile"
+                onClick={() => handleTabSelection('profile')}
                 leftSection={<IconUserCircle />}
               >
                 My profile
@@ -83,7 +95,7 @@ export default function Accord() {
             <Group justify="space-between">
               <Text py="md">Direct Messages</Text>
               <Tooltip label="Send DM">
-                <ActionIcon variant="default" aria-label="Plus">
+                <ActionIcon variant="default" aria-label="Plus" onClick={handleMessageIconClick}>
                   <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
                 </ActionIcon>
               </Tooltip>
@@ -99,11 +111,12 @@ export default function Accord() {
           </AppShell.Section>
         </AppShell.Navbar>
         <AppShell.Main>
-          <Tabs.Panel value="friends"><FriendsTab/></Tabs.Panel>
-          <Tabs.Panel value="profile">My profile</Tabs.Panel>
+          {activeView === 'friends' && <FriendsTab />}
+          {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
+          {activeView === 'message' && <MessagingInterface />}
         </AppShell.Main>
         <AppShell.Aside p="md" component={ScrollArea}>
-        <Text>Servers</Text>
+          <Text>Servers</Text>
           {Array(60)
             .fill(0)
             .map((_, index) => (
