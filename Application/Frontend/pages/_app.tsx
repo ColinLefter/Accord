@@ -1,5 +1,4 @@
 import "@mantine/core/styles.css";
-import "../custom.css";
 import { AppProps } from "next/app";
 import { MantineProvider } from "@mantine/core";
 

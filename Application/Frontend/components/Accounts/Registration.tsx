@@ -10,7 +10,7 @@ import {
   Select,
   Title,
 } from "@mantine/core";
-import { FormEvent, use, useState } from "react";
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 
 /**
@@ -47,52 +47,21 @@ export function Registration() {
     date: "",
     year: ""
   });
-
-  // To facilitates when the password is not matched - which is also the only criteria
   const [isPasswordNotMatched, setIsPasswordNotMatched] = useState(false);
 
-  /**
-   * Handles form submission, sending the registration request to the server and processing
-   * the response (to append the newly validated account information) 
-   * to either proceed to the application or show error messages.
-   *
-   * @param event - The form submission event
-   */
-
-  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+  //handle submit and handle change function
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // Client-side password confirmation
+    //check if password matched the confirmed password or not if not prompt the warning
     if (formData.confirmedPassword !== formData.password) {
       setIsPasswordNotMatched((currentIsPasswordNotMatched) => true);
     } else {
       setIsPasswordNotMatched((currentIsPasswordNotMatched) => false);
-      // console.log(formData);
-      // Can be re-enabled for bug-fixing
+      console.log(formData);
     }
-
-    const response = await fetch('/api/registration', { // Establishing a promise
-      method: 'POST', // As we are dealing with authentication, this is the most appropriate method
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData), // The data that is being sent
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      alert("Yes!")
-    }
-    // alert('Form submitted');
-    // Can be re-enabled for testing
-    // alert(JSON.stringify(formData, null, 2));
+    //alert('Form submitted');
+    alert(JSON.stringify(formData, null, 2));
   };
-  
-  /**
-   * Updates form data state on user input.
-   *
-   * @param evt - The input change event
-   */
   const handleChange = (evt: any) => {
     const changedField = evt.target.name;
     const newValue = evt.target.value;
