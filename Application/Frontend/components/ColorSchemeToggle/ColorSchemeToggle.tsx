@@ -4,6 +4,14 @@ interface IconProps {
   color: string;
 }
 
+/**
+ * SunIcon represents a sun-shaped icon, typically used to indicate a light mode theme in the UI.
+ * It receives a color prop to customize its appearance based on the current theme or user preferences.
+ *
+ * @param {IconProps} props - The properties passed to the SunIcon component.
+ * @param {string} props.color - The color applied to the icon stroke.
+ * @returns The SVG representation of a sun, symbolizing the light mode.
+ */
 function SunIcon({ color }: IconProps) {
   return (
     <svg

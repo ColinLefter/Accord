@@ -1,23 +1,4 @@
 "use client";
-/* 
-The Registration page mostly use the styling from mantine API
-- useState formData:
-  + formData is an object with 5 string attributes: userName, email, tel, password, confirmedPasword
-  + formData has a setFormData() function to update it
-
-- useState isPasswordNotMatched:
-  + isPasswordNotMatched is a boolean we use to check if the 2 entered password match each other
-  + isPasswordNotMatched has a setIsPasswordNotMatched() function to update it
-
-- function handleChange():
-  + return type: void
-  + whenever a user type anything, handleChange() save that data to formData using setFormData()
-
-- function handleChange():
-  + return type: void
-  + whenever a user click on the continue button, it checks if the 2 entered password match each other, if not change isPasswordNotMatched to true using setIsPasswordNotMatched() function
-  + if match submit formData to the database to progress
-*/
 import {
   Container,
   Paper,
@@ -32,8 +13,29 @@ import {
 import { FormEvent, use, useState } from "react";
 import Link from "next/link";
 
+/**
+ * Registration provides a form allowing new users to create an account. The form captures
+ * user information including email, phone number, username, password, confirmation password,
+ * and date of birth. The form validates the password and confirmation password to ensure they match.
+ * It uses controlled components with `useState` to handle form data and validation state.
+ *
+ * @fileoverview This component is responsible for rendering the registration form and handling its logic,
+ * including data binding, validation (specifically for password matching), and submission.
+ *
+ * State:
+ * - `formData`: An object holding the values entered in the form fields.
+ * - `isPasswordNotMatched`: A boolean indicating whether the passwords entered match.
+ *
+ * Functions:
+ * - `handleSubmit`: Submits the form data if validation passes. It prevents the default form submission behavior,
+ *   checks if the passwords match, and logs the form data.
+ * - `handleChange`: Updates `formData` whenever an input changes.
+ * - `handleMonthChange`, `handleDateChange`, `handleYearChange`: Update respective parts of the date in `formData`.
+ *
+ * The component also renders a navigation link to the login page, enabling users to switch to the login
+ * form if they already have an account.
+ */
 export function Registration() {
-  
   //The useState for the formData object
   const [formData, setFormData] = useState({
     userName: "",
