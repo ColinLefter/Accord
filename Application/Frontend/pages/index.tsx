@@ -1,3 +1,6 @@
+"use client";
+// import "../global.css";
+
 /**
  * HomePage is the root page component of the application. Currently, it primarily consists of
  * the Navbar component, serving as the entry point for users accessing the website. As the
