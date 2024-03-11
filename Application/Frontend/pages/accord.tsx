@@ -1,7 +1,7 @@
 
 import { ServerList } from "@/components/LeftSidebar/ServerList";
 import { Text } from "@mantine/core";
-import Sidebar from "@/components/FriendProfile/friendsIcon";
+import Sidebar from "@/components/FriendProfile/FriendList";
 
 
 export default function Accord() {
