@@ -1,7 +1,49 @@
 import { Message } from './Message';
 import { Stack, Textarea } from '@mantine/core';
+import React, { useEffect, useState, useRef } from 'react';
+import { useChannel } from "ably/react";
+
+interface Message {
+  username: string,
+  message: string,
+  firstMessage?: boolean,
+  date?: string
+}
 
 export function MessagingInterface() {
+  const [messageText, setMessageText] = useState("");
+  const [receivedMessages, setMessages] = useState<Message[]>([]);    
+  const messageTextIsEmpty = messageText.trim().length === 0;
+
+  const inputBoxRef = useRef(null);
+
+  const { channel, ably } = useChannel("chat-demo", (messageData) => {
+    const incomingMessage: Message = {
+      username: "default", // You might want to extract this from messageData
+      message: messageData.data, // Assuming messageData.data contains the message text
+      // Add other fields or logic to extract them as necessary
+    };
+
+    const history = receivedMessages.slice(-199);
+    setMessages([...history, incomingMessage]);
+  });
+
+  const sendChatMessage = (messageText: string) => {
+    channel.publish({ name: "chat-message", data: messageText });
+    setMessageText("");
+    if (inputBoxRef.current) {
+      (inputBoxRef.current as HTMLTextAreaElement).focus();
+    }
+  };
+
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key !== 'Enter' || messageTextIsEmpty) {
+      return;
+    }
+    sendChatMessage(messageText);
+    event.preventDefault();
+  };  
+
   return (
     <div className="messaging-container">
       <Stack justify="space-between" style={{ height: '100%' }}>
@@ -26,10 +68,14 @@ export function MessagingInterface() {
         </Stack>
 
         <Textarea
+          ref={inputBoxRef}
           placeholder="Message @user2"
           autosize
           minRows={1}
           maxRows={10}
+          value={messageText}
+          onKeyPress={handleKeyPress}
+          onChange={(e) => setMessageText(e.target.value)}
         />
       </Stack>
     </div>
