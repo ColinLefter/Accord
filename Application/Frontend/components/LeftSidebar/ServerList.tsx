@@ -2,20 +2,22 @@
 import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
 import React, { useState } from 'react';
 import { IconPhoto, IconMessageCircle, IconSettings, IconPinInvoke } from '@tabler/icons-react';
-import { Registration } from '../Accounts/Registration';
+
 export function ServerList() {
   const iconStyle = { width: rem(12), height: rem(12) };
-  const [tabs, setTabs] = useState([{ title: 'Server 1', key: '1' }]);
-  const [activeTab, setActiveTab] = useState('1');
-  const [tabCounter, setTabCounter] = useState(1);
+  const [tabs, setTabs] = useState([{ title: 'Server 1', key: '2', content: "This is server 1" }]);
+  const [activeTab, setActiveTab] = useState('2');
+  const [tabCounter, setTabCounter] = useState(2);
   const [newTabName, setNewTabName] = useState('');
   const [isAdding, setIsAdding] = useState(true);
 
 
-  const addTab = () => {
+  const addTab = async () => {
     const newTabCounter = tabCounter + 1;
     const newKey = `${newTabCounter}`;
     //const newTabs = [...tabs, { title: `Tab ${newTabCounter}`, key: newKey }];
+    const newTitle = newTabName || `Server ${newTabCounter}`
+    const newContent = `Content of ${newTabName || `Tab ${newTabCounter}`}`
     const newTabs = [...tabs, { title: newTabName || `Server ${newTabCounter}`, key: newKey, content: `Content of ${newTabName || `Tab ${newTabCounter}`}` }];
 
     setTabs(newTabs);
@@ -24,6 +26,27 @@ export function ServerList() {
     setNewTabName('');
     setIsAdding(!isAdding)
     console.log(tabs)
+    try {
+      const response = await fetch('/api/servers', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ serverName: newTabName, serverID: newKey, serverDesc: newContent }),
+        //body: JSON.stringify(tabs),
+      });
+      const data = await response.json(); 
+      if (!response.ok) {
+        throw new Error('Failed to add server');
+      }
+  
+      // Handle success
+      // Reset form fields, update UI, etc.
+    } catch (error) {
+      console.error('Error adding tab:', error);
+      // Handle error
+    }
+    alert(JSON.stringify(newTabs, null, 2));
   };
   const Adding = () => {
     console.log(isAdding)
