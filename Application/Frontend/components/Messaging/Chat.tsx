@@ -6,7 +6,10 @@ import { MessagingInterface } from '@/components/Messaging/MessagingInterface';
 
 export function Chat() {
 
-  const client = new Ably.Realtime.Promise({ authUrl: '/api' })
+  const client = new Ably.Realtime.Promise({
+    authUrl: '/api/ably-auth',
+    authMethod: 'POST' // we need to match the server-side expectation
+  })
 
   return (
     <AblyProvider client={ client }>
