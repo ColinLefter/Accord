@@ -61,7 +61,31 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
 
   // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it.
   useEffect(() => {
-    const fetchHistory = async () => {
+    const fetchMongoDBHistory = async () => {
+      try {
+        const response = await fetch('/api/get-message-history', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ channelKey }),
+        });
+
+        if (response.ok) {
+          const { messageHistory } = await response.json();
+          if (messageHistory && messageHistory.length > 0) {
+            setReceivedMessages(messageHistory);
+            return true; // History was successfully fetched and set from MongoDB.
+          }
+        }
+        return false; // MongoDB fetch was not successful or returned no messages.
+      } catch (error) {
+        console.error('Error fetching message history from MongoDB:', error);
+        return false;
+      }
+    };
+
+    const fetchAblyHistory = async () => {
       const historyPage = await channel.history({ limit: 199 });
       const historyMessages = historyPage.items.map(item => ({
         username: item.name,
@@ -72,15 +96,21 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
       }));
       setReceivedMessages(historyMessages.reverse());
     };
-  
-    if (channel) {
-      fetchHistory().catch(console.error);
-    }
-  }, [channel]); // Empty dependency array ensures this runs once on component mount.
+
+    // Attempt to fetch from MongoDB first. If that fails, fetch from Ably.
+    const fetchHistory = async () => {
+      const fetchedFromMongoDB = await fetchMongoDBHistory();
+      if (!fetchedFromMongoDB && channel) {
+        await fetchAblyHistory();
+      }
+    };
+
+    fetchHistory().catch(console.error);
+  }, [channel]);
 
   // Responsible for publishing new messages.
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages.
-  const sendChatMessage = (messageText: string) => {
+  const sendChatMessage = async (messageText: string) => {
     const now = new Date();
     const dateStr = `${(now.getFullYear()).toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
@@ -101,6 +131,26 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
   
     // Update local state with new message, no need to fetch history again.
     setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]); // NOTE: The plan is to send the data to MongoDB when the user switches tab.
+
+    // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
+    // We are doing this to ensure that the chat history is always up to date.
+    if (!privateChat) {
+      try {
+        const updatedHistory = [...receivedMessages, outgoingMessage];
+        await fetch('/api/update-message-history', {
+          method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            channelKey,
+            messageHistory: updatedHistory,
+          }),
+        });
+      } catch (error) {
+        console.error('Error updating message history:', error);
+      }
+    }
   
     setMessageText("");
     if (inputBoxRef.current) {
