@@ -1,7 +1,7 @@
 "use client"
 
 import { Message } from './Message';
-import { Stack, Group, Textarea, Button } from '@mantine/core';
+import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@mantine/core';
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
@@ -165,7 +165,7 @@ export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps
 
       <Stack justify="space-between" style={{ height: '100%' }}>
         {/* First loading the message history */}
-        <div>{messages}</div>
+        <Flex component={ScrollArea}>{messages}</Flex>
         {/*
           Keeps the message box scrolled to the most recent message (the one on the bottom).
           This empty div is then scrolled into view whenever the component re-renders.
