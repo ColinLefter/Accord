@@ -38,7 +38,7 @@ export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
 
-  const channelKey = `chat"${[sender, receiver].sort().join("_")}`; // We must counteract the swapping mechanism by sorting the names alphabetically.
+  const channelKey = `chat:${[sender, receiver].sort().join(":")}`; // We must counteract the swapping mechanism by sorting the names alphabetically.
   
   const { channel, ably } = useChannel(channelKey, (messageData) => { // IMPORTANT: the first parameter is the name of the channel we want to subscribe to.
     if (messageData.name === sender) {
