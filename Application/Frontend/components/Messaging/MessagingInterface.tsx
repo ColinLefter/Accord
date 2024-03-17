@@ -20,9 +20,10 @@ interface MessagingInterfaceProps {
   sender: string;
   receiver: string;
   privateChat: boolean;
+  onMessageExchange: () => void; // Include in the props of MessagingInterface
 }
 
-export function MessagingInterface({ sender, receiver, privateChat }: MessagingInterfaceProps) {
+export function MessagingInterface({ sender, receiver, privateChat, onMessageExchange  }: MessagingInterfaceProps) {
   let inputBox = null;
   let messageEnd: HTMLDivElement | null = null;
 
@@ -59,6 +60,11 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
     };
   
     setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
+
+    // IMPORTANT: Privacy feature.
+    // Every time we send receive a message, we call this function to let the parent component know that a message has been received. End-to-end privacy.
+    // This prevents jailbreaking the privacy feature by sending a message to a user and then having them switch the toggle off to capture the message history.
+    onMessageExchange();
   });
 
   // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it.
@@ -140,6 +146,8 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
     // Update the local state for the sender's UI. The message for the receiver
     // will be handled by the useChannel callback.
     setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]);
+
+    onMessageExchange(); // IMPORTANT: We also call this message exchange feature every time we send a message. End-to-end privacy.
 
     // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
     // We are doing this to ensure that the chat history is always up to date.

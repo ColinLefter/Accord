@@ -46,6 +46,7 @@ export default function Accord() {
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
   const [privateMode, setPrivateMode] = useState(true);
+  const [chatStarted, setChatStarted] = useState(false);
 
   // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
   // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
@@ -58,12 +59,13 @@ export default function Accord() {
   const receiver = "user2";
 
   // note: we are manually handling the currently selected tab via states
-  const handleTabSelection = (value: string) => {
-    setActiveView(value);
-  };
+  const handleTabSelection = (value: string) => setActiveView(value);
+  const handleMessageIconClick = () => setActiveView('message');
 
-  const handleMessageIconClick = () => {
-    setActiveView('message');
+  // Function to handle message sending from the Chat component
+  // This should be passed down and invoked whenever a message is sent or received
+  const onMessageExchange = () => {
+    if (!chatStarted) setChatStarted(true);
   };
 
   // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
@@ -91,7 +93,8 @@ export default function Accord() {
                 <Switch
                   defaultChecked
                   label="Private mode"
-                  onChange={(event) => setPrivateMode(event.currentTarget.checked)}
+                  onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
+                  disabled={chatStarted}  // Disable the switch if the chat has started
                 />
                 <ColorSchemeToggle/>
               </Group>
@@ -138,7 +141,14 @@ export default function Accord() {
           <AppShell.Main>
             {activeView === 'friends' && <FriendsTab />}
             {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-            {activeView === 'message' && <Chat sender={sender} receiver={receiver} privateChat={privateMode}  />}
+            {activeView === 'message' && (
+              <Chat
+                sender={sender}
+                receiver={receiver}
+                privateChat={privateMode}
+                onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+              />
+          )}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>
