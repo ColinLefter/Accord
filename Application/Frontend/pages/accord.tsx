@@ -19,7 +19,7 @@ import { Logo } from "@/components/Logo";
 import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
-import { MessagingInterface } from "@/components/Messaging/MessagingInterface";
+import { Chat } from "@/components/Messaging/Chat";
 import React, { useState } from 'react';
 
 import classes from "@/components/tabstyling.module.css";
@@ -113,7 +113,7 @@ export default function Accord() {
         <AppShell.Main>
           {activeView === 'friends' && <FriendsTab />}
           {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-          {activeView === 'message' && <MessagingInterface />}
+          {activeView === 'message' && <Chat />}
         </AppShell.Main>
         <AppShell.Aside p="md" component={ScrollArea}>
           <Text>Servers</Text>

@@ -1,3 +1,5 @@
+"use client"
+
 import { Group, Stack, Avatar, Text } from '@mantine/core';
 
 interface MessageProps {
