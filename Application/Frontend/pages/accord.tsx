@@ -114,15 +114,9 @@ export default function Accord() {
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-            <div style={{ display: activeView === 'friends' ? 'block' : 'none' }}>
-              <FriendsTab />
-            </div>
-            <div style={{ display: activeView === 'profile' ? 'block' : 'none' }}>
-              <Tabs.Panel value="profile">My profile</Tabs.Panel>
-            </div>
-            <div style={{ display: activeView === 'message' ? 'block' : 'none' }}>
-              <Chat />
-            </div>
+            {activeView === 'friends' && <FriendsTab />}
+            {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
+            {activeView === 'message' && <Chat />}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>
