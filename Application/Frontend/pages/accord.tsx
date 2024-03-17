@@ -42,6 +42,16 @@ export default function Accord() {
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
+  // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
+  // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
+  // Receiver would come from clicking on a friend in the dropdown that appears when clicking the "Send DM" button.
+  // It would also come from clicking on a friend in the FriendsTab component as that would trigger the chat to open.
+  // Every time we click on a friend who we want to chat with, we check if they are currently subscribed to the chat channel, and if not, we subscribe them.
+  // This involves writing a query to the database to check who is in this chat (i.e. who is subscribed to this channel).
+  // As for example the sender of this chat will be user1 and the receiver will be user2, but this will be flipped for user2 as they will be the sender in that case.
+  const sender = "user1";
+  const receiver = "user2";
+
   // note: we are manually handling the currently selected tab via states
   const handleTabSelection = (value: string) => {
     setActiveView(value);
@@ -116,7 +126,7 @@ export default function Accord() {
           <AppShell.Main>
             {activeView === 'friends' && <FriendsTab />}
             {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-            {activeView === 'message' && <Chat />}
+            {activeView === 'message' && <Chat sender={sender} receiver={receiver} />}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>

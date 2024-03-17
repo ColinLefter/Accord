@@ -4,7 +4,7 @@ import Ably from 'ably/promises';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'GET') {
     try {
-      const client = new Ably.Realtime({ key: process.env.ABLY_API_KEY });
+      const client = new Ably.Realtime({ key: process.env.ABLY_API_KEY_PUBLISH_SUBSCRIBE });
       const tokenRequestData = await client.auth.createTokenRequest({ clientId: 'ably-nextjs-demo' });
 
       res.status(200).json(tokenRequestData);

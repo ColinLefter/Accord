@@ -4,8 +4,12 @@ import * as Ably from 'ably';
 import { AblyProvider } from 'ably/react';
 import { MessagingInterface } from '@/components/Messaging/MessagingInterface';
 
-export function Chat() {
+interface ChatProps {
+  sender: string;
+  receiver: string;
+}
 
+export function Chat({ sender, receiver }: ChatProps) {
   const client = new Ably.Realtime.Promise({
     authUrl: '/api/ably-auth', // Must not start with a leading slash
     authMethod: 'POST' // We need to match the server-side expectation
@@ -13,7 +17,7 @@ export function Chat() {
 
   return (
     <AblyProvider client={ client }>
-      <MessagingInterface/>
+      <MessagingInterface sender={sender} receiver={receiver} />
     </AblyProvider>
   )
 }
