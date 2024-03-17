@@ -127,7 +127,7 @@ export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps
       // Start a new message group
       lastUsername = message.username;
       acc.push(
-        <Stack key={index} gap="0">
+        <Stack key={index} gap="0" justify="flex-start">
           <Message username={message.username} message={message.message} firstMessage={true} date={message.date} />
         </Stack>
       );
@@ -159,9 +159,10 @@ export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps
 
   return (
     <div className="messaging-container">
+
       <Stack justify="space-between" style={{ height: '100%' }}>
         {/* First loading the message history */}
-        {messages}
+        <div>{messages}</div>
         {/*
           Keeps the message box scrolled to the most recent message (the one on the bottom).
           This empty div is then scrolled into view whenever the component re-renders.

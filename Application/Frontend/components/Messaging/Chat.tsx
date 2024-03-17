@@ -11,7 +11,7 @@ interface ChatProps {
 
 export function Chat({ sender, receiver }: ChatProps) {
   const client = new Ably.Realtime.Promise({
-    authUrl: '/api/ably-auth', // Must not start with a leading slash
+    authUrl: '/api/ably-auth',
     authMethod: 'POST' // We need to match the server-side expectation
   })
 
