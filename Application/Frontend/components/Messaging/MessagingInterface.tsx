@@ -39,15 +39,16 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
 
-  const channelKey = `chat:${[sender, receiver].sort().join(",")}`; // We must counteract the swapping mechanism by sorting the names alphabetically.
-  console.log(channelKey)
-  
-  const { channel, ably } = useChannel(channelKey, (messageData) => { // IMPORTANT: the first parameter is the name of the channel we want to subscribe to.
+  const channelKey = `chat:${[sender, receiver].sort().join(",")}`; // We must counteract the swapping mechanism by sorting the names alphabetically.  
+  const { channel, ably } = useChannel(channelKey, (messageData) => {
+    // This callback gets executed for any message received on this channel.
+    // If the sender is the current user, don't add the message to receivedMessages because
+    // it's already added to the state when the user sends the message.
     if (messageData.name === sender) {
-      return; // Ignore messages sent by the sender
+      return;
     }
   
-    // Process and display messages sent by others
+    // For any message received from others, update the state.
     const { text, date } = messageData.data;
     const incomingMessage: Message = {
       username: messageData.name,
@@ -56,6 +57,7 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
       connectionId: messageData.clientId,
       data: text,
     };
+  
     setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
   });
 
@@ -70,43 +72,49 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
           },
           body: JSON.stringify({ channelKey }),
         });
-
+  
         if (response.ok) {
           const { messageHistory } = await response.json();
           if (messageHistory && messageHistory.length > 0) {
             setReceivedMessages(messageHistory);
-            return true; // History was successfully fetched and set from MongoDB.
+            return true;  // History was successfully fetched and set from MongoDB.
           }
         }
-        return false; // MongoDB fetch was not successful or returned no messages.
+        return false;  // MongoDB fetch was not successful or returned no messages.
       } catch (error) {
         console.error('Error fetching message history from MongoDB:', error);
         return false;
       }
     };
-
+  
     const fetchAblyHistory = async () => {
-      const historyPage = await channel.history({ limit: 199 });
-      const historyMessages = historyPage.items.map(item => ({
-        username: item.name,
-        message: item.data.text,
-        date: item.data.date,
-        connectionId: item.clientId,
-        data: item.data.text,
-      }));
-      setReceivedMessages(historyMessages.reverse());
+      if (channel) {
+        const historyPage = await channel.history({ limit: 199 });
+        const historyMessages = historyPage.items.map(item => ({
+          username: item.name,
+          message: item.data.text,
+          date: item.data.date,
+          connectionId: item.clientId,
+          data: item.data.text,
+        }));
+        setReceivedMessages(historyMessages.reverse());
+      }
     };
-
-    // Attempt to fetch from MongoDB first. If that fails, fetch from Ably.
+  
+    // Determine which history function to use based on the privateChat state.
     const fetchHistory = async () => {
-      const fetchedFromMongoDB = await fetchMongoDBHistory();
-      if (!fetchedFromMongoDB && channel) {
+      if (!privateChat) {
+        const fetchedFromMongoDB = await fetchMongoDBHistory();
+        if (!fetchedFromMongoDB) {
+          await fetchAblyHistory();
+        }
+      } else {
         await fetchAblyHistory();
       }
     };
-
+  
     fetchHistory().catch(console.error);
-  }, [channel]);
+  }, [channel, privateChat]);  // Include privateChat in the dependency array.  
 
   // Responsible for publishing new messages.
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages.
@@ -129,11 +137,13 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
       data: { text: messageText, date: dateStr }
     });
   
-    // Update local state with new message, no need to fetch history again.
-    setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]); // NOTE: The plan is to send the data to MongoDB when the user switches tab.
+    // Update the local state for the sender's UI. The message for the receiver
+    // will be handled by the useChannel callback.
+    setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]);
 
     // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
     // We are doing this to ensure that the chat history is always up to date.
+    console.log(privateChat);
     if (!privateChat) {
       try {
         const updatedHistory = [...receivedMessages, outgoingMessage];
@@ -145,6 +155,8 @@ export function MessagingInterface({ sender, receiver, privateChat }: MessagingI
           body: JSON.stringify({
             channelKey,
             messageHistory: updatedHistory,
+            owner: "user1", // hard-coded until we implement site-wide user authentication
+            members: ["user1", "user2"] // hard-coded until we implement site-wide user authentication
           }),
         });
       } catch (error) {

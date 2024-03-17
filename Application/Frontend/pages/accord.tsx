@@ -45,7 +45,7 @@ export default function Accord() {
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
-  const [privateMode, setPrivateMode] = useState(false);
+  const [privateMode, setPrivateMode] = useState(true);
 
   // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
   // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
