@@ -27,9 +27,9 @@ import { useRouter } from 'next/router';
   }
 
 export function FriendsTab(props: TextInputProps) {
-        const router = useRouter(); // To handle page redirection after the user logs in
-        const [friendList, setFriendList] = useState<string[]>([]);
-        const [searchQuery, setSearchQuery] = useState<string>(''); // for search box
+    const router = useRouter(); // To handle page redirection after the user logs in
+    const [friendList, setFriendList] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>(''); // for search box
 
     // State hooks for form data and validation errors
     const [formData, setFormData] = useState<{userName: string, password: string}>({
@@ -87,8 +87,6 @@ export function FriendsTab(props: TextInputProps) {
         setFormData(prevData => ({ ...prevData, [name]: value }));
       };
 
-    
-    
     useEffect(() => { 
         const fetchData = async () => { //
           try {
