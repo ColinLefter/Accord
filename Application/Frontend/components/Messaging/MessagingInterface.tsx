@@ -4,9 +4,10 @@ import { Message } from './Message';
 import { Stack, Group, Textarea, Button } from '@mantine/core';
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
+import { useChat } from "@/contexts/chatContext";
 import * as Ably from 'ably';
 
-interface Message {
+export interface Message {
   username: string,
   message: string,
   firstMessage?: boolean,
@@ -20,7 +21,10 @@ export function MessagingInterface() {
   let messageEnd: HTMLDivElement | null = null;
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed
-  const [receivedMessages, setMessages] = useState<Message[]>([]); // receivedMessages stores the on-screen chat history
+  const [receivedMessages, setReceivedMessages] = useState<Message[]>([]); // receivedMessages stores the on-screen chat history
+
+  // Retrieving the chat history and update function from the context
+  const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty
 
   const inputBoxRef = useRef(null);
@@ -29,6 +33,11 @@ export function MessagingInterface() {
   // You provide it with a channel name and a callback to be invoked whenever a message is received
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel
   const { channel, ably } = useChannel("chat", (messageData) => {
+    if (messageData.clientId === ably.auth.clientId) {
+      return; // IMPORTANT: This message was sent by us; ignore it.
+    }
+  
+    // Process and display messages sent by others.
     const { text, date } = messageData.data;
     const incomingMessage: Message = {
       username: messageData.name,
@@ -37,20 +46,49 @@ export function MessagingInterface() {
       connectionId: messageData.clientId,
       data: text,
     };
-    const history = receivedMessages.slice(-199); // we will always have up to 199 messages + 1 new message, stored using the setMessages React useState hook
-    setMessages([...history, incomingMessage]);
+    setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
   });
+
+  // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it.
+  useEffect(() => {
+    const fetchHistory = async () => {
+      const historyPage = await channel.history({ limit: 199 });
+      const historyMessages = historyPage.items.map(item => ({
+        username: item.name,
+        message: item.data.text,
+        date: item.data.date,
+        connectionId: item.clientId,
+        data: item.data.text,
+      }));
+      setReceivedMessages(historyMessages.reverse());
+    };
+  
+    if (channel) {
+      fetchHistory().catch(console.error);
+    }
+  }, [channel]); // Empty dependency array ensures this runs once on component mount
 
   // Responsible for publishing new messages
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages
   const sendChatMessage = (messageText: string) => {
     const now = new Date();
-    const dateStr = `${(now.getFullYear()).toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    const dateStr = `${(now.getFullYear()).toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  
+    const outgoingMessage = {
+      username: "user1", // NOTE: user1 is temporarily hardcoded as we need to implement site-wide user authentication
+      message: messageText,
+      date: dateStr,
+      data: messageText,
+    };
   
     channel.publish({
-      name: "user1", // NOTE: user1 is temporarily hardcoded as we need to implement site-wide user authentication
+      name: "user1",
       data: { text: messageText, date: dateStr }
     });
+  
+    // Update local state with new message, no need to fetch history again
+    setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]); // NOTE: The plan is to send the data to MongoDB when the user switches tab
+  
     setMessageText("");
     if (inputBoxRef.current) {
       (inputBoxRef.current as HTMLTextAreaElement).focus();
@@ -106,6 +144,10 @@ export function MessagingInterface() {
       messageEnd.scrollIntoView({ behavior: 'smooth' });
     }
   }, [receivedMessages]);
+
+  useEffect(() => {
+    setReceivedMessages(chatHistory);
+  }, [chatHistory]);
 
   return (
     <div className="messaging-container">

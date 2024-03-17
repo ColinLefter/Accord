@@ -21,6 +21,7 @@ import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeTog
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
 import React, { useState } from 'react';
+import { ChatProvider } from "@/contexts/chatContext";
 
 import classes from "@/components/tabstyling.module.css";
 
@@ -50,80 +51,89 @@ export default function Accord() {
     setActiveView('message');
   };
 
+  // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
-    <Tabs variant="unstyled" classNames={classes} value={activeView}>
-      <AppShell
-        header={{ height: 50 }}
-        navbar={{
-          width: 300,
-          breakpoint: 'sm',
-          collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
-        }}
-        padding="md"
-        aside={{ width: 120, breakpoint: 'sm' }}
-      >
-        <AppShell.Header>
-          <Group justify="space-between" className="center" px="md">
-            <Group>
-              <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
-              <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
-              <Logo />
+    <ChatProvider>
+      <Tabs variant="unstyled" classNames={classes} value={activeView}>
+        <AppShell
+          header={{ height: 50 }}
+          navbar={{
+            width: 300,
+            breakpoint: 'sm',
+            collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+          }}
+          padding="md"
+          aside={{ width: 120, breakpoint: 'sm' }}
+        >
+          <AppShell.Header>
+            <Group justify="space-between" className="center" px="md">
+              <Group>
+                <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
+                <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
+                <Logo />
+              </Group>
+              <ColorSchemeToggle/>
             </Group>
-            <ColorSchemeToggle/>
-          </Group>
-        </AppShell.Header>
-        <AppShell.Navbar p="md">
-          <AppShell.Section grow>
-            <Tabs.List grow>
-              <Tabs.Tab
-                value="friends"
-                onClick={() => handleTabSelection('friends')}
-                leftSection={<IconUsers />}
-              >
-                Friends
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="profile"
-                onClick={() => handleTabSelection('profile')}
-                leftSection={<IconUserCircle />}
-              >
-                My profile
-              </Tabs.Tab>
-            </Tabs.List>
-          </AppShell.Section>
-          <AppShell.Section grow component={ScrollArea} mt="15">
-            <Group justify="space-between">
-              <Text py="md">Direct Messages</Text>
-              <Tooltip label="Send DM">
-                <ActionIcon variant="default" aria-label="Plus" onClick={handleMessageIconClick}>
-                  <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
+          </AppShell.Header>
+          <AppShell.Navbar p="md">
+            <AppShell.Section grow>
+              <Tabs.List grow>
+                <Tabs.Tab
+                  value="friends"
+                  onClick={() => handleTabSelection('friends')}
+                  leftSection={<IconUsers />}
+                >
+                  Friends
+                </Tabs.Tab>
+                <Tabs.Tab
+                  value="profile"
+                  onClick={() => handleTabSelection('profile')}
+                  leftSection={<IconUserCircle />}
+                >
+                  My profile
+                </Tabs.Tab>
+              </Tabs.List>
+            </AppShell.Section>
+            <AppShell.Section grow component={ScrollArea} mt="15">
+              <Group justify="space-between">
+                <Text py="md">Direct Messages</Text>
+                <Tooltip label="Send DM">
+                  <ActionIcon variant="default" aria-label="Plus" onClick={handleMessageIconClick}>
+                    <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+              {Array(60)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton key={index} h={30} mt="sm" animate={false} />
+                ))}
+            </AppShell.Section>
+            <AppShell.Section mt="15">
+              <FooterProfile/>
+            </AppShell.Section>
+          </AppShell.Navbar>
+          <AppShell.Main>
+            <div style={{ display: activeView === 'friends' ? 'block' : 'none' }}>
+              <FriendsTab />
+            </div>
+            <div style={{ display: activeView === 'profile' ? 'block' : 'none' }}>
+              <Tabs.Panel value="profile">My profile</Tabs.Panel>
+            </div>
+            <div style={{ display: activeView === 'message' ? 'block' : 'none' }}>
+              <Chat />
+            </div>
+          </AppShell.Main>
+          <AppShell.Aside p="md" component={ScrollArea}>
+            <Text>Servers</Text>
             {Array(60)
               .fill(0)
               .map((_, index) => (
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))}
-          </AppShell.Section>
-          <AppShell.Section mt="15">
-            <FooterProfile/>
-          </AppShell.Section>
-        </AppShell.Navbar>
-        <AppShell.Main>
-          {activeView === 'friends' && <FriendsTab />}
-          {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-          {activeView === 'message' && <Chat />}
-        </AppShell.Main>
-        <AppShell.Aside p="md" component={ScrollArea}>
-          <Text>Servers</Text>
-          {Array(60)
-            .fill(0)
-            .map((_, index) => (
-              <Skeleton key={index} h={30} mt="sm" animate={false} />
-            ))}
-        </AppShell.Aside>
-      </AppShell>
-    </Tabs>
+          </AppShell.Aside>
+        </AppShell>
+      </Tabs>
+    </ChatProvider>
   );
 }
