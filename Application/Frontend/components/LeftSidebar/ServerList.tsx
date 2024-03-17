@@ -14,67 +14,6 @@ export function ServerList() {
   const [newTabName, setNewTabName] = useState('');
   const [isAdding, setIsAdding] = useState(true);
   
-  const getServersOfLoggedInUser = async ()  => {
-
-    const response = await fetch('/api/getServersListOfUser', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
-  const data = await response.json(); 
-  if (!response.ok) {
-    throw new Error('Failed to add server');
-  }
-
-  // Handle success
-  // Reset form fields, update UI, etc.
-  //alert(data.listOfServerIDs)
-  // console.log(data.listOfServerIDs)
-  setServerIDsList(data.listOfServerIDs)
-  //alert(data.listOfServerIDs)
-  //alert(serverIDsList)
-  return data.listOfServerIDs;
-}
-  
-  const [serverIDsList, setServerIDsList] = useState(async () => {
-    const initialState = await getServersOfLoggedInUser();
-    console.log(initialState)
-    return initialState;})
-    //console.log(getServersOfLoggedInUser())
-   
-  let xd:any
-  const getServersFromServerIDList = async () => {
-    getServersOfLoggedInUser()
-    let serverArray = []
-    let serverObj = {}
-    //alert(ServerIDArray)
-    console.log(serverIDsList)
-    const response = await fetch('/api/initializingServerList', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({serverIDList: serverIDsList}),
-    });
-    const data = await response.json(); 
-    serverArray = data.returnedServerObj;
-    console.log("hello");
-    console.log(tabs)
-    console.log(serverArray);
-    // const newTabs = [...tabs, serverArray];
-    xd = serverArray
-    setTabs(serverArray);
-    return data.returnedServerObj;
-  }
-
-  
-//   const [tabs, setTabs] = useState(async () => {
-//     const initialState = await getServersFromServerIDList();
-//     console.log(initialState)
-//     return initialState;
-// });
-
 
   const addTab = async () => {
 
@@ -127,9 +66,6 @@ export function ServerList() {
 
   return (    
     <div>
-      <Button style={{ height: em(50), border: px(32) }} onClick={getServersFromServerIDList} radius="xl">
-        aa
-      </Button>
       {isAdding && 
       <Tabs color="teal" orientation="vertical" variant='pills' radius="xl">
         <Tabs.List>
@@ -185,10 +121,6 @@ export function ServerList() {
                     Add Server
       </Button>
       }
-      <Button style={{ height: em(50), border: px(32) }} onClick={getServersOfLoggedInUser} radius="xl">
-                    Check User Server
-      </Button>
-      
     </div>
     // </>
   );
