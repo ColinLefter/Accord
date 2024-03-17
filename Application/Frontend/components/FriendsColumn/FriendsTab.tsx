@@ -27,8 +27,9 @@ import { useRouter } from 'next/router';
   }
 
 export function FriendsTab(props: TextInputProps) {
-        const router = useRouter(); // To handle page redirection after the user logs in
-        const [friendList, setFriendList] = useState<string[]>([]);
+    const router = useRouter(); // To handle page redirection after the user logs in
+    const [friendList, setFriendList] = useState<string[]>([]);
+    const [searchQuery, setSearchQuery] = useState<string>(''); // for search box
 
     // State hooks for form data and validation errors
     const [formData, setFormData] = useState<{userName: string, password: string}>({
@@ -86,8 +87,6 @@ export function FriendsTab(props: TextInputProps) {
         setFormData(prevData => ({ ...prevData, [name]: value }));
       };
 
-    
-    
     useEffect(() => { 
         const fetchData = async () => { //
           try {
@@ -111,48 +110,53 @@ export function FriendsTab(props: TextInputProps) {
         };
         fetchData(); 
       }, []);
-    
-    return (
-      <Stack>
-          {/** Search Box*/}
-          <TextInput
-              style={{ width: '100%' }}  // Ensure the TextInput takes up only available space
-              radius="xl"
-              size="md"
-              placeholder="Search..."
-              leftSection={<IconSearch color="orange" stroke={1.5} />}
-              rightSection={
-                  <ActionIcon radius="xl" variant="filled">
-                      <IconArrowRight stroke={1.5} />
-                  </ActionIcon>
-              }
-          />
-      
-          {/** "All friends" text*/}
-          <Text
-              fw={500}
-              className="text-xl"
-              component="span"
-              size="xl" 
-          >
-              All friends
-          </Text>
-          {/** Users that are in the friendlist*/}
-          {
-              friendList
-                  .map((friend, index) => (
-                    <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`}>
-                      <Group py="10" >
-                          <Avatar
-                              alt={`Friend ${index + 1}`}
-                              radius="xl"
-                          />
-                          <Text size="sm">{friend}</Text>
-                      </Group>
-                    </Paper>
-                  ))
-          }
-      </Stack>
+
+          // Filter friendList based on search query
+    const filteredFriendList = friendList.filter((friend) =>
+      friend.toLowerCase().includes(searchQuery.toLowerCase())
     );
-  }
-  
+    
+      return (
+        <Stack>
+            {/** Search Box*/}
+            <TextInput
+                style={{ width: '100%' }}
+                radius="xl"
+                size="md"
+                placeholder="Search..."
+                leftSection={<IconSearch color="orange" stroke={1.5} />}
+                rightSection={
+                    <ActionIcon radius="xl" variant="filled">
+                        <IconArrowRight stroke={1.5} />
+                    </ActionIcon>
+                }
+                value={searchQuery}
+                onChange={(event) => setSearchQuery(event.currentTarget.value)}
+            />
+        
+            {/** "All friends" text*/}
+            <Text
+                fw={500}
+                className="text-xl"
+                component="span"
+                size="xl" 
+            >
+                All friends
+            </Text>
+            {/** Users that are in the friendlist*/}
+            {
+                filteredFriendList.map((friend, index) => (
+                    <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`}>
+                        <Group py="10" >
+                            <Avatar
+                                alt={`Friend ${index + 1}`}
+                                radius="xl"
+                            />
+                            <Text size="sm">{friend}</Text>
+                        </Group>
+                    </Paper>
+                ))
+            }
+        </Stack>
+    );
+}
