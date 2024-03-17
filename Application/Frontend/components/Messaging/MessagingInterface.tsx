@@ -28,12 +28,14 @@ export function MessagingInterface() {
   // useChannel is a react-hook API for subscribing to messages from an Ably channel
   // You provide it with a channel name and a callback to be invoked whenever a message is received
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel
-  const { channel, ably } = useChannel("chat-demo", (messageData) => {
+  const { channel, ably } = useChannel("chat", (messageData) => {
+    const { text, date } = messageData.data;
     const incomingMessage: Message = {
       username: messageData.name,
-      message: messageData.data,
+      message: text,
+      date: date,
       connectionId: messageData.clientId,
-      data: messageData.data,
+      data: text,
     };
     const history = receivedMessages.slice(-199); // we will always have up to 199 messages + 1 new message, stored using the setMessages React useState hook
     setMessages([...history, incomingMessage]);
@@ -42,13 +44,19 @@ export function MessagingInterface() {
   // Responsible for publishing new messages
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages
   const sendChatMessage = (messageText: string) => {
-    channel.publish({ name: "chat-message", data: messageText });
+    const now = new Date();
+    const dateStr = `${(now.getFullYear()).toString().padStart(2, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+  
+    channel.publish({
+      name: "user1", // NOTE: user1 is temporarily hardcoded as we need to implement site-wide user authentication
+      data: { text: messageText, date: dateStr }
+    });
     setMessageText("");
     if (inputBoxRef.current) {
       (inputBoxRef.current as HTMLTextAreaElement).focus();
     }
   };
-
+  
   // This is triggered when the submit button is clicked and calls sendChatMessage, along with preventing a page reload
   const handleFormSubmission = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -67,25 +75,32 @@ export function MessagingInterface() {
   // We are mapping the received Ably messages into HTML span elements
   // Group messages by username and construct UI elements to display the messages
   let lastUsername = '';
-  const messages = receivedMessages.reduce((acc: JSX.Element[], message, index) => {
+  const messages = receivedMessages.reduce<JSX.Element[]>((acc, message, index) => {
     const isFirstMessage = message.username !== lastUsername;
     if (isFirstMessage) {
       // Start a new message group
       lastUsername = message.username;
       acc.push(
         <Stack key={index} gap="0">
-          <Message username={message.username} message={message.message} firstMessage date={message.date} />
+          <Message username={message.username} message={message.message} firstMessage={true} date={message.date} />
         </Stack>
       );
     } else {
-      // Add to the existing group
-      acc[acc.length - 1].props.children.push(
-        <Message key={index} username={message.username} message={message.message} date={message.date} />
+      // Clone the last element and its children to create a new instance before modifying
+      const lastElement = React.cloneElement(
+        acc[acc.length - 1],
+        {},
+        React.Children.toArray(acc[acc.length - 1].props.children).concat(
+          <Message key={index} username={message.username} message={message.message} date={message.date} />
+        )
       );
+  
+      // Replace the last element with the updated one
+      acc[acc.length - 1] = lastElement;
     }
     return acc;
   }, []);
-
+  
   useEffect(() => {
     if (messageEnd) {
       messageEnd.scrollIntoView({ behavior: 'smooth' });
