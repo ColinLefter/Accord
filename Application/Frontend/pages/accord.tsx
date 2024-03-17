@@ -13,7 +13,8 @@ import {
   useComputedColorScheme,
   ActionIcon,
   Container,
-  Tabs
+  Tabs,
+  Switch
 } from '@mantine/core';
 import { IconUsers, IconPlus, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
@@ -43,6 +44,8 @@ export default function Accord() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
+
+  const [privateMode, setPrivateMode] = useState(false);
 
   // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
   // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
@@ -84,7 +87,14 @@ export default function Accord() {
                 <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
                 <Logo />
               </Group>
-              <ColorSchemeToggle/>
+              <Group>
+                <Switch
+                  defaultChecked
+                  label="Private mode"
+                  onChange={(event) => setPrivateMode(event.currentTarget.checked)}
+                />
+                <ColorSchemeToggle/>
+              </Group>
             </Group>
           </AppShell.Header>
           <AppShell.Navbar p="md">
@@ -128,7 +138,7 @@ export default function Accord() {
           <AppShell.Main>
             {activeView === 'friends' && <FriendsTab />}
             {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-            {activeView === 'message' && <Chat sender={sender} receiver={receiver} />}
+            {activeView === 'message' && <Chat sender={sender} receiver={receiver} privateChat={privateMode}  />}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>
