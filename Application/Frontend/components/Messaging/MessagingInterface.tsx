@@ -23,6 +23,19 @@ interface MessagingInterfaceProps {
   onMessageExchange: () => void; // Include in the props of MessagingInterface
 }
 
+/**
+ * The MessagingInterface component manages and displays the chat interface, allowing users to send and receive messages.
+ * It utilizes Ably's real-time messaging service for communication and maintains the chat history both locally and in MongoDB.
+ *
+ * Props:
+ * - sender: The username of the user who is sending the message.
+ * - receiver: The username of the user who is receiving the message.
+ * - privateChat: A boolean indicating whether the chat is private.
+ * - onMessageExchange: A callback function that is invoked whenever a message is sent or received, supporting end-to-end privacy features.
+ *
+ * The component listens for incoming messages via the Ably channel, maintains local message history state, and provides a UI for sending new messages.
+ * It also interacts with backend APIs to fetch and update message history in MongoDB based on the chat's privacy settings.
+ */
 export function MessagingInterface({ sender, receiver, privateChat, onMessageExchange  }: MessagingInterfaceProps) {
   let messageEnd: HTMLDivElement | null = null;
 
@@ -105,6 +118,13 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
 
   // Responsible for publishing new messages.
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages.
+  /**
+   * Publishes a new chat message to the Ably channel and updates local and remote message histories.
+   * This function is triggered when the user sends a message, handling the publishing process,
+   * updating local state, and potentially updating the message history stored in MongoDB.
+   *
+   * @param {string} messageText The text of the message to be sent.
+   */
   const sendChatMessage = async (messageText: string) => {
     const now = new Date();
     const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
@@ -162,12 +182,26 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   };  
   
   // This is triggered when the submit button is clicked and calls sendChatMessage, along with preventing a page reload.
+  /**
+   * Handles the form submission event when sending a message.
+   * It prevents the default form submission behavior, calls sendChatMessage to publish the message,
+   * and ensures the user interface reflects this action properly.
+   *
+   * @param {React.FormEvent<HTMLFormElement>} event The form submission event.
+   */
   const handleFormSubmission = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     sendChatMessage(messageText);
   }
 
   // If a user presses the enter key, while there is text in the textarea, the sendCHatMessage fuction is triggered.
+  /**
+   * Triggers message sending when the Enter key is pressed in the message input box,
+   * provided that the message text is not empty. It prevents the default action of adding
+   * a new line to the text area, maintaining a single-line input for message sending.
+   *
+   * @param {React.KeyboardEvent<HTMLTextAreaElement>} event The keyboard event.
+   */
   const handleKeyPress = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (event.key === 'Enter' && !event.shiftKey && !messageTextIsEmpty) {
       event.preventDefault(); // Prevent default to avoid line break in textarea.
