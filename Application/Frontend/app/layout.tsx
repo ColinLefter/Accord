@@ -4,12 +4,17 @@ import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { theme } from "../theme";
 // import "../global.css";
 
+import * as Ably from 'ably';
+import { AblyProvider } from 'ably/react';
+
 export const metadata = {
   title: "Mantine Next.js template",
   description: "I am using Mantine with Next.js!",
 };
 
 export default function RootLayout({ children }: { children: any }) {
+  const client = new Ably.Realtime.Promise({ authUrl: '/api' });
+
   return (
     <html lang="en">
       <head>
@@ -21,7 +26,11 @@ export default function RootLayout({ children }: { children: any }) {
         />
       </head>
       <body>
-        <MantineProvider theme={theme}>{children}</MantineProvider>
+        <MantineProvider theme={theme}>
+          <AblyProvider client={ client }>
+            {children}
+          </AblyProvider>
+        </MantineProvider>
       </body>
     </html>
   );
