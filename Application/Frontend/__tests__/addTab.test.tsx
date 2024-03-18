@@ -25,20 +25,20 @@ describe("Accord.Accounts Document Insert and Cleanup Test ", () => {
   });
 
   it("should insert a new server into Accord.Servers then clean up", async () => {
-    const accountCollection = db.collection("Servers");
+    const serversCollection = db.collection("Servers");
     const newServer = {
       serverID: "3",
       serverName: "server3",
       serverDesc: "A sad place"
     };
 
-    const insertResult = await accountCollection.insertOne(newServer);
+    const insertResult = await serversCollection.insertOne(newServer);
     expect(insertResult.acknowledged).toBeTruthy();
     expect(insertResult.insertedId).toBeDefined();
     insertedDocumentId = insertResult.insertedId; // Store the inserted document ID for cleanup
 
     // Optionally, fetch the inserted document to verify
-    const insertedMessage = await accountCollection.findOne({ _id: insertResult.insertedId });
+    const insertedMessage = await serversCollection.findOne({ _id: insertResult.insertedId });
     expect(insertedMessage).toMatchObject(newServer);
   });
 });
