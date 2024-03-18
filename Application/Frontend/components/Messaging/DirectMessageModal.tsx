@@ -32,7 +32,7 @@ export function DirectMessageModal() {
 
   return (
     <>
-      <Modal opened={opened} onClose={close} title="Send direct message">
+      <Modal opened={opened} onClose={close} title="New DM">
         <Stack>
           <Combobox
             store={combobox}
