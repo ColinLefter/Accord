@@ -107,7 +107,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages.
   const sendChatMessage = async (messageText: string) => {
     const now = new Date();
-    const dateStr = `${(now.getFullYear()).toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
+    const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
     const outgoingMessage = {
       username: sender, // NOTE: user1 is temporarily hardcoded as we need to implement site-wide user authentication.
@@ -118,45 +118,48 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   
     // Publish the message to the Ably channel. This is how we send messages to other users.
     // We don't specify who the message is for as the way we handle who receives messages is by subscribing certain users to certain channels.
-    // That means when we publish a message to a channel, we need to the subscribe the other user who we are targeting to that channel.
-    channel.publish({
+    // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
+    await channel.publish({
       name: sender,
       data: { text: messageText, date: dateStr }
     });
   
     // Update the local state for the sender's UI. The message for the receiver
     // will be handled by the useChannel callback.
-    setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]);
-
-    onMessageExchange(); // IMPORTANT: We also call this message exchange feature every time we send a message. End-to-end privacy.
-
-    // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
-    // We are doing this to ensure that the chat history is always up to date.
-    if (!privateChat) {
-      try {
-        const updatedHistory = [...receivedMessages, outgoingMessage];
-        await fetch('/api/update-message-history', {
-          method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            channelKey,
-            messageHistory: updatedHistory,
-            owner: "user1", // hard-coded until we implement site-wide user authentication
-            members: ["user1", "user2"] // hard-coded until we implement site-wide user authentication
-          }),
-        });
-      } catch (error) {
-        console.error('Error updating message history:', error);
+    setReceivedMessages(prevMessages => {
+      const updatedHistory = [...prevMessages, outgoingMessage];
+  
+      // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
+      // We are doing this to ensure that the chat history is always up to date.
+      if (!privateChat) {
+        try {
+          fetch('/api/update-message-history', {
+            method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              channelKey,
+              messageHistory: updatedHistory,
+              owner: "user1", // hard-coded until we implement site-wide user authentication
+              members: ["user1", "user2"] // hard-coded until we implement site-wide user authentication
+            }),
+          });
+        } catch (error) {
+          console.error('Error updating message history:', error);
+        }
       }
-    }
+  
+      return updatedHistory; // Update state with the latest messages.
+    });
+  
+    onMessageExchange(); // IMPORTANT: We also call this message exchange feature every time we send a message. End-to-end privacy.
   
     setMessageText("");
     if (inputBoxRef.current) {
       (inputBoxRef.current as HTMLTextAreaElement).focus();
     }
-  };
+  };  
   
   // This is triggered when the submit button is clicked and calls sendChatMessage, along with preventing a page reload.
   const handleFormSubmission = (event: React.FormEvent<HTMLFormElement>) => {
