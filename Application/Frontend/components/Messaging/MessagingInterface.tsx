@@ -24,7 +24,6 @@ interface MessagingInterfaceProps {
 }
 
 export function MessagingInterface({ sender, receiver, privateChat, onMessageExchange  }: MessagingInterfaceProps) {
-  let inputBox = null;
   let messageEnd: HTMLDivElement | null = null;
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
@@ -67,60 +66,42 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     onMessageExchange();
   });
 
-  // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it.
-  useEffect(() => {
-    const fetchMongoDBHistory = async () => {
-      try {
-        const response = await fetch('/api/get-message-history', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ channelKey }),
-        });
+  // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it. We always fetch from MongoDB.
+  // In terms of the privacy toggle, if we refresh our page, we load from MongoDB. That means if the toggle was on, no data was sent.
+  // Hence, data will effectively be "Wiped" if you refresh your page. This is a privacy feature.
+  // It will, however, not be "Wiped" if you refresh your page and all the messages were sent while the toggle was off.
+  const fetchMongoDBHistory = async () => {
+    try {
+      const response = await fetch('/api/get-message-history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ channelKey }),
+      });
   
-        if (response.ok) {
-          const { messageHistory } = await response.json();
-          if (messageHistory && messageHistory.length > 0) {
-            setReceivedMessages(messageHistory);
-            return true;  // History was successfully fetched and set from MongoDB.
-          }
-        }
-        return false;  // MongoDB fetch was not successful or returned no messages.
-      } catch (error) {
-        console.error('Error fetching message history from MongoDB:', error);
-        return false;
-      }
-    };
-  
-    const fetchAblyHistory = async () => {
-      if (channel) {
-        const historyPage = await channel.history({ limit: 199 });
-        const historyMessages = historyPage.items.map(item => ({
-          username: item.name,
-          message: item.data.text,
-          date: item.data.date,
-          connectionId: item.clientId,
-          data: item.data.text,
-        }));
-        setReceivedMessages(historyMessages.reverse());
-      }
-    };
-  
-    // Determine which history function to use based on the privateChat state.
-    const fetchHistory = async () => {
-      if (!privateChat) {
-        const fetchedFromMongoDB = await fetchMongoDBHistory();
-        if (!fetchedFromMongoDB) {
-          await fetchAblyHistory();
+      if (response.ok) {
+        const data = await response.json();
+        if (data.messageHistory && data.messageHistory.length > 0) {
+          setReceivedMessages(data.messageHistory);
         }
       } else {
-        await fetchAblyHistory();
+        console.error('Failed to fetch message history from MongoDB.');
       }
-    };
-  
-    fetchHistory().catch(console.error);
-  }, [channel, privateChat]);  // Include privateChat in the dependency array.  
+    } catch (error) {
+      console.error('Error fetching message history from MongoDB:', error);
+    }
+  };
+
+  // Always fetch history from MongoDB.
+    useEffect(() => {
+      const fetchHistory = async () => {
+        // Always try to fetch from MongoDB upon component mounting or updates related to channel and privateChat state
+        await fetchMongoDBHistory();
+      };
+    
+      fetchHistory().catch(console.error);
+    }, [channel]); // Depend on the channel. If the channel changes, we need to fetch the history again. Reserved for future use when we target different users.
 
   // Responsible for publishing new messages.
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages.
@@ -151,7 +132,6 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
 
     // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
     // We are doing this to ensure that the chat history is always up to date.
-    console.log(privateChat);
     if (!privateChat) {
       try {
         const updatedHistory = [...receivedMessages, outgoingMessage];
@@ -236,7 +216,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     <div className="messaging-container">
 
       <Stack justify="space-between" style={{ height: '100%' }}>
-        {/* First loading the message history */}
+        {/* All the message components exist here */}
         <Flex component={ScrollArea}>{messages}</Flex>
         {/*
           Keeps the message box scrolled to the most recent message (the one on the bottom).
