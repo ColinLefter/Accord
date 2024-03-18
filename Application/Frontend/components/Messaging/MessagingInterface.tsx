@@ -44,22 +44,17 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     // This callback gets executed for any message received on this channel.
     // If the sender is the current user, don't add the message to receivedMessages because
     // it's already added to the state when the user sends the message.
-    if (messageData.name === sender) {
-      return;
+    if (messageData.name !== sender) {
+      const incomingMessage: Message = {
+        username: messageData.name,
+        message: messageData.data.text,
+        date: messageData.data.date,
+        connectionId: messageData.clientId,
+        data: messageData.data.text,
+      };
+    
+      setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
     }
-  
-    // For any message received from others, update the state.
-    const { text, date } = messageData.data;
-    const incomingMessage: Message = {
-      username: messageData.name,
-      message: text,
-      date: date,
-      connectionId: messageData.clientId,
-      data: text,
-    };
-  
-    setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
-
     // IMPORTANT: Privacy feature.
     // Every time we send receive a message, we call this function to let the parent component know that a message has been received. End-to-end privacy.
     // This prevents jailbreaking the privacy feature by sending a message to a user and then having them switch the toggle off to capture the message history.
@@ -126,32 +121,30 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   
     // Update the local state for the sender's UI. The message for the receiver
     // will be handled by the useChannel callback.
-    setReceivedMessages(prevMessages => {
-      const updatedHistory = [...prevMessages, outgoingMessage];
-  
-      // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
-      // We are doing this to ensure that the chat history is always up to date.
-      if (!privateChat) {
-        try {
-          fetch('/api/update-message-history', {
-            method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              channelKey,
-              messageHistory: updatedHistory,
-              owner: "user1", // hard-coded until we implement site-wide user authentication
-              members: ["user1", "user2"] // hard-coded until we implement site-wide user authentication
-            }),
-          });
-        } catch (error) {
-          console.error('Error updating message history:', error);
-        }
+    setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]);
+
+    // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
+    // We are doing this to ensure that the chat history is always up to date.
+    console.log(privateChat);
+    if (!privateChat) {
+      try {
+        const updatedHistory = [...receivedMessages, outgoingMessage];
+        await fetch('/api/update-message-history', {
+          method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            channelKey,
+            messageHistory: updatedHistory,
+            owner: "user1", // hard-coded until we implement site-wide user authentication
+            members: ["user1", "user2"] // hard-coded until we implement site-wide user authentication
+          }),
+        });
+      } catch (error) {
+        console.error('Error updating message history:', error);
       }
-  
-      return updatedHistory; // Update state with the latest messages.
-    });
+    }
   
     onMessageExchange(); // IMPORTANT: We also call this message exchange feature every time we send a message. End-to-end privacy.
   

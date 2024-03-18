@@ -23,7 +23,7 @@ import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
 
 import classes from "@/components/tabstyling.module.css";
@@ -46,7 +46,37 @@ export default function Accord() {
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
   const [privateMode, setPrivateMode] = useState(true);
-  const [chatStarted, setChatStarted] = useState(false);
+  // CRITICAL: This solves a significant vulnerability where users could refresh their browser to regain access to the privacy toggle and disable it to capture private messages.
+  const [chatStarted, setChatStarted] = useState(() => {
+    // Initialize state based on localStorage or default to false
+    return typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('chatStarted') || 'false') : false;
+  });
+
+  // Event listener for storage changes across tabs
+  useEffect(() => {
+    const handleStorageChange = (event: StorageEvent) => {
+      if (event.key === 'chatStarted') {
+        setChatStarted(event.newValue ? JSON.parse(event.newValue) : false);
+      }
+    };
+
+    // CRITICAL: This solves a significant vulnerability where users could open the app in different tabs and disable the privacy toggle in one tab to capture private messages in another tab.
+    // This is done by synchronizing local storage across tabs to ensure that the privacy toggle is consistent across all tabs.
+    // Add the event listener in the browser environment
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  // Local storage effect for chatStarted
+  useEffect(() => {
+    localStorage.setItem('chatStarted', JSON.stringify(chatStarted));
+  }, [chatStarted]);
+
+  // Function to handle message sending from the Chat component
+  // This should be passed down and invoked whenever a message is sent or received
+  const onMessageExchange = () => {
+    if (!chatStarted) setChatStarted(true);
+  };
 
   // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
   // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
@@ -61,13 +91,7 @@ export default function Accord() {
   // note: we are manually handling the currently selected tab via states
   const handleTabSelection = (value: string) => setActiveView(value);
   const handleMessageIconClick = () => setActiveView('message');
-
-  // Function to handle message sending from the Chat component
-  // This should be passed down and invoked whenever a message is sent or received
-  const onMessageExchange = () => {
-    if (!chatStarted) setChatStarted(true);
-  };
-
+  
   // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
     <ChatProvider>
@@ -94,7 +118,7 @@ export default function Accord() {
                   defaultChecked
                   label="Private mode"
                   onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
-                  disabled={chatStarted}  // Disable the switch if the chat has started
+                  disabled={chatStarted}  // Use just chatStarted to determine if the switch should be disabled
                 />
                 <ColorSchemeToggle/>
               </Group>
