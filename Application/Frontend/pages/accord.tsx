@@ -25,6 +25,7 @@ import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
 import React, { useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
+import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
 
 import classes from "@/components/tabstyling.module.css";
 
