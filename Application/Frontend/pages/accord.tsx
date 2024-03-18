@@ -51,6 +51,9 @@ export default function Accord() {
   // Every time we click on a friend who we want to chat with, we check if they are currently subscribed to the chat channel, and if not, we subscribe them.
   // This involves writing a query to the database to check who is in this chat (i.e. who is subscribed to this channel).
   // As for example the sender of this chat will be user1 and the receiver will be user2, but this will be flipped for user2 as they will be the sender in that case.
+  
+  // CRITICAL: These need to be swapped on both ends to ensure that the chat history is consistent for both users.
+  // If not, you won't get any real-time messaging
   const sender = "user1";
   const receiver = "user2";
 
