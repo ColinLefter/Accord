@@ -67,7 +67,6 @@ export function Registration() {
       // console.log(formData);
       // Can be re-enabled for bug-fixing
     }
-
     const response = await fetch('/api/registration', { // Establishing a promise
       method: 'POST', // As we are dealing with authentication, this is the most appropriate method
       headers: {
