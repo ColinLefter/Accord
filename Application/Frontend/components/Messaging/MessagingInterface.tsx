@@ -19,10 +19,11 @@ export interface Message {
 interface MessagingInterfaceProps {
   sender: string;
   receiver: string;
+  privateChat: boolean;
+  onMessageExchange: () => void; // Include in the props of MessagingInterface
 }
 
-export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps) {
-  let inputBox = null;
+export function MessagingInterface({ sender, receiver, privateChat, onMessageExchange  }: MessagingInterfaceProps) {
   let messageEnd: HTMLDivElement | null = null;
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
@@ -38,14 +39,16 @@ export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
 
-  const channelKey = `chat:${[sender, receiver].sort().join(":")}`; // We must counteract the swapping mechanism by sorting the names alphabetically.
-  
-  const { channel, ably } = useChannel(channelKey, (messageData) => { // IMPORTANT: the first parameter is the name of the channel we want to subscribe to.
+  const channelKey = `chat:${[sender, receiver].sort().join(",")}`; // We must counteract the swapping mechanism by sorting the names alphabetically.  
+  const { channel, ably } = useChannel(channelKey, (messageData) => {
+    // This callback gets executed for any message received on this channel.
+    // If the sender is the current user, don't add the message to receivedMessages because
+    // it's already added to the state when the user sends the message.
     if (messageData.name === sender) {
-      return; // Ignore messages sent by the sender
+      return;
     }
   
-    // Process and display messages sent by others
+    // For any message received from others, update the state.
     const { text, date } = messageData.data;
     const incomingMessage: Message = {
       username: messageData.name,
@@ -54,31 +57,55 @@ export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps
       connectionId: messageData.clientId,
       data: text,
     };
+  
     setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
+
+    // IMPORTANT: Privacy feature.
+    // Every time we send receive a message, we call this function to let the parent component know that a message has been received. End-to-end privacy.
+    // This prevents jailbreaking the privacy feature by sending a message to a user and then having them switch the toggle off to capture the message history.
+    onMessageExchange();
   });
 
-  // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it.
-  useEffect(() => {
-    const fetchHistory = async () => {
-      const historyPage = await channel.history({ limit: 199 });
-      const historyMessages = historyPage.items.map(item => ({
-        username: item.name,
-        message: item.data.text,
-        date: item.data.date,
-        connectionId: item.clientId,
-        data: item.data.text,
-      }));
-      setReceivedMessages(historyMessages.reverse());
-    };
+  // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it. We always fetch from MongoDB.
+  // In terms of the privacy toggle, if we refresh our page, we load from MongoDB. That means if the toggle was on, no data was sent.
+  // Hence, data will effectively be "Wiped" if you refresh your page. This is a privacy feature.
+  // It will, however, not be "Wiped" if you refresh your page and all the messages were sent while the toggle was off.
+  const fetchMongoDBHistory = async () => {
+    try {
+      const response = await fetch('/api/get-message-history', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ channelKey }),
+      });
   
-    if (channel) {
-      fetchHistory().catch(console.error);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.messageHistory && data.messageHistory.length > 0) {
+          setReceivedMessages(data.messageHistory);
+        }
+      } else {
+        console.error('Failed to fetch message history from MongoDB.');
+      }
+    } catch (error) {
+      console.error('Error fetching message history from MongoDB:', error);
     }
-  }, [channel]); // Empty dependency array ensures this runs once on component mount.
+  };
+
+  // Always fetch history from MongoDB.
+    useEffect(() => {
+      const fetchHistory = async () => {
+        // Always try to fetch from MongoDB upon component mounting or updates related to channel and privateChat state
+        await fetchMongoDBHistory();
+      };
+    
+      fetchHistory().catch(console.error);
+    }, [channel]); // Depend on the channel. If the channel changes, we need to fetch the history again. Reserved for future use when we target different users.
 
   // Responsible for publishing new messages.
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages.
-  const sendChatMessage = (messageText: string) => {
+  const sendChatMessage = async (messageText: string) => {
     const now = new Date();
     const dateStr = `${(now.getFullYear()).toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
@@ -97,8 +124,33 @@ export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps
       data: { text: messageText, date: dateStr }
     });
   
-    // Update local state with new message, no need to fetch history again.
-    setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]); // NOTE: The plan is to send the data to MongoDB when the user switches tab.
+    // Update the local state for the sender's UI. The message for the receiver
+    // will be handled by the useChannel callback.
+    setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]);
+
+    onMessageExchange(); // IMPORTANT: We also call this message exchange feature every time we send a message. End-to-end privacy.
+
+    // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
+    // We are doing this to ensure that the chat history is always up to date.
+    if (!privateChat) {
+      try {
+        const updatedHistory = [...receivedMessages, outgoingMessage];
+        await fetch('/api/update-message-history', {
+          method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            channelKey,
+            messageHistory: updatedHistory,
+            owner: "user1", // hard-coded until we implement site-wide user authentication
+            members: ["user1", "user2"] // hard-coded until we implement site-wide user authentication
+          }),
+        });
+      } catch (error) {
+        console.error('Error updating message history:', error);
+      }
+    }
   
     setMessageText("");
     if (inputBoxRef.current) {
@@ -164,7 +216,7 @@ export function MessagingInterface({ sender, receiver }: MessagingInterfaceProps
     <div className="messaging-container">
 
       <Stack justify="space-between" style={{ height: '100%' }}>
-        {/* First loading the message history */}
+        {/* All the message components exist here */}
         <Flex component={ScrollArea}>{messages}</Flex>
         {/*
           Keeps the message box scrolled to the most recent message (the one on the bottom).

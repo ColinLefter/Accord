@@ -13,7 +13,8 @@ import {
   useComputedColorScheme,
   ActionIcon,
   Container,
-  Tabs
+  Tabs,
+  Switch
 } from '@mantine/core';
 import { IconUsers, IconPlus, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
@@ -44,6 +45,9 @@ export default function Accord() {
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
+  const [privateMode, setPrivateMode] = useState(true);
+  const [chatStarted, setChatStarted] = useState(false);
+
   // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
   // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
   // Receiver would come from clicking on a friend in the dropdown that appears when clicking the "Send DM" button.
@@ -51,19 +55,17 @@ export default function Accord() {
   // Every time we click on a friend who we want to chat with, we check if they are currently subscribed to the chat channel, and if not, we subscribe them.
   // This involves writing a query to the database to check who is in this chat (i.e. who is subscribed to this channel).
   // As for example the sender of this chat will be user1 and the receiver will be user2, but this will be flipped for user2 as they will be the sender in that case.
-  
-  // CRITICAL: These need to be swapped on both ends to ensure that the chat history is consistent for both users.
-  // If not, you won't get any real-time messaging
   const sender = "user1";
   const receiver = "user2";
 
   // note: we are manually handling the currently selected tab via states
-  const handleTabSelection = (value: string) => {
-    setActiveView(value);
-  };
+  const handleTabSelection = (value: string) => setActiveView(value);
+  const handleMessageIconClick = () => setActiveView('message');
 
-  const handleMessageIconClick = () => {
-    setActiveView('message');
+  // Function to handle message sending from the Chat component
+  // This should be passed down and invoked whenever a message is sent or received
+  const onMessageExchange = () => {
+    if (!chatStarted) setChatStarted(true);
   };
 
   // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
@@ -87,7 +89,15 @@ export default function Accord() {
                 <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
                 <Logo />
               </Group>
-              <ColorSchemeToggle/>
+              <Group>
+                <Switch
+                  defaultChecked
+                  label="Private mode"
+                  onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
+                  disabled={chatStarted}  // Disable the switch if the chat has started
+                />
+                <ColorSchemeToggle/>
+              </Group>
             </Group>
           </AppShell.Header>
           <AppShell.Navbar p="md">
@@ -131,7 +141,14 @@ export default function Accord() {
           <AppShell.Main>
             {activeView === 'friends' && <FriendsTab />}
             {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-            {activeView === 'message' && <Chat sender={sender} receiver={receiver} />}
+            {activeView === 'message' && (
+              <Chat
+                sender={sender}
+                receiver={receiver}
+                privateChat={privateMode}
+                onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+              />
+          )}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>
