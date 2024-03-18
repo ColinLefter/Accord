@@ -1,41 +1,119 @@
 
 import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { IconPhoto, IconMessageCircle, IconSettings, IconPinInvoke } from '@tabler/icons-react';
-import { Registration } from '../Accounts/Registration';
+
 export function ServerList() {
   const iconStyle = { width: rem(12), height: rem(12) };
-  const [tabs, setTabs] = useState([{ title: 'Server 1', key: '1' }]);
-  const [activeTab, setActiveTab] = useState('1');
-  const [tabCounter, setTabCounter] = useState(1);
+
+  
+  
+  const [tabs, setTabs] = useState([{_id: "",  serverName: 'Server 1', serverID: '2', serverDesc: "This is server 1" }]);
+  const [activeTab, setActiveTab] = useState('2');
+  const [tabCounter, setTabCounter] = useState(2);
   const [newTabName, setNewTabName] = useState('');
   const [isAdding, setIsAdding] = useState(true);
+  
+  const getServersOfLoggedInUser = async ()  => {
+
+    const response = await fetch('/api/getServersListOfUser', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+  const data = await response.json(); 
+  if (!response.ok) {
+    throw new Error('Failed to add server');
+  }
+
+  // Handle success
+  // Reset form fields, update UI, etc.
+  //alert(data.listOfServerIDs)
+  // console.log(data.listOfServerIDs)
+  setServerIDsList(data.listOfServerIDs)
+  //alert(data.listOfServerIDs)
+  //alert(serverIDsList)
+  return data.listOfServerIDs;
+}
+  
+  const [serverIDsList, setServerIDsList] = useState(async () => {
+    const initialState = await getServersOfLoggedInUser();
+    console.log(initialState)
+    return initialState;})
+    //console.log(getServersOfLoggedInUser())
+   
+  let xd:any
+  const getServersFromServerIDList = async () => {
+    getServersOfLoggedInUser()
+    let serverArray = []
+    let serverObj = {}
+    //alert(ServerIDArray)
+    console.log(serverIDsList)
+    const response = await fetch('/api/initializingServerList', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({serverIDList: serverIDsList}),
+    });
+    const data = await response.json(); 
+    serverArray = data.returnedServerObj;
+    console.log("hello");
+    console.log(tabs)
+    console.log(serverArray);
+    // const newTabs = [...tabs, serverArray];
+    xd = serverArray
+    setTabs(serverArray);
+    return data.returnedServerObj;
+  }
+
+  
+//   const [tabs, setTabs] = useState(async () => {
+//     const initialState = await getServersFromServerIDList();
+//     console.log(initialState)
+//     return initialState;
+// });
 
 
   const addTab = () => {
+
     const newTabCounter = tabCounter + 1;
-    const newKey = `${newTabCounter}`;
-    //const newTabs = [...tabs, { title: `Tab ${newTabCounter}`, key: newKey }];
-    const newTabs = [...tabs, { title: newTabName || `Server ${newTabCounter}`, key: newKey, content: `Content of ${newTabName || `Tab ${newTabCounter}`}` }];
+    const newServerID = `${newTabCounter}`;
+    //const newTabs = [...tabs, { serverName: `Tab ${newTabCounter}`, serverID: newserverID }];
+    const newServerName = newTabName || `Server ${newTabCounter}`
+    const newServerDesc = `Content of ${newTabName || `Tab ${newTabCounter}`}`
+    const newTabs = [...tabs, { _id: "", serverName: newTabName || `Server ${newTabCounter}`, serverID: newServerID, serverDesc: `Content of ${newTabName || `Tab ${newTabCounter}`}` }];
 
     setTabs(newTabs);
-    setActiveTab(newKey);
+    setActiveTab(newServerID);
     setTabCounter(newTabCounter);
     setNewTabName('');
     setIsAdding(!isAdding)
     console.log(tabs)
+    alert(JSON.stringify(newTabs, null, 2));
   };
   const Adding = () => {
     console.log(isAdding)
     setIsAdding(!isAdding)
   }
+//   useEffect(() => {
+//     getServersOfLoggedInUser()
+//     getServersFromServerIDList()
+//     console.log("loaded");
+//  });
+
+
   return (    
     <div>
+      <Button style={{ height: em(50), border: px(32) }} onClick={getServersFromServerIDList} radius="xl">
+        aa
+      </Button>
       {isAdding && 
       <Tabs color="teal" orientation="vertical" variant='pills' radius="xl">
         <Tabs.List>
           {tabs.map((tab) => (
-            <Tabs.Tab value={tab.key}  style={{ marginRight: "350px"}}>
+            <Tabs.Tab value={tab.serverID}  style={{ marginRight: "350px"}}>
               <Avatar
                     src="https://www.freebiefindingmom.com/wp-content/uploads/2023/01/free-printable-Old-English-calligraphy-capital-letter-A-1.jpg"
                     alt="Server Profile"
@@ -43,14 +121,14 @@ export function ServerList() {
                     />
               
               {/* Content of each tab */}
-              {/* {tab.title} */}
+              {/* {tab.serverName} */}
             </Tabs.Tab>
           ))}
         </Tabs.List>
         {tabs.map((tab) => (
-        <Tabs.Panel value={tab.key}>
+        <Tabs.Panel value={tab.serverID}>
               {/* Content of each tab */}
-              <Text size='xl'>The content of {tab.title}</Text> 
+              <Text size='xl'>The content of {tab.serverName}</Text> 
             </Tabs.Panel>
              ))}
       </Tabs>
@@ -86,8 +164,11 @@ export function ServerList() {
                     Add Server
       </Button>
       }
+      <Button style={{ height: em(50), border: px(32) }} onClick={getServersOfLoggedInUser} radius="xl">
+                    Check User Server
+      </Button>
       
     </div>
-    //</>
+    // </>
   );
 }
