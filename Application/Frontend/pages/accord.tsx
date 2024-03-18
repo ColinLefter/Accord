@@ -1,3 +1,5 @@
+'use client'
+
 import {
   AppShell,
   Burger,
@@ -11,7 +13,8 @@ import {
   useComputedColorScheme,
   ActionIcon,
   Container,
-  Tabs
+  Tabs,
+  Switch
 } from '@mantine/core';
 import { IconUsers, IconPlus, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
@@ -19,8 +22,10 @@ import { Logo } from "@/components/Logo";
 import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
-import { MessagingInterface } from "@/components/Messaging/MessagingInterface";
+import { Chat } from "@/components/Messaging/Chat";
 import React, { useState } from 'react';
+import { ChatProvider } from "@/contexts/chatContext";
+import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
 
 import classes from "@/components/tabstyling.module.css";
 
@@ -41,89 +46,121 @@ export default function Accord() {
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
+  const [privateMode, setPrivateMode] = useState(true);
+  const [chatStarted, setChatStarted] = useState(false);
+
+  // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
+  // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
+  // Receiver would come from clicking on a friend in the dropdown that appears when clicking the "Send DM" button.
+  // It would also come from clicking on a friend in the FriendsTab component as that would trigger the chat to open.
+  // Every time we click on a friend who we want to chat with, we check if they are currently subscribed to the chat channel, and if not, we subscribe them.
+  // This involves writing a query to the database to check who is in this chat (i.e. who is subscribed to this channel).
+  // As for example the sender of this chat will be user1 and the receiver will be user2, but this will be flipped for user2 as they will be the sender in that case.
+  const sender = "user1";
+  const receiver = "user2";
+
   // note: we are manually handling the currently selected tab via states
-  const handleTabSelection = (value: string) => {
-    setActiveView(value);
+  const handleTabSelection = (value: string) => setActiveView(value);
+  const handleMessageIconClick = () => setActiveView('message');
+
+  // Function to handle message sending from the Chat component
+  // This should be passed down and invoked whenever a message is sent or received
+  const onMessageExchange = () => {
+    if (!chatStarted) setChatStarted(true);
   };
 
-  const handleMessageIconClick = () => {
-    setActiveView('message');
-  };
-
+  // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
-    <Tabs variant="unstyled" classNames={classes} value={activeView}>
-      <AppShell
-        header={{ height: 50 }}
-        navbar={{
-          width: 300,
-          breakpoint: 'sm',
-          collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
-        }}
-        padding="md"
-        aside={{ width: 120, breakpoint: 'sm' }}
-      >
-        <AppShell.Header>
-          <Group justify="space-between" className="center" px="md">
-            <Group>
-              <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
-              <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
-              <Logo />
+    <ChatProvider>
+      <Tabs variant="unstyled" classNames={classes} value={activeView}>
+        <AppShell
+          header={{ height: 50 }}
+          navbar={{
+            width: 300,
+            breakpoint: 'sm',
+            collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+          }}
+          padding="md"
+          aside={{ width: 120, breakpoint: 'sm' }}
+        >
+          <AppShell.Header>
+            <Group justify="space-between" className="center" px="md">
+              <Group>
+                <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
+                <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
+                <Logo />
+              </Group>
+              <Group>
+                <Switch
+                  defaultChecked
+                  label="Private mode"
+                  onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
+                  disabled={chatStarted}  // Disable the switch if the chat has started
+                />
+                <ColorSchemeToggle/>
+              </Group>
             </Group>
-            <ColorSchemeToggle/>
-          </Group>
-        </AppShell.Header>
-        <AppShell.Navbar p="md">
-          <AppShell.Section grow>
-            <Tabs.List grow>
-              <Tabs.Tab
-                value="friends"
-                onClick={() => handleTabSelection('friends')}
-                leftSection={<IconUsers />}
-              >
-                Friends
-              </Tabs.Tab>
-              <Tabs.Tab
-                value="profile"
-                onClick={() => handleTabSelection('profile')}
-                leftSection={<IconUserCircle />}
-              >
-                My profile
-              </Tabs.Tab>
-            </Tabs.List>
-          </AppShell.Section>
-          <AppShell.Section grow component={ScrollArea} mt="15">
-            <Group justify="space-between">
-              <Text py="md">Direct Messages</Text>
-              <Tooltip label="Send DM">
-                <ActionIcon variant="default" aria-label="Plus" onClick={handleMessageIconClick}>
-                  <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
-                </ActionIcon>
-              </Tooltip>
-            </Group>
+          </AppShell.Header>
+          <AppShell.Navbar p="md">
+            <AppShell.Section grow>
+              <Tabs.List grow>
+                <Tabs.Tab
+                  value="friends"
+                  onClick={() => handleTabSelection('friends')}
+                  leftSection={<IconUsers />}
+                >
+                  Friends
+                </Tabs.Tab>
+                <Tabs.Tab
+                  value="profile"
+                  onClick={() => handleTabSelection('profile')}
+                  leftSection={<IconUserCircle />}
+                >
+                  My profile
+                </Tabs.Tab>
+              </Tabs.List>
+            </AppShell.Section>
+            <AppShell.Section grow component={ScrollArea} mt="15">
+              <Group justify="space-between">
+                <Text py="md">Direct Messages</Text>
+                <Tooltip label="Send DM">
+                  <ActionIcon variant="default" aria-label="Plus" onClick={handleMessageIconClick}>
+                    <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
+                  </ActionIcon>
+                </Tooltip>
+              </Group>
+              {Array(60)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton key={index} h={30} mt="sm" animate={false} />
+                ))}
+            </AppShell.Section>
+            <AppShell.Section mt="15">
+              <FooterProfile/>
+            </AppShell.Section>
+          </AppShell.Navbar>
+          <AppShell.Main>
+            {activeView === 'friends' && <FriendsTab />}
+            {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
+            {activeView === 'message' && (
+              <Chat
+                sender={sender}
+                receiver={receiver}
+                privateChat={privateMode}
+                onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+              />
+          )}
+          </AppShell.Main>
+          <AppShell.Aside p="md" component={ScrollArea}>
+            <Text>Servers</Text>
             {Array(60)
               .fill(0)
               .map((_, index) => (
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))}
-          </AppShell.Section>
-          <AppShell.Section mt="15">
-            <FooterProfile/>
-          </AppShell.Section>
-        </AppShell.Navbar>
-        <AppShell.Main>
-          {activeView === 'friends' && <FriendsTab />}
-          {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-          {activeView === 'message' && <MessagingInterface />}
-        </AppShell.Main>
-        <AppShell.Aside p="md" component={ScrollArea}>
-          <Text>Servers</Text>
-          {Array(60)
-            .fill(0)
-            .map((_, index) => (
-              <Skeleton key={index} h={30} mt="sm" animate={false} />
-            ))}
-        </AppShell.Aside>
-      </AppShell>
-    </Tabs>
+          </AppShell.Aside>
+        </AppShell>
+      </Tabs>
+    </ChatProvider>
   );
 }

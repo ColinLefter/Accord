@@ -1,3 +1,5 @@
+"use client"
+
 import { Group, Stack, Avatar, Text } from '@mantine/core';
 
 interface MessageProps {
@@ -7,6 +9,25 @@ interface MessageProps {
   date?: string
 }
 
+/**
+ * The Message component displays a single message within a conversation,
+ * showing the user's avatar, name, and the timestamp for the first message in a series.
+ * Subsequent messages from the same user will display without the avatar and username to
+ * maintain the context without redundancy.
+ *
+ * Props:
+ * - username: The name of the user who sent the message.
+ * - message: The content of the message being displayed.
+ * - firstMessage: Optional boolean that indicates if this message is the first in a series from the user.
+ * - date: Optional string representing the timestamp of the message.
+ *
+ * This component utilizes the Mantine library for its UI elements. The Avatar is shown only when
+ * the message is the first in a series from a particular user, providing a visual grouping of
+ * consecutive messages.
+ *
+ * @param {MessageProps} props The properties passed to the Message component.
+ * @returns {JSX.Element} The rendered Message component.
+ */
 export function Message({ username, message, firstMessage, date }: MessageProps) {
   return (
     <Group gap="xs">

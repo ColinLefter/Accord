@@ -1,6 +1,7 @@
 import { Avatar, Group, Card, Tooltip, Text, Stack, ActionIcon } from '@mantine/core';
 import { IconSettings } from '@tabler/icons-react';
 import { AppLink } from  "@/components/AppLink";
+import { useRouter } from 'next/router';
 
 /**
  * FooterProfile renders a user profile component typically used in the footer area of the application.
@@ -17,6 +18,13 @@ import { AppLink } from  "@/components/AppLink";
  * and settings, encapsulated within a card layout for distinct visual separation.
  */
 export function FooterProfile() {
+
+  const router = useRouter();
+
+  const handleUserSettingsClick = () => {
+    router.push('//log-in');
+  };
+
   return (
     <>
       <Card>
@@ -30,7 +38,7 @@ export function FooterProfile() {
             <Text>User 1</Text>
           </Group>
           <Tooltip label="User Settings">
-            <ActionIcon variant="default" aria-label="Plus">
+            <ActionIcon variant="default" aria-label="Plus" onClick = {handleUserSettingsClick}>
               <IconSettings style={{ width: '70%', height: '70%' }} stroke={1.5} />
             </ActionIcon>
           </Tooltip>
