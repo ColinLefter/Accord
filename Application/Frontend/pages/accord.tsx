@@ -13,8 +13,7 @@ import {
   useComputedColorScheme,
   ActionIcon,
   Container,
-  Tabs,
-  Switch
+  Tabs
 } from '@mantine/core';
 import { IconUsers, IconPlus, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
@@ -23,7 +22,7 @@ import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
 
 import classes from "@/components/tabstyling.module.css";
@@ -45,39 +44,6 @@ export default function Accord() {
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
 
-  const [privateMode, setPrivateMode] = useState(true);
-  // CRITICAL: This solves a significant vulnerability where users could refresh their browser to regain access to the privacy toggle and disable it to capture private messages.
-  const [chatStarted, setChatStarted] = useState(() => {
-    // Initialize state based on localStorage or default to false
-    return typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('chatStarted') || 'false') : false;
-  });
-
-  // Event listener for storage changes across tabs
-  useEffect(() => {
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === 'chatStarted') {
-        setChatStarted(event.newValue ? JSON.parse(event.newValue) : false);
-      }
-    };
-
-    // CRITICAL: This solves a significant vulnerability where users could open the app in different tabs and disable the privacy toggle in one tab to capture private messages in another tab.
-    // This is done by synchronizing local storage across tabs to ensure that the privacy toggle is consistent across all tabs.
-    // Add the event listener in the browser environment
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
-
-  // Local storage effect for chatStarted
-  useEffect(() => {
-    localStorage.setItem('chatStarted', JSON.stringify(chatStarted));
-  }, [chatStarted]);
-
-  // Function to handle message sending from the Chat component
-  // This should be passed down and invoked whenever a message is sent or received
-  const onMessageExchange = () => {
-    if (!chatStarted) setChatStarted(true);
-  };
-
   // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
   // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
   // Receiver would come from clicking on a friend in the dropdown that appears when clicking the "Send DM" button.
@@ -89,9 +55,14 @@ export default function Accord() {
   const receiver = "user2";
 
   // note: we are manually handling the currently selected tab via states
-  const handleTabSelection = (value: string) => setActiveView(value);
-  const handleMessageIconClick = () => setActiveView('message');
-  
+  const handleTabSelection = (value: string) => {
+    setActiveView(value);
+  };
+
+  const handleMessageIconClick = () => {
+    setActiveView('message');
+  };
+
   // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
     <ChatProvider>
@@ -113,15 +84,7 @@ export default function Accord() {
                 <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
                 <Logo />
               </Group>
-              <Group>
-                <Switch
-                  defaultChecked
-                  label="Private mode"
-                  onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
-                  disabled={chatStarted}  // Use just chatStarted to determine if the switch should be disabled
-                />
-                <ColorSchemeToggle/>
-              </Group>
+              <ColorSchemeToggle/>
             </Group>
           </AppShell.Header>
           <AppShell.Navbar p="md">
@@ -165,14 +128,7 @@ export default function Accord() {
           <AppShell.Main>
             {activeView === 'friends' && <FriendsTab />}
             {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-            {activeView === 'message' && (
-              <Chat
-                sender={sender}
-                receiver={receiver}
-                privateChat={privateMode}
-                onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
-              />
-          )}
+            {activeView === 'message' && <Chat sender={sender} receiver={receiver} />}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>

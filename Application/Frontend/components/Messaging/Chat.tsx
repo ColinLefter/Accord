@@ -7,11 +7,9 @@ import { MessagingInterface } from '@/components/Messaging/MessagingInterface';
 interface ChatProps {
   sender: string;
   receiver: string;
-  privateChat: boolean;
-  onMessageExchange: () => void; // Function type that doesn't take arguments and returns void
 }
 
-export function Chat({ sender, receiver, privateChat, onMessageExchange }: ChatProps) {
+export function Chat({ sender, receiver }: ChatProps) {
   const client = new Ably.Realtime.Promise({
     authUrl: '/api/ably-auth',
     authMethod: 'POST' // We need to match the server-side expectation
@@ -19,12 +17,7 @@ export function Chat({ sender, receiver, privateChat, onMessageExchange }: ChatP
 
   return (
     <AblyProvider client={ client }>
-      <MessagingInterface 
-        sender={sender} 
-        receiver={receiver} 
-        privateChat={privateChat} 
-        onMessageExchange={onMessageExchange} // Pass down the function to MessagingInterface
-      />
+      <MessagingInterface sender={sender} receiver={receiver} />
     </AblyProvider>
-  );
+  )
 }
