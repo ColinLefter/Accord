@@ -50,7 +50,7 @@ export function Registration() {
   const [isPasswordNotMatched, setIsPasswordNotMatched] = useState(false);
 
   //handle submit and handle change function
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     //check if password matched the confirmed password or not if not prompt the warning
     if (formData.confirmedPassword !== formData.password) {
@@ -58,6 +58,19 @@ export function Registration() {
     } else {
       setIsPasswordNotMatched((currentIsPasswordNotMatched) => false);
       console.log(formData);
+    }
+    const response = await fetch('/api/registration', { // Establishing a promise
+      method: 'POST', // As we are dealing with authentication, this is the most appropriate method
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData), // The data that is being sent
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      alert("Yes!")
     }
     //alert('Form submitted');
     alert(JSON.stringify(formData, null, 2));
