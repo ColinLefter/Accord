@@ -65,8 +65,8 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   // In terms of the privacy toggle, if we refresh our page, we load from MongoDB. That means if the toggle was on, no data was sent.
   // Hence, data will effectively be "Wiped" if you refresh your page. This is a privacy feature.
   // It will, however, not be "Wiped" if you refresh your page and all the messages were sent while the toggle was off.
-  const fetchMongoDBHistory = async () => {
-    try {
+  useEffect(() => {
+    const fetchMongoDBHistory = async () => {
       const response = await fetch('/api/get-message-history', {
         method: 'POST',
         headers: {
@@ -74,29 +74,17 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
         },
         body: JSON.stringify({ channelKey }),
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        if (data.messageHistory && data.messageHistory.length > 0) {
-          setReceivedMessages(data.messageHistory);
-        }
-      } else {
-        console.error('Failed to fetch message history from MongoDB.');
+        setReceivedMessages(data.messageHistory || []);
       }
-    } catch (error) {
-      console.error('Error fetching message history from MongoDB:', error);
-    }
-  };
+    };
 
-  // Always fetch history from MongoDB.
-    useEffect(() => {
-      const fetchHistory = async () => {
-        // Always try to fetch from MongoDB upon component mounting or updates related to channel and privateChat state
-        await fetchMongoDBHistory();
-      };
-    
-      fetchHistory().catch(console.error);
-    }, [channel]); // Depend on the channel. If the channel changes, we need to fetch the history again. Reserved for future use when we target different users.
+    if (!privateChat) {
+      fetchMongoDBHistory().catch(console.error);
+    }
+  }, [channelKey, privateChat]); // Add privateChat to dependency array
 
   // Responsible for publishing new messages.
   // It uses the Ably Channel returned by the useChannel hook, clears the input, and focuses on the textarea so that users can type more messages.
@@ -118,42 +106,35 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
       name: sender,
       data: { text: messageText, date: dateStr }
     });
-  
-    // Update the local state for the sender's UI. The message for the receiver
-    // will be handled by the useChannel callback.
-    setReceivedMessages(prevMessages => [...prevMessages, outgoingMessage]);
 
-    // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
-    // We are doing this to ensure that the chat history is always up to date.
-    console.log(privateChat);
     if (!privateChat) {
-      try {
-        const updatedHistory = [...receivedMessages, outgoingMessage];
-        await fetch('/api/update-message-history', {
-          method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            channelKey,
-            messageHistory: updatedHistory,
-            owner: "user1", // hard-coded until we implement site-wide user authentication
-            members: ["user1", "user2"] // hard-coded until we implement site-wide user authentication
-          }),
-        });
-      } catch (error) {
-        console.error('Error updating message history:', error);
-      }
+      storeMessageInMongoDB(channelKey, outgoingMessage);
     }
-  
+
     onMessageExchange(); // IMPORTANT: We also call this message exchange feature every time we send a message. End-to-end privacy.
-  
+
     setMessageText("");
     if (inputBoxRef.current) {
       (inputBoxRef.current as HTMLTextAreaElement).focus();
     }
-  };  
-  
+  };
+
+  async function storeMessageInMongoDB(channelKey: string, message: Message) {
+    // Append the new message to MongoDB without waiting for it to complete
+    fetch('/api/update-message-history', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        channelKey,
+        message,  // This should now correctly be an object
+        owner: "user1",  // Update these as needed
+        members: ["user1", "user2"],  // Update these as needed
+      }),
+    }).catch(console.error);
+  }
+
   // This is triggered when the submit button is clicked and calls sendChatMessage, along with preventing a page reload.
   const handleFormSubmission = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
