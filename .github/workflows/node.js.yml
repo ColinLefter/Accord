@@ -26,6 +26,7 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: cd Application/Frontend # Navigating to the Frontend folder before anything else
     - run: npm install -g npm-check
     - run: npm --v
     - run: npm test
