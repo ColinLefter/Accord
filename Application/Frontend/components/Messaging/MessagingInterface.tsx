@@ -130,7 +130,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
     const outgoingMessage = {
-      username: sender, // NOTE: user1 is temporarily hardcoded as we need to implement site-wide user authentication.
+      username: sender,
       message: messageText,
       date: dateStr,
       data: messageText,
@@ -161,8 +161,8 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
             body: JSON.stringify({
               channelKey,
               messageHistory: updatedHistory,
-              owner: "user1", // hard-coded until we implement site-wide user authentication
-              members: ["user1", "user2"] // hard-coded until we implement site-wide user authentication
+              owner: sender, // hard-coded until we implement site-wide user authentication
+              members: [sender, receiver] // hard-coded until we implement site-wide user authentication
             }),
           });
         } catch (error) {

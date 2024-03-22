@@ -14,7 +14,7 @@ import { getMongoDbUri } from '@/lib/dbConfig';
   // Reader starts from here
 export default async function handler(req: NextApiRequest, res: NextApiResponse) { 
   if (req.method === 'POST') { 
-    const { userName } = req.body; // Intaking the data that has been sent from the client-side - only using the username ("user1") for the .findOne method for now
+    const { userName } = req.body; // Intaking the data that has been sent from the client-side
     let client: MongoClient | null = null; // We need to assign something to the client so TypeScript is aware that it can be null if the connection fails 
 
     try { //creating and establishing connections to the DB
