@@ -31,6 +31,8 @@ import classes from "./Navbar.module.css";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
+
+import { useUser } from '@clerk/nextjs';
 import { UserButton } from "@clerk/nextjs";
 
 const mockdata = [
@@ -72,10 +74,11 @@ const mockdata = [
  * - Direct navigation to the login page is provided for user authentication.
  */
 export function Navbar() {
-  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] =
-    useDisclosure(false);
+  const [drawerOpened, { toggle: toggleDrawer, close: closeDrawer }] = useDisclosure(false);
   const [linksOpened, { toggle: toggleLinks }] = useDisclosure(false);
   const theme = useMantineTheme();
+  
+  const { user } = useUser();
 
   const links = mockdata.map((item) => (
     <UnstyledButton className={classes.subLink} key={item.title}>
@@ -160,10 +163,12 @@ export function Navbar() {
 
           <Group>
             <ColorSchemeToggle />
-            <Link href="/accord">
-              <Button variant="default">Log in</Button>
-            </Link>
-            <UserButton />
+            {!user && ( // If the user is not logged in, display the login button
+              <Link href="/accord">
+                <Button variant="default">Log in</Button>
+              </Link>
+            )}
+            <UserButton /> {/* The provider won't display this if the user is not logged in */}
           </Group>
 
           <Burger
@@ -201,7 +206,11 @@ export function Navbar() {
 
           <Divider my="sm" />
 
-          <Button variant="default">Log in</Button>
+          {!user && ( // If the user is not logged in, display the login button
+            <Link href="/accord">
+              <Button variant="default">Log in</Button>
+            </Link>
+          )}
         </ScrollArea>
       </Drawer>
     </Box>

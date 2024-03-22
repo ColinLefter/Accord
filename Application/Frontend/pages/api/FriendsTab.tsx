@@ -27,26 +27,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Querying the database by the username we received
       const user = await accountsCollection.findOne({ userName: userName }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
       // now user variable contains these data from the table
-      /*
-        {
-        "_id": {
-          "$oid": "65dbc3e37df38ece4025f5ac"
-        },
-        "userName": "user1",
-        "email": "user1@example.com",
-        "phoneNumber": "+1 999 888 7654",
-        "password": "user1Pass",
-        "friendList": [
-          "user2",
-          "hoc",
-          "toby",
-          "bao",
-          "colin",
-          "immanuel"
-        ]
-        }
-      */
-
       if (user) { // Check if the user existed 
         return res.status(200).json({ friendList: user.friendList}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {
