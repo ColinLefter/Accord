@@ -1,5 +1,4 @@
-import { Registration } from "@/components/Accounts/Registration";
-import { Logo } from "@/components/Logo";
+import { SignUp } from "@clerk/nextjs";
 
 /**
  * CreateAccount is the page component responsible for rendering the account creation interface
@@ -27,25 +26,8 @@ import { Logo } from "@/components/Logo";
  */
 export default function CreateAccount() {
   return (
-    <div>
-      <div style={{
-        zIndex: 2,
-        position: "relative",
-        width: "100%",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}>
-        <div style={{
-          position: "absolute",
-          top: 0,
-          left: 0,
-          padding: "20px",
-        }}>
-          <Logo />
-        </div>
-      </div>
-      <Registration />
+    <div className="account-container">
+      <SignUp />
     </div>
   );
 }

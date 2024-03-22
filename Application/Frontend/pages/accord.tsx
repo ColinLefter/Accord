@@ -26,7 +26,7 @@ import { Chat } from "@/components/Messaging/Chat";
 import React, { useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
 import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
-
+import { UserButton } from "@clerk/nextjs";
 import classes from "@/components/tabstyling.module.css";
 
 /**
@@ -98,6 +98,7 @@ export default function Accord() {
                   disabled={chatStarted}  // Disable the switch if the chat has started
                 />
                 <ColorSchemeToggle/>
+                <UserButton/>
               </Group>
             </Group>
           </AppShell.Header>

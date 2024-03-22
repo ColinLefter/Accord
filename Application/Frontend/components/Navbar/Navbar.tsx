@@ -31,6 +31,7 @@ import classes from "./Navbar.module.css";
 import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
+import { UserButton } from "@clerk/nextjs";
 
 const mockdata = [
   {
@@ -148,7 +149,7 @@ export function Navbar() {
                         Start chatting with your friends on the browser TODAY!
                       </Text>
                     </div>
-                    <Link href="/log-in">
+                    <Link href="/accord">
                       <Button name ="Get started">Get started</Button>
                     </Link>
                   </Group>
@@ -159,9 +160,10 @@ export function Navbar() {
 
           <Group>
             <ColorSchemeToggle />
-            <Link href="/log-in">
+            <Link href="/accord">
               <Button variant="default">Log in</Button>
             </Link>
+            <UserButton />
           </Group>
 
           <Burger

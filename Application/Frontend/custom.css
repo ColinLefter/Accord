@@ -11,3 +11,10 @@
 .messaging-container {
   height: calc(100vh - 82px); /* or any specific height */
 }
+
+.account-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
