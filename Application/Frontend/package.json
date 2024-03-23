@@ -5,7 +5,7 @@
   "scripts": {
     "ngrok": "ngrok http 3000",
     "dev": "next dev",
-    "proxy": "ts-node proxyServer.ts",
+    "proxy": "ts-node -P tsconfig.node.json proxyServer.ts",
     "accord": "concurrently \"npm run dev\" \"npm run proxy\"",
     "build": "next build",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx}\"",
