@@ -3,7 +3,7 @@ import React from "react";
 import { MantineProvider, ColorSchemeScript } from "@mantine/core";
 import { theme } from "../theme";
 import { ClerkProvider } from '@clerk/nextjs';
-import { dark, light } from '@clerk/themes';
+import { dark } from '@clerk/themes';
 // import "../global.css";
 
 import * as Ably from 'ably';
@@ -21,7 +21,6 @@ export default function RootLayout({ children }: { children: any }) {
     <ClerkProvider>
       <html lang="en">
         <head>
-          <ColorSchemeScript />
           <link rel="shortcut icon" href="/favicon.svg" />
           <meta
             name="viewport"
