@@ -10,7 +10,8 @@ export default authMiddleware({
     '/api/webhooks/clerk-mongodb-sync',
     '/api/registration',
     '/api/update-user-data',
-    '/api/delete-user'
+    '/api/delete-user',
+    '/api/ably-auth'
   ],
   // Prevent the specified routes from accessing authentication information:
   // ignoredRoutes: [''],
