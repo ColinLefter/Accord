@@ -29,14 +29,9 @@ import { useUser } from '@clerk/nextjs';
 
 export function FriendsTab(props: TextInputProps) {
     const router = useRouter(); // To handle page redirection after the user logs in
-    const [friendList, setFriendList] = useState<string[]>([]);
+    const [friendsList, setfriendsList] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>(''); // for search box
     const { user } = useUser();
-
-    // State hooks for form data and validation errors
-    const [formData, setFormData] = useState<{userName: string | null | undefined}>({
-        userName: user?.username,
-      });
     
       /**
        * Handles form submission, sending the login request to the server and processing
@@ -52,6 +47,7 @@ export function FriendsTab(props: TextInputProps) {
        */
       useEffect(() => {
         if (user) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
+          console.log(user.id);
           const fetchData = async () => {
             try {
               const response = await fetch('/api/FriendsTab', {
@@ -59,12 +55,13 @@ export function FriendsTab(props: TextInputProps) {
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ userName: user.username }), // Directly use user.username
+                body: JSON.stringify({ id: user.id }), // Directly use user.username
               });
     
               if (response.ok) {
                 const data = await response.json();
-                setFriendList(data.friendList);
+                console.log("My friends" + data.firstName);
+                setfriendsList(data.friendsList);
               } else {
                 console.error('Failed to fetch friend list');
               }
@@ -77,8 +74,8 @@ export function FriendsTab(props: TextInputProps) {
         }
       }, [user]); // Dependency array includes user, so effect runs when user changes
 
-          // Filter friendList based on search query
-    const filteredFriendList = friendList.filter((friend) =>
+          // Filter friendsList based on search query
+    const filteredfriendsList = friendsList.filter((friend) =>
       friend.toLowerCase().includes(searchQuery.toLowerCase())
     );
     
@@ -109,9 +106,9 @@ export function FriendsTab(props: TextInputProps) {
             >
                 All friends
             </Text>
-            {/** Users that are in the friendlist*/}
+            {/** Users that are in the friendsList*/}
             {
-                filteredFriendList.map((friend, index) => (
+                filteredfriendsList.map((friend, index) => (
                     <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`}>
                         <Group py="10" >
                             <Avatar

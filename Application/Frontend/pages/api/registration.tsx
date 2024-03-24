@@ -38,7 +38,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         userName: userName,
         email: email,
         phone: phone,
-        createdAt: createdAt
+        createdAt: createdAt,
+        friendsList: ["user1", "user2"] // for now every single new user is friends with user1 and user2. This would be replaced with an add friends button.
         }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
       return res.status(200).json({ message: 'Registration success' });
 
