@@ -28,6 +28,7 @@ import { ChatProvider } from "@/contexts/chatContext";
 import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
 import { UserButton } from "@clerk/nextjs";
 import classes from "@/components/tabstyling.module.css";
+import { UserProfile } from '@clerk/nextjs';
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -117,7 +118,6 @@ export default function Accord() {
                   onClick={() => handleTabSelection('profile')}
                   leftSection={<IconUserCircle />}
                 >
-                  My profile
                 </Tabs.Tab>
               </Tabs.List>
             </AppShell.Section>
@@ -142,7 +142,13 @@ export default function Accord() {
           </AppShell.Navbar>
           <AppShell.Main>
             {activeView === 'friends' && <FriendsTab />}
-            {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
+            {activeView === 'profile' &&
+            <Tabs.Panel value="profile">
+                  <div className="general-container">
+                  <UserProfile/>
+    </div>
+              
+            </Tabs.Panel>}
             {activeView === 'message' && (
               <Chat
                 sender={sender}

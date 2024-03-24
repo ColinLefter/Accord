@@ -32,7 +32,7 @@ import Link from "next/link";
 import { Logo } from "@/components/Logo";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 
-import { useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';  //
 import { UserButton } from "@clerk/nextjs";
 
 const mockdata = [
