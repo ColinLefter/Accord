@@ -5,7 +5,13 @@ import { authMiddleware } from "@clerk/nextjs";
  
 export default authMiddleware({
   // Allow signed out users to access the specified routes:
-  publicRoutes: ['/'],
+  publicRoutes: [
+    '/',
+    '/api/webhooks/clerk-mongodb-sync',
+    '/api/registration',
+    '/api/update-user-data',
+    '/api/delete-user'
+  ],
   // Prevent the specified routes from accessing authentication information:
   // ignoredRoutes: [''],
 });

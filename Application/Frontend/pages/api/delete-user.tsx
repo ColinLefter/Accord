@@ -5,9 +5,9 @@ import { getMongoDbUri } from '@/lib/dbConfig';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { userID } = JSON.parse(req.body); // Assuming the email is sent in the body
+    const { id } = JSON.parse(req.body); // Assuming the email is sent in the body
 
-    if (!userID) {
+    if (!id) {
       return res.status(400).json({ error: 'User ID is required for deletion' });
     }
 
@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const accountsCollection = db.collection("Accounts");
 
       // Attempt to delete the user with the given email
-      const result = await accountsCollection.deleteOne({ userID: userID }); // This is from the Clerk provider, so it is guaranteed to be unique as it is how they internally identify users
+      const result = await accountsCollection.deleteOne({ id: id }); // This is from the Clerk provider, so it is guaranteed to be unique as it is how they internally identify users
 
       if (result.deletedCount === 1) {
         return res.status(200).json({ message: 'User successfully deleted' });

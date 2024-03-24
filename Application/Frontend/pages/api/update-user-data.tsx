@@ -7,16 +7,16 @@ import { getMongoDbUri } from '@/lib/dbConfig';
  * Responds with a success message and status code 200 if the credentials are valid, or an error
  * message and status code 401 for invalid credentials, and 500 for any internal server errors.
  *
- * @param req - The incoming Next.js API request object, containing the username and password.
+ * @param req - The incoming Next.js API request object, containing the userName and password.
  * @param res - The outgoing Next.js API response object used to send back the result.
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     const {
-      userID,
+      id,
       firstName,
       lastName,
-      username,
+      userName,
       email,
       phone,
       createdAt
@@ -31,14 +31,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const accountsCollection = db.collection("Accounts");
 
-      const filter = { userID: userID}; // This is from the Clerk provider, so it is guaranteed to be unique as it is how they internally identify users
+      const filter = { id: id}; // This is from the Clerk provider, so it is guaranteed to be unique as it is how they internally identify users
 
       const updateDoc = {
         $set: {
-          userID: userID,
+          id: id,
           firstName: firstName,
           lastName: lastName,
-          username: username,
+          userName: userName,
           email: email,
           phone: phone,
           createdAt: createdAt
