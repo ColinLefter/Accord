@@ -1,13 +1,12 @@
+// components/FriendComponent.tsx
 import React from 'react';
 import { Avatar } from '@mantine/core';
 
-// Define a type for the component's props
 type FriendComponentProps = {
   avatarSrc: string;
   name: string;
 };
 
-// Use the defined type in your functional component
 const FriendComponent: React.FC<FriendComponentProps> = ({ avatarSrc, name }) => {
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
