@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
 
 /**
- * Handles the POST request for registering users, validating the user credentials against the database.
+ * Handles the POST request for updating user data, validating the user credentials against the database.
  * Responds with a success message and status code 200 if the credentials are valid, or an error
  * message and status code 401 for invalid credentials, and 500 for any internal server errors.
  *
@@ -29,17 +29,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const db = client.db('Accord');
 
       const accountsCollection = db.collection("Accounts");
-      // Querying the database by the username we received
-      await accountsCollection.insertOne({
-        firstName: firstName,
-        lastName: lastName,
-        username: username,
-        email: email,
-        phone: phone,
-        createdAt: createdAt
-        }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
-      return res.status(200).json({ message: 'Registration success' });
 
+      const filter = { email: email}; // We are actually filtering by email, not username, since our provider guarantees that everyone has unique emails
+
+      const updateDoc = {
+        $set: {
+          firstName: firstName,
+          lastName: lastName,
+          username: username,
+          email: email,
+          phone: phone,
+          createdAt: createdAt
+        },
+      };
+
+      const result = await accountsCollection.updateOne(filter, updateDoc);
+
+      if (result.matchedCount != 0) { // i.e. if the user was found
+        return res.status(200).json({ error: 'User account data successfully updated!' });
+      }
+      else {
+        return res.status(401).json({ error: 'User account not found' });
+      }
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });

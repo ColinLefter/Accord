@@ -58,30 +58,20 @@ export async function POST(req: Request) {
     // Assuming evt.data can be safely cast to UserJSON for these event types
     let userData = evt.data as UserJSON;
 
-    const {
-      first_name,
-      last_name,
-      username,
-      email_addresses,
-      phone_numbers,
-      created_at
-    } = userData;
+
+    const postData = {
+      firstName: userData.first_name,
+      lastName: userData.last_name,
+      username: userData.username,
+      email: userData.email_addresses?.[0],
+      phone: userData.phone_numbers?.[0],
+      createdAt: userData.created_at,
+    };
 
     if (userData) {
       switch (eventType) {
         case 'user.created':
-          console.log(`Creating user: ${first_name} ${last_name}`);
-          
-          // Prepare the data to send to your registration endpoint
-          const postData = { // We are also renaming variables for clarity in our MongoDB database
-            firstName: first_name,
-            lastName: last_name,
-            username: username,
-            email: email_addresses[0],
-            phone: phone_numbers[0],
-            createdAt: created_at,
-          };
-        
+          console.log(`Creating user: ${postData.firstName} ${postData.lastName}`);
           // Making the API call
           try {
             const response = await fetch('http://localhost:3000/api/registration', {
@@ -103,11 +93,28 @@ export async function POST(req: Request) {
           break;
         case 'user.updated':
           // TODO: Update user in MongoDB
-          console.log(`Updating user: ${first_name} ${last_name}`);
+          console.log(`Updating user: ${postData.firstName} ${postData.lastName}`);
+          try {
+            const response = await fetch('http://localhost:3000/api/update-user-data', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(postData),
+            });
+        
+            if (!response.ok) {
+              console.error('Failed to update user through API:', await response.text());
+            } else {
+              console.log('User updated successfully through API');
+            }
+          } catch (error) {
+            console.error('Error calling update user data API:', error);
+          }
           break;
         case 'user.deleted':
           // TODO: Delete user from MongoDB
-          console.log(`Deleting user: ${first_name} ${last_name}`);
+          console.log(`Deleting user: ${postData.firstName} ${postData.lastName}`);
           break;
       }
     }
