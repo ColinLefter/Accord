@@ -152,7 +152,7 @@ export function Navbar() {
                         Start chatting with your friends on the browser TODAY!
                       </Text>
                     </div>
-                    <Link href="/accord">
+                    <Link href="/log-in">
                       <Button name ="Get started">Get started</Button>
                     </Link>
                   </Group>
@@ -164,7 +164,7 @@ export function Navbar() {
           <Group>
             <ColorSchemeToggle />
             {!user && ( // If the user is not logged in, display the login button
-              <Link href="/accord">
+              <Link href="/log-in">
                 <Button variant="default">Log in</Button>
               </Link>
             )}
@@ -207,7 +207,7 @@ export function Navbar() {
           <Divider my="sm" />
 
           {!user && ( // If the user is not logged in, display the login button
-            <Link href="/accord">
+            <Link href="/log-in">
               <Button variant="default">Log in</Button>
             </Link>
           )}
