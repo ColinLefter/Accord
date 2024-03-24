@@ -265,7 +265,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
               <Group grow>
                 <Textarea
                     ref={inputBoxRef}
-                    placeholder="Message @user2"
+                    placeholder={`Message @${receiver}`}
                     autosize
                     minRows={1}
                     maxRows={10}
