@@ -60,6 +60,7 @@ export async function POST(req: Request) {
 
 
     const postData = {
+      userID: userData.id,
       firstName: userData.first_name,
       lastName: userData.last_name,
       username: userData.username,
@@ -115,6 +116,23 @@ export async function POST(req: Request) {
         case 'user.deleted':
           // TODO: Delete user from MongoDB
           console.log(`Deleting user: ${postData.firstName} ${postData.lastName}`);
+          try {
+            const response = await fetch('http://localhost:3000/api/delete-user', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(postData.email),
+            });
+        
+            if (!response.ok) {
+              console.error('Failed to update user through API:', await response.text());
+            } else {
+              console.log('User updated successfully through API');
+            }
+          } catch (error) {
+            console.error('Error calling update user data API:', error);
+          }
           break;
       }
     }

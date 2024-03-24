@@ -13,6 +13,7 @@ import { getMongoDbUri } from '@/lib/dbConfig';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     const {
+      userID,
       firstName,
       lastName,
       username,
@@ -30,10 +31,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const accountsCollection = db.collection("Accounts");
 
-      const filter = { email: email}; // We are actually filtering by email, not username, since our provider guarantees that everyone has unique emails
+      const filter = { userID: userID}; // This is from the Clerk provider, so it is guaranteed to be unique as it is how they internally identify users
 
       const updateDoc = {
         $set: {
+          userID: userID,
           firstName: firstName,
           lastName: lastName,
           username: username,
@@ -47,8 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       if (result.matchedCount != 0) { // i.e. if the user was found
         return res.status(200).json({ error: 'User account data successfully updated!' });
-      }
-      else {
+      } else {
         return res.status(401).json({ error: 'User account not found' });
       }
     } catch (error) {

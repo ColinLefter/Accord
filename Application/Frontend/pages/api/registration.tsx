@@ -13,6 +13,7 @@ import { getMongoDbUri } from '@/lib/dbConfig';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     const {
+      userID,
       firstName,
       lastName,
       username,
@@ -31,6 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const accountsCollection = db.collection("Accounts");
       // Querying the database by the username we received
       await accountsCollection.insertOne({
+        userID: userID,
         firstName: firstName,
         lastName: lastName,
         username: username,
