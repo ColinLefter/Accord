@@ -23,7 +23,6 @@
     "storybook:build": "storybook build"
   },
   "dependencies": {
-    "@clerk/nextjs": "^4.29.9",
     "@mantine/core": "^7.4.1",
     "@mantine/hooks": "^7.4.1",
     "@next/bundle-analyzer": "^14.0.1",
@@ -39,6 +38,7 @@
   },
   "devDependencies": {
     "@babel/core": "^7.23.2",
+    "@clerk/nextjs": "^4.29.9",
     "@next/eslint-plugin-next": "^14.0.1",
     "@storybook/addon-essentials": "^7.5.2",
     "@storybook/addon-styling-webpack": "^0.0.5",

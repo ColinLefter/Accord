@@ -1,5 +1,3 @@
-'use client'
-
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { Message } from "@/components/Messaging/MessagingInterface"; // Adjust the path as necessary
 

@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Message } from './Message';
 import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@mantine/core';
