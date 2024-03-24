@@ -1,3 +1,6 @@
+"use client";
+
+
 import { useState } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { Chat } from "@/components/Messaging/Chat";

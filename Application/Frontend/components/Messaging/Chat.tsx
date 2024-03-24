@@ -1,3 +1,5 @@
+"use client";
+
 import * as Ably from 'ably';
 import { AblyProvider } from 'ably/react';
 import { MessagingInterface } from '@/components/Messaging/MessagingInterface';
