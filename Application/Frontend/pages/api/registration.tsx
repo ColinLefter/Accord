@@ -12,7 +12,15 @@ import { getMongoDbUri } from '@/lib/dbConfig';
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { userName, password, email, tel } = req.body; // Intaking the data that has been sent from the client-side
+    const {
+      firstName,
+      lastName,
+      username,
+      email,
+      phone,
+      createdAt
+    } = req.body; // Intaking the data that has been sent from the client-side
+
     let client: MongoClient | null = null; // We need to assign something to the client so TypeScript is aware that it can be null if the connection fails
 
     try {
@@ -22,7 +30,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       const accountsCollection = db.collection("Accounts");
       // Querying the database by the username we received
-      await accountsCollection.insertOne({ userName: userName, email: email, phoneNumber: tel, password: password} ); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
+      await accountsCollection.insertOne({
+        firstName: firstName,
+        lastName: lastName,
+        username: username,
+        email: email,
+        phone: phone,
+        createdAt: createdAt
+        }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
       return res.status(200).json({ message: 'Registration success' });
 
     } catch (error) {
