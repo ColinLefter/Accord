@@ -1,0 +1,18 @@
+### <a name="_f7qlqezbzr2o"></a>Functionality Updates
+- So far in our project, we have implemented many features together with their tests:
+  - Registration functionality: 
+    - The constraint function (ensuring the users input their information in the correct format) is working.
+    - The register function is also working by posting the correct registered information to the database. Both of these functions pass the ad-hoc, and unit tests that we have implemented so far.
+  - Login functionality:
+    - The constraint function (ensuring the users input their information in the correct format) is working.
+    - The login function is also working by sending the input login details by the user and validating them with the data in our database. Both of these functions pass the ad-hoc, and unit tests that we have implemented so far.
+  - Linking functionality in our landing page:
+    - Ad-hoc testing and black-box testing have been implemented and the functionality also passed all the tests.
+  - Friend List-display functionality:
+    - We have implemented the database with our Friend List. It is now working properly with the data in the database and passed the unit tests that were written for it. However, the data is of “user1” due to the lack of “State-validation functionality” that is still being worked on.
+  - Chat history-display functionality:
+    - We have implemented the database with our Chat History. It is now working properly with the data in the database and passed the unit tests that were written for it. However, the data is of “user1” due to the lack of “State-validation functionality” that is still being worked on.
+  - Server List-display functionality:
+    - We have implemented the database with our Server List. It is now working properly with the data in the database and passed the unit tests that were written for it. However, the data is of “user1” due to the lack of “State-validation functionality” that is still being worked on.
+  - Live Messaging functionality:
+    - So far we have implemented the functionality of live messaging between 2 users. However, it is still a work in progress because we are still developing the “state validation functionality”. Without this function, we have yet to determine the currently logged-in user and their associated information.
