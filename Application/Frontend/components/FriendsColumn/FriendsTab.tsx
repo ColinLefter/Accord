@@ -88,7 +88,7 @@ export function FriendsTab(props: TextInputProps) {
 
     if (activeChat && user?.id) { // Ensure both activeChat and user.id are defined
       return <Chat 
-          sender={user.id}
+          sender={user.username as any}
           receiver={activeChat} // The receiver is now the friend we clicked on
           privateChat={true}
           onMessageExchange={() => {}}

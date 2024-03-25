@@ -13,6 +13,7 @@ export default authMiddleware({
     '/api/FriendsTab',
     '/api/get-message-history',
     '/api/getServersListOfUser',
+    '/api/initializingServerList',
     '/api/login',
     '/api/registration',
     '/api/servers',
