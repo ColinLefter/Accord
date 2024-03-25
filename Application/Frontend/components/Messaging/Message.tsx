@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { Group, Stack, Avatar, Text } from '@mantine/core';
 

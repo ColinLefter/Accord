@@ -3,7 +3,7 @@ import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
 
 /**
- * Handles the POST request for registering users, validating the user credentials against the database.
+ * Handles the POST request for updating user data, validating the user credentials against the database.
  * Responds with a success message and status code 200 if the credentials are valid, or an error
  * message and status code 401 for invalid credentials, and 500 for any internal server errors.
  *
@@ -30,19 +30,28 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const db = client.db('Accord');
 
       const accountsCollection = db.collection("Accounts");
-      // Querying the database by the userName we received
-      await accountsCollection.insertOne({
-        id: id,
-        firstName: firstName,
-        lastName: lastName,
-        userName: userName,
-        email: email,
-        phone: phone,
-        createdAt: createdAt,
-        friendsList: ["user1", "user2"] // for now every single new user is friends with user1 and user2. This would be replaced with an add friends button.
-        }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
-      return res.status(200).json({ message: 'Registration success' });
 
+      const filter = { id: id}; // This is from the Clerk provider, so it is guaranteed to be unique as it is how they internally identify users
+
+      const updateDoc = {
+        $set: {
+          id: id,
+          firstName: firstName,
+          lastName: lastName,
+          userName: userName,
+          email: email,
+          phone: phone,
+          createdAt: createdAt
+        },
+      };
+
+      const result = await accountsCollection.updateOne(filter, updateDoc);
+
+      if (result.matchedCount != 0) { // i.e. if the user was found
+        return res.status(200).json({ error: 'User account data successfully updated!' });
+      } else {
+        return res.status(401).json({ error: 'User account not found' });
+      }
     } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });

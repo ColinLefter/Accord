@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import * as Ably from 'ably';
 import { AblyProvider } from 'ably/react';

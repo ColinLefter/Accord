@@ -2,7 +2,7 @@ import { Avatar, Group, Card, Tooltip, Text, Stack, ActionIcon } from '@mantine/
 import { IconSettings } from '@tabler/icons-react';
 import { AppLink } from  "@/components/AppLink";
 import { useRouter } from 'next/router';
-
+import { useUser, UserProfile } from '@clerk/nextjs';
 /**
  * FooterProfile renders a user profile component typically used in the footer area of the application.
  * It displays an avatar that links to the user's profile and provides a quick navigation option to view
@@ -18,32 +18,30 @@ import { useRouter } from 'next/router';
  * and settings, encapsulated within a card layout for distinct visual separation.
  */
 export function FooterProfile() {
-
+  const { user } = useUser();
   const router = useRouter();
 
   const handleUserSettingsClick = () => {
-    router.push('//log-in');
+    router.push('/');
   };
 
   return (
-    <>
-      <Card>
-        <Group justify="space-between">
-          <Group>
-            <AppLink href="/">
-              <Tooltip label="Profile">
-                <Avatar radius="xl"/>
-              </Tooltip>
-            </AppLink>
-            <Text>User 1</Text>
-          </Group>
-          <Tooltip label="User Settings">
-            <ActionIcon variant="default" aria-label="Plus" onClick = {handleUserSettingsClick}>
-              <IconSettings style={{ width: '70%', height: '70%' }} stroke={1.5} />
-            </ActionIcon>
-          </Tooltip>
+    <Card>
+      <Group justify="space-between">
+        <Group>
+          <AppLink href="/">
+            <Tooltip label="Profile">
+              <Avatar radius="xl"/>
+            </Tooltip>
+          </AppLink>
+          <Text>{user?.username}</Text>
         </Group>
-      </Card>
-    </>
+        <Tooltip label="User Settings">
+          <ActionIcon variant="default" aria-label="Settings" onClick={handleUserSettingsClick}>
+            <IconSettings style={{ width: '70%', height: '70%' }} stroke={1.5} />
+          </ActionIcon>
+        </Tooltip>
+      </Group>
+    </Card>
   );
 }

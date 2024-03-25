@@ -18,12 +18,12 @@ export function Logo() {
     <AppLink href="/">
       <Text
         variant="gradient"
-        fw={500}
+        fw={800}
         size="xl"
         component="span"
         gradient={{ from: "pink", to: "yellow" }}
       >
-        Accord
+        Accord.
       </Text>
     </AppLink>
   );

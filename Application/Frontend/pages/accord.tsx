@@ -1,4 +1,4 @@
-'use client'
+"use client";
 
 import {
   AppShell,
@@ -26,8 +26,8 @@ import { Chat } from "@/components/Messaging/Chat";
 import React, { useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
 import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
-
 import classes from "@/components/tabstyling.module.css";
+import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -49,6 +49,8 @@ export default function Accord() {
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
 
+  const { user } = useUser();
+
   // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
   // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
   // Receiver would come from clicking on a friend in the dropdown that appears when clicking the "Send DM" button.
@@ -56,8 +58,7 @@ export default function Accord() {
   // Every time we click on a friend who we want to chat with, we check if they are currently subscribed to the chat channel, and if not, we subscribe them.
   // This involves writing a query to the database to check who is in this chat (i.e. who is subscribed to this channel).
   // As for example the sender of this chat will be user1 and the receiver will be user2, but this will be flipped for user2 as they will be the sender in that case.
-  const sender = "user1";
-  const receiver = "user2";
+  const sender = user?.username;
 
   // note: we are manually handling the currently selected tab via states
   const handleTabSelection = (value: string) => setActiveView(value);
@@ -98,6 +99,7 @@ export default function Accord() {
                   disabled={chatStarted}  // Disable the switch if the chat has started
                 />
                 <ColorSchemeToggle/>
+                <UserButton/>
               </Group>
             </Group>
           </AppShell.Header>
@@ -116,7 +118,6 @@ export default function Accord() {
                   onClick={() => handleTabSelection('profile')}
                   leftSection={<IconUserCircle />}
                 >
-                  My profile
                 </Tabs.Tab>
               </Tabs.List>
             </AppShell.Section>
@@ -141,15 +142,20 @@ export default function Accord() {
           </AppShell.Navbar>
           <AppShell.Main>
             {activeView === 'friends' && <FriendsTab />}
-            {activeView === 'profile' && <Tabs.Panel value="profile">My profile</Tabs.Panel>}
-            {activeView === 'message' && (
+            {activeView === 'profile' &&
+            <Tabs.Panel value="profile">
+                  <div className="general-container">
+                  <UserProfile/>
+        </div>
+            </Tabs.Panel>}
+            {/* {activeView === 'message' && (
               <Chat
                 sender={sender}
                 receiver={receiver}
                 privateChat={privateMode}
                 onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
               />
-          )}
+          )} */}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>
