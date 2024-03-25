@@ -8,12 +8,18 @@ export default authMiddleware({
   publicRoutes: [
     '/',
     '/api/webhooks/clerk-mongodb-sync',
-    '/api/registration',
-    '/api/update-user-data',
+    '/api/ably-auth',
     '/api/delete-user',
     '/api/FriendsTab',
-    '/log-in',
-    '/create-account'
+    '/api/get-message-history',
+    '/api/getServersListOfUser',
+    '/api/login',
+    '/api/registration',
+    '/api/servers',
+    '/api/testMongoDB',
+    '/api/update-message-history',
+    '/api/update-user-data',
+    '/api/userSettings'
   ],
   // Prevent the specified routes from accessing authentication information:
   // ignoredRoutes: [''],
