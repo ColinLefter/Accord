@@ -31,4 +31,4 @@ jobs:
     - run: cd Application/Frontend # Navigating to the Frontend folder before anything else
     - run: npm install -g npm-check
     - run: npm --version
-    - run: npm test
+    - run: npm test:jest
