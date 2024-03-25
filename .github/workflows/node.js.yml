@@ -1,4 +1,4 @@
-oin# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code, and run tests across different versions of the node
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code, and run tests across different versions of the node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
 name: Node.js CI For Accord
@@ -12,7 +12,7 @@ on:
 jobs:
   build:
 
-    runs-on: ubuntu-latest
+    os: [ubuntu-latest, windows-latest, macos-latest]
 
     strategy:
       matrix:
@@ -25,6 +25,10 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        # Use a specific npm version for Node.js 10.x
+        # Adjust the version according to your requirement
+        # Check available npm versions: https://npmjs.com/package/npm/v/10.24.0
+        npm: '10.24.0'
         cache: 'npm'
     - run: cd Application/Frontend # Navigating to the Frontend folder before anything else
     - run: npm install -g npm-check
