@@ -5,7 +5,7 @@ import { getMongoDbUri } from '@/lib/dbConfig';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { id } = JSON.parse(req.body); // Assuming the email is sent in the body
+    const { id } = req.body; // Directly destructuring `id` from `req.body` because it's already an object
 
     if (!id) {
       return res.status(400).json({ error: 'User ID is required for deletion' });

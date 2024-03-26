@@ -20,9 +20,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       email,
       phone,
       createdAt
-    } = req.body; // Intaking the data that has been sent from the client-side
+    } = req.body;
 
-    let client: MongoClient | null = null; // We need to assign something to the client so TypeScript is aware that it can be null if the connection fails
+    let client: MongoClient | null = null;
 
     try {
       client = new MongoClient(getMongoDbUri());
@@ -30,7 +30,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const db = client.db('Accord');
 
       const accountsCollection = db.collection("Accounts");
-      // Querying the database by the userName we received
+
+      // First, check if an account with the same 'id' or 'userName' already exists
+      const existingAccountById = await accountsCollection.findOne({ id: id });
+      const existingAccountByUserName = await accountsCollection.findOne({ userName: userName });
+
+      if (existingAccountById || existingAccountByUserName) {
+        // If the account already exists by either id or userName, return a message indicating so
+        return res.status(409).json({ message: 'An account with the same ID or username already exists.' });
+      }
+
+      // If the account does not exist by either criterion, proceed to create a new account
       await accountsCollection.insertOne({
         id: id,
         firstName: firstName,
@@ -39,12 +49,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         email: email,
         phone: phone,
         createdAt: createdAt,
-        friendsList: ["user1", "user2"] // for now every single new user is friends with user1 and user2. This would be replaced with an add friends button.
-        }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
-      return res.status(200).json({ message: 'Registration success' });
+        friendsList: ["user1", "user2"] // Example initial friends list
+      });
 
+      return res.status(200).json({ message: 'Registration successful' });
     } catch (error) {
-      console.error(error);
+      console.error('Failed to register user:', error);
       return res.status(500).json({ error: 'Internal server error' });
     } finally {
       if (client) {

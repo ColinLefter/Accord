@@ -79,8 +79,8 @@ export default async function POST(req: Request) {
       if (userData) {
         switch (eventType) {
           case 'user.created':
+            // Create user in MongoDB
             console.log(`Creating user: ${postData.firstName} ${postData.lastName}`);
-            // Making the API call
             try {
               const response = await fetch('http://localhost:3000/api/registration', {
                 method: 'POST',
@@ -100,7 +100,7 @@ export default async function POST(req: Request) {
             }
             break;
           case 'user.updated':
-            // TODO: Update user in MongoDB
+            // Update user data in MongoDB
             console.log(`Updating user: ${postData.firstName} ${postData.lastName}`);
             try {
               const response = await fetch('http://localhost:3000/api/update-user-data', {
@@ -121,7 +121,7 @@ export default async function POST(req: Request) {
             }
             break;
           case 'user.deleted':
-            // TODO: Delete user from MongoDB
+            // Delete user in MongoDB
             console.log(`Deleting user: ${postData.firstName} ${postData.lastName}`);
             try {
               const response = await fetch('http://localhost:3000/api/delete-user', {
@@ -129,9 +129,10 @@ export default async function POST(req: Request) {
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(postData.email),
+                // Stringify the whole object, not just the id
+                body: JSON.stringify({ id: postData.id }), // postData contains the id field
               });
-          
+              
               if (!response.ok) {
                 console.error('Failed to update user through API:', await response.text());
               } else {

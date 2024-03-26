@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "ngrok": "ngrok http 3001",
+    "ngrok": "ngrok http --domain=ant-inspired-bass.ngrok-free.app 3001",
     "dev": "next dev",
     "proxy": "ts-node -P tsconfig.node.json proxyServer.ts",
     "accord": "concurrently \"npm run dev\" \"npm run proxy\" \"npm run ngrok\"",
@@ -39,6 +39,7 @@
   "devDependencies": {
     "@babel/core": "^7.23.2",
     "@clerk/nextjs": "^4.29.9",
+    "@clerk/themes": "^1.7.10",
     "@next/eslint-plugin-next": "^14.0.1",
     "@storybook/addon-essentials": "^7.5.2",
     "@storybook/addon-styling-webpack": "^0.0.5",
@@ -68,6 +69,7 @@
     "eslint-plugin-react": "^7.33.2",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-testing-library": "^6.1.0",
+    "http-proxy-middleware": "^2.0.6",
     "jest": "^29.7.0",
     "jest-environment-jsdom": "^29.7.0",
     "postcss": "^8.4.31",

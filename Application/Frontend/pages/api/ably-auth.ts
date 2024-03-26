@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import Ably from 'ably/promises';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  if (req.method === 'GET') {
+  if (req.method === 'POST') {
     const ably = new Ably.Rest.Promise({ key: process.env.ABLY_API_KEY_PUBLISH_SUBSCRIBE });
     
     try {
