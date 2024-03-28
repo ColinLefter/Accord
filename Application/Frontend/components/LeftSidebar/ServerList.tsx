@@ -182,12 +182,12 @@ const Adding = () => {
       } 
       {isAdding && 
       <Button style={{ height: em(50), border: px(32) }} onClick={Adding} radius="xl">
-                    Add Server
+                    +
       </Button>
       }
-      <Button style={{ height: em(50), border: px(32) }} onClick={getServersOfLoggedInUser} radius="xl">
+      {/* <Button style={{ height: em(50), border: px(32) }} onClick={getServersOfLoggedInUser} radius="xl">
                     Check User Server
-      </Button>
+      </Button> */}
       
     </div>
     // </>

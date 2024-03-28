@@ -14,7 +14,8 @@ import {
   ActionIcon,
   Container,
   Tabs,
-  Switch
+  Switch,
+  Flex
 } from '@mantine/core';
 import { IconUsers, IconPlus, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
@@ -28,7 +29,6 @@ import { ChatProvider } from "@/contexts/chatContext";
 import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
-import { ServerList } from '@/components/LeftSidebar/ServerList';
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -42,7 +42,7 @@ import { ServerList } from '@/components/LeftSidebar/ServerList';
  * Additionally, it handles responsive toggles for mobile and desktop views and applies the
  * appropriate color scheme based on user preferences or system settings.
  */
-export default function Accord() {
+export default function server_appshell() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
@@ -93,12 +93,6 @@ export default function Accord() {
                 <Logo />
               </Group>
               <Group>
-                <Switch
-                  defaultChecked
-                  label="Private mode"
-                  onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
-                  disabled={chatStarted}  // Disable the switch if the chat has started
-                />
                 <ColorSchemeToggle/>
                 <UserButton/>
               </Group>
@@ -106,32 +100,20 @@ export default function Accord() {
           </AppShell.Header>
           <AppShell.Navbar p="md">
             <AppShell.Section grow>
-              <Tabs.List grow>
-                <Tabs.Tab
-                  value="friends"
-                  onClick={() => handleTabSelection('friends')}
-                  leftSection={<IconUsers />}
-                >
-                  Friends
-                </Tabs.Tab>
-                <Tabs.Tab
-                  value="profile"
-                  onClick={() => handleTabSelection('profile')}
-                  leftSection={<IconUserCircle />}
-                >
-                </Tabs.Tab>
-              </Tabs.List>
+              <Text size='xl' fw={700}>
+                Server Name
+              </Text>
             </AppShell.Section>
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
-                <Text py="md">Direct Messages</Text>
+                <Text py="md">Channel List</Text>
                 <Tooltip label="Send DM">
                   <ActionIcon variant="default" aria-label="Plus" onClick={handleMessageIconClick}>
                     <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
                   </ActionIcon>
                 </Tooltip>
               </Group>
-              {Array(60)
+              {Array(20)
                 .fill(0)
                 .map((_, index) => (
                   <Skeleton key={index} h={30} mt="sm" animate={false} />
@@ -142,13 +124,18 @@ export default function Accord() {
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-            {activeView === 'friends' && <ServerList/>}
-            {activeView === 'profile' &&
-            <Tabs.Panel value="profile">
-                  <div className="general-container">
-                  <UserProfile/>
-                  </div>
-            </Tabs.Panel>}
+          <Flex
+            mih={50}
+            bg="rgba(0, 0, 0, .5)"
+            gap="md"
+            justify="flex-end"
+            align="flex-start"
+            direction="row"
+            wrap="wrap"
+          >
+            {/* Chat Function first */}
+            {/* MemberList Function Second */}
+          </Flex>
             {/* {activeView === 'message' && (
               <Chat
                 sender={sender}
@@ -160,12 +147,11 @@ export default function Accord() {
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>
-            {/* {Array(60)
+            {Array(40)
               .fill(0)
               .map((_, index) => (
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
-              ))} */}
-              <ServerList/>
+              ))}
           </AppShell.Aside>
         </AppShell>
       </Tabs>

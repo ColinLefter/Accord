@@ -2,6 +2,7 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
 import { currentUser } from '@clerk/nextjs';
+import { getAuth } from '@clerk/nextjs/dist/types/server-helpers.server';
 
 let client: MongoClient | null = null;
 
