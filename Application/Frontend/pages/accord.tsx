@@ -4,15 +4,11 @@ import {
   AppShell,
   Burger,
   Group,
-  Stack,
   Skeleton,
   ScrollArea,
-  Button,
   Text,
   Tooltip,
-  useComputedColorScheme,
   ActionIcon,
-  Container,
   Tabs,
   Switch
 } from '@mantine/core';

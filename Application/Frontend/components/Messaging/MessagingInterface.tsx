@@ -5,7 +5,6 @@ import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@ma
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
-import * as Ably from 'ably';
 
 export interface Message {
   username: string,
