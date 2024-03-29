@@ -29,11 +29,7 @@ export function FooterProfile() {
     <Card>
       <Group justify="space-between">
         <Group>
-          <AppLink href="/">
-            <Tooltip label="Profile">
-              <UserButton/>
-            </Tooltip>
-          </AppLink>
+          <UserButton/>
           <Text>{user?.username}</Text>
         </Group>
         <Tooltip label="User Settings">
