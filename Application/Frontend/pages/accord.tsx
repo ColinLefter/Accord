@@ -12,7 +12,7 @@ import {
   Tabs,
   Switch
 } from '@mantine/core';
-import { IconUsers, IconPlus, IconUserCircle } from "@tabler/icons-react";
+import { IconUsers, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
 import { Logo } from "@/components/Logo";
 import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
@@ -21,7 +21,7 @@ import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
 import React, { useEffect, useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
-import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
+import { NewChatModal } from '@/components/Messaging/NewChatModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 
@@ -127,11 +127,7 @@ export default function Accord() {
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
                 <Text py="md">Direct Messages</Text>
-                <Tooltip label="Send DM">
-                  <ActionIcon variant="default" aria-label="Plus" onClick={handleMessageIconClick}>
-                    <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
-                  </ActionIcon>
-                </Tooltip>
+                <NewChatModal/>
               </Group>
               {Array(60)
                 .fill(0)

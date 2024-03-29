@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from 'next/router';
 import { useUser } from '@clerk/nextjs';
 import { Chat } from '@/components/Messaging/Chat';
+import { useFriendsList } from '@/hooks/useFriendsList';
 
 /**
  * FriendsTab provides a dedicated section within the application for displaying and interacting with
@@ -35,11 +36,11 @@ interface FriendsTabProps {
 }
 
 export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabProps) {
+    const { user } = useUser();
     const router = useRouter();
-    const [friendsList, setFriendsList] = useState<string[]>([]);
+    const friendsList = useFriendsList();
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [activeChat, setActiveChat] = useState<string>(''); // State to manage active chat
-    const { user } = useUser();
     
       /**
        * Handles form submission, sending the login request to the server and processing
@@ -53,34 +54,6 @@ export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabP
        *
        * @param evt - The input change event
        */
-      useEffect(() => {
-        if (user) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
-          const fetchData = async () => {
-            try {
-              const response = await fetch('/api/FriendsTab', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: user.id })
-              });
-    
-              if (response.ok) {
-                const data = await response.json();
-                setFriendsList(data.friendsList);
-              } else {
-                console.error('Failed to fetch friend list');
-              }
-            } catch (error) {
-              console.error('Error fetching friend list:', error);
-            }
-          };
-    
-          fetchData();
-        }
-      }, [user]); // Dependency array includes user, so effect runs when user changes
-
-          // Filter friendsList based on search query
     const filteredFriendsList = friendsList.filter((friendUsername) =>
       friendUsername.toLowerCase().includes(searchQuery.toLowerCase()) // This means that the search is case-insensitive
     );
