@@ -23,7 +23,7 @@ import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
 import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
 import classes from "@/components/tabstyling.module.css";
@@ -45,6 +45,9 @@ export default function Accord() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
+  // Default is to just display no username. This will never be the case as you can't be here without an account.
+  // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
+  const [sender, setSender] = useState<string>(''); 
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
@@ -58,7 +61,12 @@ export default function Accord() {
   // Every time we click on a friend who we want to chat with, we check if they are currently subscribed to the chat channel, and if not, we subscribe them.
   // This involves writing a query to the database to check who is in this chat (i.e. who is subscribed to this channel).
   // As for example the sender of this chat will be user1 and the receiver will be user2, but this will be flipped for user2 as they will be the sender in that case.
-  const sender = user?.username;
+  useEffect(() => {
+    if (user && user.username) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setSender(user.username);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   // note: we are manually handling the currently selected tab via states
   const handleTabSelection = (value: string) => setActiveView(value);
@@ -99,7 +107,6 @@ export default function Accord() {
                   disabled={chatStarted}  // Disable the switch if the chat has started
                 />
                 <ColorSchemeToggle/>
-                <UserButton/>
               </Group>
             </Group>
           </AppShell.Header>
@@ -141,12 +148,12 @@ export default function Accord() {
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-            {activeView === 'friends' && <FriendsTab />}
+            {activeView === 'friends' && <FriendsTab sender={sender} privateChat={privateMode} onMessageExchange={onMessageExchange} />}
             {activeView === 'profile' &&
             <Tabs.Panel value="profile">
-                  <div className="general-container">
-                  <UserProfile/>
-        </div>
+            <div className="general-container">
+              <UserProfile />
+            </div>
             </Tabs.Panel>}
             {/* {activeView === 'message' && (
               <Chat
