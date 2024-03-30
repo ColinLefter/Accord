@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { FetchStatusProps } from '@/types/accordTypes';
+import { FetchStatusProps } from '@/accordTypes';
 
 export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps) {
   const [friendIDList, setfriendIDList] = useState<string[]>([]);

@@ -1,17 +1,17 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Message } from "@/components/Messaging/MessagingInterface"; // Adjust the path as necessary
+import { MessageProps } from "@/accordTypes"; // Adjust the path as necessary
 
 interface ChatContextType {
-  chatHistory: Message[];
-  updateChatHistory: (messages: Message[]) => void;
+  chatHistory: MessageProps[];
+  updateChatHistory: (messages: MessageProps[]) => void;
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
 
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
-  const [chatHistory, setChatHistory] = useState<Message[]>([]);
+  const [chatHistory, setChatHistory] = useState<MessageProps[]>([]);
 
-  const updateChatHistory = (messages: Message[]) => {
+  const updateChatHistory = (messages: MessageProps[]) => {
     setChatHistory(messages);
   };
 

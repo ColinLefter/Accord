@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { useUser } from '@clerk/nextjs';
 import { Chat } from '@/components/Messaging/Chat';
 import { useFriendList } from '@/hooks/useFriendList';
-import { FriendsTabProps } from '@/types/accordTypes';
+import { FriendsTabProps } from '@/accordTypes';
 /**
  * FriendsTab provides a dedicated section within the application for displaying and interacting with
  * the user's friends list. It features a search bar allowing users to filter or search through their
@@ -29,7 +29,7 @@ function goBack() {
 window.history.back();
 }
 
-export function FriendsTab({sender, senderID, privateChat, onMessageExchange}: FriendsTabProps) {
+export function FriendsTab({senderUsername, senderID, privateChat, onMessageExchange}: FriendsTabProps) {
     const { user } = useUser();
     const router = useRouter();
     const [lastFetched, setLastFetched] = useState<number | null>(null);
@@ -60,7 +60,7 @@ export function FriendsTab({sender, senderID, privateChat, onMessageExchange}: F
 
     if (receiverUsername && user?.id) { // Ensure both receiverUsername and user.id are defined
       return <Chat 
-          senderUsername={sender}
+          senderUsername={senderUsername}
           receiverUsername={receiverUsername} // The receiver is now the friend we clicked on.
           senderID={senderID}
           receiverID={receiverID}

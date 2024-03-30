@@ -3,13 +3,7 @@
 import { Group, Stack, Avatar, Text } from '@mantine/core';
 import { useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
-
-interface MessageProps {
-  username: string,
-  message: string,
-  firstMessage?: boolean,
-  date?: string
-}
+import { MessageProps } from "@/accordTypes";
 
 /**
  * The Message component displays a single message within a conversation,

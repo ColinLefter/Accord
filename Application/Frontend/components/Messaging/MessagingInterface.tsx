@@ -1,28 +1,11 @@
 "use client";
 
-import { Message } from './Message';
+import { Message } from "@/components/Messaging/Message";
 import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@mantine/core';
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
-
-export interface Message {
-  username: string,
-  message: string,
-  firstMessage?: boolean,
-  date?: string,
-  connectionId?: string,
-  data?: string,
-}
-
-interface MessagingInterfaceProps {
-  sender: string;
-  receiver: string;
-  senderID: string;
-  receiverID: string;
-  privateChat: boolean;
-  onMessageExchange: () => void; // Include in the props of MessagingInterface
-}
+import { MessageProps, MessagingInterfaceProps } from "@/accordTypes";
 
 /**
  * The MessagingInterface component manages and displays the chat interface, allowing users to send and receive messages.
@@ -41,7 +24,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   let messageEnd: HTMLDivElement | null = null;
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
-  const [receivedMessages, setReceivedMessages] = useState<Message[]>([]); // receivedMessages stores the on-screen chat history.
+  const [receivedMessages, setReceivedMessages] = useState<MessageProps[]>([]); // receivedMessages stores the on-screen chat history.
 
   // Retrieving the chat history and update function from the context
   const { chatHistory, updateChatHistory } = useChat();
@@ -64,7 +47,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   
     // For any message received from others, update the state.
     const { text, date } = messageData.data;
-    const incomingMessage: Message = {
+    const incomingMessage: MessageProps = {
       username: messageData.name,
       message: text,
       date: date,

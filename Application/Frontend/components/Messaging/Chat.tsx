@@ -4,14 +4,7 @@ import * as Ably from 'ably';
 import { AblyProvider } from 'ably/react';
 import { MessagingInterface } from '@/components/Messaging/MessagingInterface';
 
-interface ChatProps {
-  senderUsername: string;
-  receiverUsername: string;
-  senderID: string;
-  receiverID: string;
-  privateChat: boolean;
-  onMessageExchange: () => void; // Function type that doesn't take arguments and returns void
-}
+import { ChatProps } from '@/accordTypes';
 
 /**
  * The Chat component sets up a communication channel between two users
