@@ -6,7 +6,7 @@ import Link from "next/link";
 import { useRouter } from 'next/router';
 import { useUser } from '@clerk/nextjs';
 import { Chat } from '@/components/Messaging/Chat';
-import { useFriendsList } from '@/hooks/useFriendsList';
+import { useFriendList } from '@/hooks/useFriendList';
 
 /**
  * FriendsTab provides a dedicated section within the application for displaying and interacting with
@@ -31,16 +31,18 @@ import { useFriendsList } from '@/hooks/useFriendsList';
 
 interface FriendsTabProps {
   sender: string;
+  senderID: string;
   privateChat: boolean;
   onMessageExchange: () => void; // Function type that doesn't take arguments and returns void
 }
 
-export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabProps) {
+export function FriendsTab({sender, senderID, privateChat, onMessageExchange}: FriendsTabProps) {
     const { user } = useUser();
     const router = useRouter();
-    const friendsList = useFriendsList();
+    const friendUsernames = useFriendList();
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [activeChat, setActiveChat] = useState<string>(''); // State to manage active chat
+    const [receiverUsername, setreceiverUsername] = useState<string>('');
+    const [receiverID, setreceiverID] = useState<string>('');
     
       /**
        * Handles form submission, sending the login request to the server and processing
@@ -54,18 +56,20 @@ export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabP
        *
        * @param evt - The input change event
        */
-    const filteredFriendsList = friendsList.filter((friendUsername) =>
+    const filteredfriendList = friendUsernames.filter((friendUsername: string) =>
       friendUsername.toLowerCase().includes(searchQuery.toLowerCase()) // This means that the search is case-insensitive
     );
 
     const handleFriendClick = (friendUsername: string) => {
-      setActiveChat(friendUsername);
+      setreceiverUsername(friendUsername);
     };
 
-    if (activeChat && user?.id) { // Ensure both activeChat and user.id are defined
+    if (receiverUsername && user?.id) { // Ensure both receiverUsername and user.id are defined
       return <Chat 
-          sender={sender}
-          receiver={activeChat} // The receiver is now the friend we clicked on.
+          senderUsername={sender}
+          receiverUsername={receiverUsername} // The receiver is now the friend we clicked on.
+          senderID={senderID}
+          receiverID={receiverID}
           privateChat={privateChat}
           onMessageExchange={onMessageExchange}
       />;
@@ -98,8 +102,8 @@ export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabP
             >
                 All friends
             </Text>
-            {/** Users that are in the friendsList*/}
-            {filteredFriendsList.map((friendUsername, index) => (
+            {/** Users that are in the friendList*/}
+            {filteredfriendList.map((friendUsername: string, index: number) => (
                 <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friendUsername)}>
                     <Group py="10">
                         <Avatar alt={`Friend ${index + 1}`} radius="xl"/>

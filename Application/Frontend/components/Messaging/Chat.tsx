@@ -5,8 +5,10 @@ import { AblyProvider } from 'ably/react';
 import { MessagingInterface } from '@/components/Messaging/MessagingInterface';
 
 interface ChatProps {
-  sender: string;
-  receiver: string;
+  senderUsername: string;
+  receiverUsername: string;
+  senderID: string;
+  receiverID: string;
   privateChat: boolean;
   onMessageExchange: () => void; // Function type that doesn't take arguments and returns void
 }
@@ -28,19 +30,19 @@ interface ChatProps {
  * @param {ChatProps} props The properties passed to the Chat component.
  * @returns {JSX.Element} The rendered Chat component.
  */
-export function Chat({ sender, receiver, privateChat, onMessageExchange }: ChatProps) {
-  // Initialize the Ably Realtime client with authentication details.
+export function Chat({ senderUsername, receiverUsername, senderID, receiverID, privateChat, onMessageExchange }: ChatProps) {
   const client = new Ably.Realtime.Promise({
     authUrl: '/api/ably-auth',
-    authMethod: 'POST' // Ensure the authentication method matches server-side expectation.
+    authMethod: 'POST'
   });
 
-  // Render the MessagingInterface within the context of the AblyProvider.
   return (
     <AblyProvider client={client}>
       <MessagingInterface 
-        sender={sender} 
-        receiver={receiver} 
+        sender={senderUsername} 
+        receiver={receiverUsername}
+        senderID={senderID} 
+        receiverID={receiverID}
         privateChat={privateChat} 
         onMessageExchange={onMessageExchange} // Propagate the onMessageExchange callback.
       />

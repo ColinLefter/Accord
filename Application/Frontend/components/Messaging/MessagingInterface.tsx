@@ -18,6 +18,8 @@ export interface Message {
 interface MessagingInterfaceProps {
   sender: string;
   receiver: string;
+  senderID: string;
+  receiverID: string;
   privateChat: boolean;
   onMessageExchange: () => void; // Include in the props of MessagingInterface
 }

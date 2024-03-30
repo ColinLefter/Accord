@@ -25,6 +25,7 @@ import { NewChatModal } from '@/components/Messaging/NewChatModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 
+
 /**
  * Represents the central structure of the application interface, organizing the layout into
  * header, navbar, main content, and aside sections. This component serves as the main framework
@@ -44,23 +45,18 @@ export default function Accord() {
   // Default is to just display no username. This will never be the case as you can't be here without an account.
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
+  const [senderID, setSenderID] = useState<string>('');
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
 
   const { user } = useUser();
 
-  // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
-  // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
-  // Receiver would come from clicking on a friend in the dropdown that appears when clicking the "Send DM" button.
-  // It would also come from clicking on a friend in the FriendsTab component as that would trigger the chat to open.
-  // Every time we click on a friend who we want to chat with, we check if they are currently subscribed to the chat channel, and if not, we subscribe them.
-  // This involves writing a query to the database to check who is in this chat (i.e. who is subscribed to this channel).
-  // As for example the sender of this chat will be user1 and the receiver will be user2, but this will be flipped for user2 as they will be the sender in that case.
   useEffect(() => {
-    if (user && user.username) {
+    if (user && user.username && user.id) {
       // Set sender to user's username if user exists and username is not null/undefined
       setSender(user.username);
+      setSenderID(user.id);
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
@@ -140,7 +136,7 @@ export default function Accord() {
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-            {activeView === 'friends' && <FriendsTab sender={sender} privateChat={privateMode} onMessageExchange={onMessageExchange} />}
+            {activeView === 'friends' && <FriendsTab sender={sender} senderID={senderID}  privateChat={privateMode} onMessageExchange={onMessageExchange} />}
             {activeView === 'profile' &&
             <Tabs.Panel value="profile">
             <div className="general-container">
@@ -149,8 +145,8 @@ export default function Accord() {
             </Tabs.Panel>}
             {/* {activeView === 'message' && (
               <Chat
-                sender={sender}
-                receiver={receiver}
+                senderUsername={sender}
+                receiverUsername={'receiver'}
                 privateChat={privateMode}
                 onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
               />
