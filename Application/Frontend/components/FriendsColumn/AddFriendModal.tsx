@@ -4,15 +4,35 @@ import { IconPlus } from '@tabler/icons-react';
 import { useState } from 'react';
 import { NewFriendModalProps } from '@/accordTypes';
 
-export function AddFriend({ onAddFriend }: NewFriendModalProps) {
+export function AddFriendModal({ senderID }: NewFriendModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const [friendUsername, setFriendUsername] = useState(''); // Track the username input for adding a friend
 
-  const handleAddFriendClick = () => {
+  const handleAddFriendClick = async () => {
+    close(); // Close the modal. Done here so that it is instant.
     if (friendUsername) {
-      onAddFriend(friendUsername);
-      close(); // Close the modal after adding the friend
-      setFriendUsername(''); // Reset the input field
+      console.log(`Adding friend: ${friendUsername}`);
+      try {
+        const response = await fetch('/api/add-friend', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ senderID: senderID, friendUsername: friendUsername }),
+        });
+    
+        if (response.ok) {
+          console.log(senderID);
+          console.log(friendUsername);
+          const data = await response.json();
+          console.log(data.message); // Log the success message
+          setFriendUsername(''); // Clear the input field to allow for further friend requests
+        } else {
+          console.error('Failed to add friend');
+        }
+      } catch (error) {
+        console.error('Error adding friend:', error);
+      }
     }
   };
 

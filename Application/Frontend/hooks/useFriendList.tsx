@@ -8,7 +8,7 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
   const [usernames, setusernames] = useState<string[]>([]);
   const { user } = useUser();
 
-  const CACHE_DURATION = 60 * 1000; // Establishing a 1-minute cache duration
+  const CACHE_DURATION = 5 * 1000; // Establishing a 5-second cache duration
 
   useEffect(() => {
     if (user && (lastFetched === null || Date.now() - lastFetched >= CACHE_DURATION)) {
@@ -24,7 +24,7 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
 
           if (response.ok) {
             const data = await response.json();
-            setIDs(data.friendList || []); // Fallback to an empty array if data.friendList is undefined
+            setIDs(data.friendList); // friendList is now an array if user IDs
             setLastFetched(Date.now()); // Updating the last fetched time
           } else {
             console.error('Failed to fetch friend list');

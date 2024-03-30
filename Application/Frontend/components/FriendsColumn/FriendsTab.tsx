@@ -26,7 +26,7 @@ import { FriendsTabProps } from '@/accordTypes';
 
 // Function to call to go back to the last previous URL
 function goBack() {
-window.history.back();
+    window.history.back();
 }
 
 export function FriendsTab({senderUsername, senderID, privateChat, onMessageExchange}: FriendsTabProps) {
@@ -71,9 +71,9 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
           onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
         />
       );
-  }
+    }
     
-      return (
+    return (
         <Stack>
             {/** Search Box*/}
             <TextInput

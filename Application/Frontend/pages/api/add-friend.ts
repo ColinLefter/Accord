@@ -21,6 +21,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(404).json({ error: 'Friend not found' });
     }
 
+    if (!senderID || !friend.id) {
+      console.error('Invalid senderID or friendID');
+      return res.status(400).json({ error: 'Invalid senderID or friendID' });
+    }    
+
     // Add friend to the sender's friendList
     await accountsCollection.updateOne({ id: senderID }, { $addToSet: { friendList: friend.id } });
 

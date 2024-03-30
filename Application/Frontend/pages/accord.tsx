@@ -26,7 +26,7 @@ import { NewChatModal } from '@/components/Messaging/NewChatModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
-import { AddFriend } from '@/components/FriendsColumn/AddFriend';
+import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 /**
  * Represents the central structure of the application interface, organizing the layout into
  * header, navbar, main content, and aside sections. This component serves as the main framework
@@ -51,7 +51,6 @@ export default function Accord() {
   const [sender, setSender] = useState<string>(''); 
   const [senderID, setSenderID] = useState<string>('');
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
-  const [addedFriendUsername, setAddedFriendUsername] = useState<string>('');
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
@@ -61,29 +60,6 @@ export default function Accord() {
     setSelectedRecipients(recipients); // Update the recipients state
     setActiveView('chat'); // 'chat' is the view for showing the chat interface
   };
-
-  const handleAddFriend = async (username: string) => {
-    console.log(`Adding friend: ${username}`);
-    try {
-      const response = await fetch('/api/add-friend', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ senderID: senderID, friendUsername: username }),
-      });
-  
-      if (response.ok) {
-        const data = await response.json();
-        console.log(data.message); // Log the success message
-        setAddedFriendUsername(username); // Update the state only after successful API call
-      } else {
-        console.error('Failed to add friend');
-      }
-    } catch (error) {
-      console.error('Error adding friend:', error);
-    }
-  };  
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -147,7 +123,7 @@ export default function Accord() {
                     Friends
                   </Tabs.Tab>
                 </Tabs.List>
-                <AddFriend onAddFriend={handleAddFriend} />
+                <AddFriendModal senderID={senderID} />
               </Stack>
             </AppShell.Section>
             <AppShell.Section grow component={ScrollArea} mt="15">

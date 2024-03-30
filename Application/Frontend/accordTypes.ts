@@ -12,9 +12,12 @@ export interface MessageProps {
   data?: string;
 }
 
-export interface FriendsTabProps extends FetchStatusProps {
-  senderUsername: string;
+export interface NewFriendModalProps {
   senderID: string;
+}
+
+export interface FriendsTabProps extends FetchStatusProps, NewFriendModalProps {
+  senderUsername: string;
   privateChat: boolean;
   onMessageExchange: () => void;
 }
@@ -34,8 +37,4 @@ export interface IconProps {
 
 export interface NewChatModalProps {
   onCreateChat: (recipients: string[]) => void;
-}
-
-export interface NewFriendModalProps {
-  onAddFriend: (friendUsername: string) => void;
 }
