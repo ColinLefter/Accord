@@ -5,7 +5,12 @@ import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@ma
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
-import { MessageProps, MessagingInterfaceProps } from "@/accordTypes";
+import { ChatProps, MessageProps } from "@/accordTypes";
+import { createHash } from 'crypto';
+
+const generateHash = (input: string) => {
+  return createHash('sha256').update(input).digest('hex');
+};
 
 /**
  * The MessagingInterface component manages and displays the chat interface, allowing users to send and receive messages.
@@ -20,11 +25,12 @@ import { MessageProps, MessagingInterfaceProps } from "@/accordTypes";
  * The component listens for incoming messages via the Ably channel, maintains local message history state, and provides a UI for sending new messages.
  * It also interacts with backend APIs to fetch and update message history in MongoDB based on the chat's privacy settings.
  */
-export function MessagingInterface({ sender, receiver, privateChat, onMessageExchange  }: MessagingInterfaceProps) {
+export function MessagingInterface({ senderUsername, senderID, receiverIDs, privateChat, onMessageExchange }: ChatProps) {
   let messageEnd: HTMLDivElement | null = null;
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
   const [receivedMessages, setReceivedMessages] = useState<MessageProps[]>([]); // receivedMessages stores the on-screen chat history.
+  const participantIDs = [senderID, ...receiverIDs].sort(); // To allow for group chats. We also need to sort the key to counteract the swapping mechanism where sender and receiver becomes flipped.
 
   // Retrieving the chat history and update function from the context
   const { chatHistory, updateChatHistory } = useChat();
@@ -36,12 +42,13 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
 
-  const channelKey = `chat:${[sender, receiver].sort().join(",")}`; // We must counteract the swapping mechanism by sorting the names alphabetically.  
+  const rawChannelKey = `chat:${participantIDs.join(",")}`;
+  const channelKey = generateHash(rawChannelKey); // Generating a SHA-256 hash of a channel to compress it and also enforce security, privacy and uniqueness :D
   const { channel, ably } = useChannel(channelKey, (messageData) => {
     // This callback gets executed for any message received on this channel.
     // If the sender is the current user, don't add the message to receivedMessages because
     // it's already added to the state when the user sends the message.
-    if (messageData.name === sender) {
+    if (messageData.name === senderUsername) {
       return;
     }
   
@@ -116,7 +123,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
     const outgoingMessage = {
-      username: sender,
+      username: senderUsername,
       message: messageText,
       date: dateStr,
       data: messageText,
@@ -126,7 +133,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     // We don't specify who the message is for as the way we handle who receives messages is by subscribing certain users to certain channels.
     // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
     await channel.publish({
-      name: sender,
+      name: senderUsername,
       data: { text: messageText, date: dateStr }
     });
   
@@ -148,8 +155,8 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
             body: JSON.stringify({
               channelKey,
               messageHistory: updatedHistory,
-              owner: sender,
-              members: [sender, receiver]
+              owner: senderUsername,
+              memberIDs: receiverIDs
             }),
           });
         } catch (error) {
@@ -236,6 +243,8 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     setReceivedMessages(chatHistory);
   }, [chatHistory]);
 
+  const messageLabel = receiverIDs.length > 1 ? `Message everyone in the group` : `Send a DM`;
+
   return (
     <div className="messaging-container">
 
@@ -252,7 +261,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
               <Group grow>
                 <Textarea
                     ref={inputBoxRef}
-                    placeholder={`Message @${receiver}`}
+                    placeholder={messageLabel}
                     autosize
                     minRows={1}
                     maxRows={10}

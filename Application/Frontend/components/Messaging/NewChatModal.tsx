@@ -10,10 +10,11 @@ import { NewChatModalProps } from '@/accordTypes';
 export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const { lastFetched, setLastFetched } = useCache();
+  const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const friends = useFriendList({lastFetched, setLastFetched});
 
   const handleCreateChatClick = () => {
-    // onCreateChat(selectedFriends);
+    onCreateChat(selectedFriends);
     close(); // Close the modal
   };
 
@@ -56,6 +57,7 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
           fullWidth
           variant="gradient"
           gradient={{ from: "pink", to: "yellow" }}
+          onClick={handleCreateChatClick} // Call handleCreateChatClick when the button is clicked
         >
           Create chat
         </Button>

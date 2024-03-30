@@ -22,21 +22,16 @@ import { ChatProps } from '@/accordTypes';
  * @param {ChatProps} props The properties passed to the Chat component.
  * @returns {JSX.Element} The rendered Chat component.
  */
-export function Chat({ senderUsername, senderID, receiverIDs, privateChat, onMessageExchange }: ChatProps) {
-  const client = new Ably.Realtime.Promise({
-    authUrl: '/api/ably-auth',
-    authMethod: 'POST'
-  });
-
+export function Chat({ senderID, senderUsername, receiverIDs, privateChat, lastFetched, setLastFetched, onMessageExchange }: ChatProps) {
   return (
-    <AblyProvider client={client}>
       <MessagingInterface 
-        senderUsername={senderUsername} 
-        senderID={senderID} 
+        senderID={senderID}
+        senderUsername={senderUsername}
         receiverIDs={receiverIDs}
-        privateChat={privateChat} 
-        onMessageExchange={onMessageExchange} // Propagate the onMessageExchange callback.
+        privateChat={privateChat}
+        lastFetched={lastFetched}
+        setLastFetched={setLastFetched}
+        onMessageExchange={onMessageExchange}
       />
-    </AblyProvider>
   );
 }
