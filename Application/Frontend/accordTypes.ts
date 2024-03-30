@@ -35,3 +35,7 @@ export interface IconProps {
 export interface NewChatModalProps {
   onCreateChat: (recipients: string[]) => void;
 }
+
+export interface NewFriendModalProps {
+  onAddFriend: (friendUsername: string) => void;
+}

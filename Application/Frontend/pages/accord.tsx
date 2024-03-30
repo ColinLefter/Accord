@@ -10,7 +10,8 @@ import {
   Tooltip,
   ActionIcon,
   Tabs,
-  Switch
+  Switch,
+  Stack
 } from '@mantine/core';
 import { IconUsers, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
@@ -25,7 +26,7 @@ import { NewChatModal } from '@/components/Messaging/NewChatModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
-
+import { AddFriend } from '@/components/FriendsColumn/AddFriend';
 /**
  * Represents the central structure of the application interface, organizing the layout into
  * header, navbar, main content, and aside sections. This component serves as the main framework
@@ -50,6 +51,7 @@ export default function Accord() {
   const [sender, setSender] = useState<string>(''); 
   const [senderID, setSenderID] = useState<string>('');
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
+  const [addedFriendUsername, setAddedFriendUsername] = useState<string>('');
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
@@ -59,6 +61,32 @@ export default function Accord() {
     setSelectedRecipients(recipients); // Update the recipients state
     setActiveView('chat'); // 'chat' is the view for showing the chat interface
   };
+
+  const handleAddFriend = async (username: string) => {
+    console.log(`Adding friend: ${username}`);
+    // Assuming the logged-in user's ID is available as senderID
+    try {
+      const response = await fetch('/api/add-friend', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ senderID, friendUsername: username }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        console.log(data.message); // Log the success message
+        setAddedFriendUsername(username); // Update the state only after successful API call
+      } else {
+        console.error('Failed to add friend');
+      }
+    } catch (error) {
+      console.error('Error adding friend:', error);
+    }
+  };
+  
+  
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -70,7 +98,6 @@ export default function Accord() {
 
   // note: we are manually handling the currently selected tab via states
   const handleTabSelection = (value: string) => setActiveView(value);
-  const handleMessageIconClick = () => setActiveView('message');
 
   // Function to handle message sending from the Chat component
   // This should be passed down and invoked whenever a message is sent or received
@@ -113,21 +140,18 @@ export default function Accord() {
           </AppShell.Header>
           <AppShell.Navbar p="md">
             <AppShell.Section grow>
-              <Tabs.List grow>
-                <Tabs.Tab
-                  value="friends"
-                  onClick={() => handleTabSelection('friends')}
-                  leftSection={<IconUsers />}
-                >
-                  Friends
-                </Tabs.Tab>
-                <Tabs.Tab
-                  value="profile"
-                  onClick={() => handleTabSelection('profile')}
-                  leftSection={<IconUserCircle />}
-                >
-                </Tabs.Tab>
-              </Tabs.List>
+              <Stack gap="xs">
+                <Tabs.List grow>
+                  <Tabs.Tab
+                    value="friends"
+                    onClick={() => handleTabSelection('friends')}
+                    leftSection={<IconUsers />}
+                  >
+                    Friends
+                  </Tabs.Tab>
+                </Tabs.List>
+                <AddFriend onAddFriend={handleAddFriend} />
+              </Stack>
             </AppShell.Section>
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
