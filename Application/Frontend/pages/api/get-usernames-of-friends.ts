@@ -8,9 +8,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).end(`Method ${req.method} Not Allowed`);
   }
 
-  const { friendIDList } = req.body;
-  if (!Array.isArray(friendIDList) || friendIDList.length === 0) {
-    return res.status(400).json({ error: 'Invalid friendIDList provided' });
+  const { IDs } = req.body;
+  if (!Array.isArray(IDs) || IDs.length === 0) {
+    return res.status(400).json({ error: 'Invalid IDs provided' });
   }
 
   let client: MongoClient | null = null;
@@ -21,9 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const db = client.db('Accord');
     const accountsCollection = db.collection("Accounts");
 
-    // Use the $in operator to find users whose ID is in friendIDList
+    // Use the $in operator to find users whose ID is in IDs
     const friends = await accountsCollection.find({
-      id: { $in: friendIDList }
+      id: { $in: IDs }
     }).toArray();
 
     // Map over the results to extract just the usernames

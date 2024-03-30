@@ -33,7 +33,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     const { user } = useUser();
     const router = useRouter();
     const [lastFetched, setLastFetched] = useState<number | null>(null);
-    const friendUsernames = useFriendList({lastFetched, setLastFetched});
+    const friends = useFriendList({lastFetched, setLastFetched});
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [receiverUsername, setreceiverUsername] = useState<string>('');
     const [receiverID, setreceiverID] = useState<string>('');
@@ -50,7 +50,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
        *
        * @param evt - The input change event
        */
-    const filteredfriendList = friendUsernames.filter((friendUsername: string) =>
+    const filteredfriendList = friends.usernames.filter((friendUsername: string) =>
       friendUsername.toLowerCase().includes(searchQuery.toLowerCase()) // This means that the search is case-insensitive
     );
 
@@ -59,14 +59,17 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     };
 
     if (receiverUsername && user?.id) { // Ensure both receiverUsername and user.id are defined
-      return <Chat 
-          senderUsername={senderUsername}
-          receiverUsername={receiverUsername} // The receiver is now the friend we clicked on.
+      return (
+        <Chat
           senderID={senderID}
-          receiverID={receiverID}
+          senderUsername={senderUsername}
+          receiverIDs={[receiverUsername]} // The Chat component will always expect an array of IDs, even if it's just one
           privateChat={privateChat}
-          onMessageExchange={onMessageExchange}
-      />;
+          lastFetched={lastFetched}
+          setLastFetched={setLastFetched}
+          onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+        />
+      );
   }
     
       return (

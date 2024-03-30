@@ -3,8 +3,8 @@ import { useUser } from '@clerk/nextjs';
 import { FetchStatusProps } from '@/accordTypes';
 
 export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps) {
-  const [friendIDList, setfriendIDList] = useState<string[]>([]);
-  const [friendUsernames, setFriendUsernames] = useState<string[]>([]);
+  const [IDs, setIDs] = useState<string[]>([]);
+  const [usernames, setusernames] = useState<string[]>([]);
   const { user } = useUser();
 
   const CACHE_DURATION = 60 * 1000; // Establishing a 1-minute cache duration
@@ -22,7 +22,7 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
 
           if (response.ok) {
             const data = await response.json();
-            setfriendIDList(data.friendList);
+            setIDs(data.friendList);
             setLastFetched(Date.now()); // Updating the last fetched time
           } else {
             console.error('Failed to fetch friend list');
@@ -37,7 +37,7 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
   }, [user, lastFetched]); // Now this effect depends on when  the data was last fetched as well
 
   useEffect(() => {
-    if (friendIDList.length > 0) {
+    if (IDs.length > 0) {
       const fetchData = async () => {
         try {
           const response = await fetch('/api/get-usernames-of-friends', {
@@ -45,12 +45,12 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ friendIDList }),
+            body: JSON.stringify({ IDs }),
           });
 
           if (response.ok) {
             const data = await response.json();
-            setFriendUsernames(data);
+            setusernames(data);
             // No need to update lastFetched here as it's already set in the previous useEffect
           } else {
             console.error('Failed to fetch friend usernames');
@@ -62,7 +62,16 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
 
       fetchData();
     }
-  }, [friendIDList]); // Removed lastFetched from dependency array to prevent re-fetching due to its update
+  }, [IDs]); // Removed lastFetched from dependency array to prevent re-fetching due to its update
 
-  return friendUsernames;
+  // We need to return both the usernames and the IDs
+  // The usernames are required for display purposes such as in displaying the list of friends that user has
+  // However, the IDs need to be used to maintain text channels because if a user changes their username, all channels will be lost
+  // IDs are persistent across all changes and are guaranteed to be both unique and unchanged as they are assigned by our authentication provider
+  const friends = {
+    usernames: usernames,
+    IDs: IDs,
+  }
+
+  return friends;
 }

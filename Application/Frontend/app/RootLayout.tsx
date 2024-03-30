@@ -16,28 +16,28 @@ export default function RootLayout({ children }: any) { // The one time where 'a
     authHeaders: { 'Content-Type': 'application/json' },
   });
     // Define a wrapper component inside App to access the Mantine theme
-    const WithProviders = () => {
-      const theme = useComputedColorScheme() === 'dark' ? dark : undefined;
-      const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
-    
-      return (
-        <ClerkProvider
-          appearance={{
-            baseTheme: theme,
-            variables: { colorPrimary: textColor },
-          }}>
-            <CacheProvider>
-              <AblyProvider client={ client }>
-                {children}
-              </AblyProvider>              
-            </CacheProvider>
-        </ClerkProvider>
-      );
-    }
-
+  const WithProviders = () => {
+    const theme = useComputedColorScheme() === 'dark' ? dark : undefined;
+    const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
+  
     return (
-      <MantineProvider>
-        <WithProviders />
-      </MantineProvider>
+      <ClerkProvider
+        appearance={{
+          baseTheme: theme,
+          variables: { colorPrimary: textColor },
+        }}>
+          <CacheProvider>
+            <AblyProvider client={ client }>
+              {children}
+            </AblyProvider>              
+          </CacheProvider>
+      </ClerkProvider>
     );
+  }
+
+  return (
+    <MantineProvider>
+      <WithProviders />
+    </MantineProvider>
+  );
 }

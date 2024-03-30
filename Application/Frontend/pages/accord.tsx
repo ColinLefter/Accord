@@ -39,20 +39,27 @@ import { useCache } from '@/contexts/queryCacheContext';
  * appropriate color scheme based on user preferences or system settings.
  */
 export default function Accord() {
+  const { user } = useUser();
+
+  const { lastFetched, setLastFetched } = useCache();
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
-  const { lastFetched, setLastFetched } = useCache();
   // Default is to just display no username. This will never be the case as you can't be here without an account.
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
   const [senderID, setSenderID] = useState<string>('');
+  const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
 
-  const { user } = useUser();
-
+  // Function to handle chat creation from modal
+  const handleCreateChat = (recipients: string[]) => {
+    setSelectedRecipients(recipients); // Update the recipients state
+    setActiveView('chat'); // 'chat' is the view for showing the chat interface
+  };
+  
   useEffect(() => {
     if (user && user.username && user.id) {
       // Set sender to user's username if user exists and username is not null/undefined
@@ -125,7 +132,7 @@ export default function Accord() {
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
                 <Text py="md">Direct Messages</Text>
-                <NewChatModal/>
+                <NewChatModal onCreateChat={handleCreateChat} />
               </Group>
               {Array(60)
                 .fill(0)
@@ -140,7 +147,7 @@ export default function Accord() {
           <AppShell.Main>
           {activeView === 'friends' && 
             <FriendsTab
-              sender={sender}
+              senderUsername={sender}
               senderID={senderID}
               privateChat={privateMode}
               onMessageExchange={onMessageExchange}
@@ -155,14 +162,17 @@ export default function Accord() {
               </div>
             </Tabs.Panel>
           }
-          {/* {activeView === 'message' && (
+          {activeView === 'chat' && (
             <Chat
+              senderID={senderID}
               senderUsername={sender}
-              receiverUsername={'receiver'}
+              receiverIDs={selectedRecipients}
               privateChat={privateMode}
+              lastFetched={lastFetched}
+              setLastFetched={setLastFetched}
               onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
             />
-        )} */}
+          )}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>

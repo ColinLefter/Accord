@@ -5,11 +5,17 @@ import { useEffect, useState } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
+import { NewChatModalProps } from '@/accordTypes';
 
-export function NewChatModal() {
+export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const { lastFetched, setLastFetched } = useCache();
-  const friendUsernames = useFriendList({lastFetched, setLastFetched});
+  const friends = useFriendList({lastFetched, setLastFetched});
+
+  const handleCreateChatClick = () => {
+    // onCreateChat(selectedFriends);
+    close(); // Close the modal
+  };
 
   return (
     <>
@@ -44,7 +50,7 @@ export function NewChatModal() {
           maxValues={9} // Anything more than that and it's a server
           label="Search your friends by username"
           placeholder="Choose up to 9 friends to chat with"
-          data={friendUsernames}
+          data={friends.usernames}
         />
         <Button
           fullWidth
