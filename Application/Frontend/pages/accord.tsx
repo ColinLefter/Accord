@@ -70,7 +70,7 @@ export default function Accord() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ senderID, friendUsername: username }),
+        body: JSON.stringify({ senderID: senderID, friendUsername: username }),
       });
   
       if (response.ok) {

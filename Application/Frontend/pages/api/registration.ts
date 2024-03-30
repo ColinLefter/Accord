@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         email: email,
         phone: phone,
         createdAt: createdAt,
-        friendsList: [] // Everyone starts with an empty friends list. They can add friends via the application shell.
+        friendList: [] // Everyone starts with an empty friends list. They can add friends via the application shell.
       });
 
       return res.status(200).json({ message: 'Registration successful' });
