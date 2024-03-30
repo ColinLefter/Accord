@@ -3,11 +3,13 @@ import { useUser } from '@clerk/nextjs';
 import { FetchStatusProps } from '@/accordTypes';
 
 export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps) {
+  // If we never update the IDs or usernames, we still get an array, just that it's empty, so no errors will be thrown.
   const [IDs, setIDs] = useState<string[]>([]);
   const [usernames, setusernames] = useState<string[]>([]);
   const { user } = useUser();
 
   const CACHE_DURATION = 60 * 1000; // Establishing a 1-minute cache duration
+
   useEffect(() => {
     if (user && (lastFetched === null || Date.now() - lastFetched >= CACHE_DURATION)) {
       const fetchData = async () => {
@@ -22,7 +24,7 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
 
           if (response.ok) {
             const data = await response.json();
-            setIDs(data.friendList);
+            setIDs(data.friendList || []); // Fallback to an empty array if data.friendList is undefined
             setLastFetched(Date.now()); // Updating the last fetched time
           } else {
             console.error('Failed to fetch friend list');
@@ -34,8 +36,8 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
 
       fetchData();
     }
-  }, [user, lastFetched]); // Now this effect depends on when  the data was last fetched as well
-
+  }, [user, lastFetched]); // Dependencies listed here are correct
+  
   useEffect(() => {
     if (IDs.length > 0) {
       const fetchData = async () => {
@@ -64,14 +66,11 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
     }
   }, [IDs]); // Removed lastFetched from dependency array to prevent re-fetching due to its update
 
-  // We need to return both the usernames and the IDs
-  // The usernames are required for display purposes such as in displaying the list of friends that user has
-  // However, the IDs need to be used to maintain text channels because if a user changes their username, all channels will be lost
-  // IDs are persistent across all changes and are guaranteed to be both unique and unchanged as they are assigned by our authentication provider
+  // Return both the usernames and the IDs
   const friends = {
     usernames: usernames,
     IDs: IDs,
-  }
+  };
 
   return friends;
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Avatar, Group, Text, TextInput, TextInputProps, ActionIcon, useMantineTheme, Stack, Paper  } from '@mantine/core';
+import { Avatar, Group, Text, TextInput, TextInputProps, ActionIcon, useMantineTheme, Stack, Paper, Center } from '@mantine/core';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
@@ -50,6 +50,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
        *
        * @param evt - The input change event
        */
+    
     const filteredfriendList = friends.usernames.filter((friendUsername: string) =>
       friendUsername.toLowerCase().includes(searchQuery.toLowerCase()) // This means that the search is case-insensitive
     );
@@ -99,15 +100,37 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
             >
                 All friends
             </Text>
-            {/** Users that are in the friendList*/}
-            {filteredfriendList.map((friendUsername: string, index: number) => (
-                <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friendUsername)}>
-                    <Group py="10">
-                        <Avatar alt={`Friend ${index + 1}`} radius="xl"/>
-                        <Text size="sm">{friendUsername}</Text>
-                    </Group>
-                </Paper>
-            ))}
+            {/** Users that are in the friendList*/
+                friends.usernames.length === 0 || friends.IDs.length === 0 ? (
+                    <Paper shadow="xs" p="xl">
+                        <Center style={{ height: '100%' }}> {/* Ensure the Center component takes up full height */}
+                            <Text fw={400} size="xl" component="span"> {/* Wrap Text in span for inline behavior */}
+                                Welcome to{' '}
+                                <Text
+                                    variant="gradient"
+                                    fw={800}
+                                    size="xl"
+                                    component="span" // Use span here too for inline display
+                                    gradient={{ from: "pink", to: "yellow" }}
+                                    style={{ display: 'inline' }} // Ensure this Text is also inline
+                                >
+                                    Accord!
+                                </Text>
+                                {' '}Add some friends to get started!
+                            </Text>
+                        </Center>
+                    </Paper>
+                ) : (
+                    filteredfriendList.map((friendUsername: string, index: number) => (
+                        <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friendUsername)}>
+                            <Group py="10">
+                                <Avatar alt={`Friend ${index + 1}`} radius="xl"/>
+                                <Text size="sm">{friendUsername}</Text>
+                            </Group>
+                        </Paper>
+                    ))
+                )
+            }
         </Stack>
     );
 }

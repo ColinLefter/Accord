@@ -64,7 +64,6 @@ export default function Accord() {
 
   const handleAddFriend = async (username: string) => {
     console.log(`Adding friend: ${username}`);
-    // Assuming the logged-in user's ID is available as senderID
     try {
       const response = await fetch('/api/add-friend', {
         method: 'POST',
@@ -84,9 +83,7 @@ export default function Accord() {
     } catch (error) {
       console.error('Error adding friend:', error);
     }
-  };
-  
-  
+  };  
   
   useEffect(() => {
     if (user && user.username && user.id) {

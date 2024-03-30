@@ -51,7 +51,7 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
           maxValues={9} // Anything more than that and it's a server
           label="Search your friends by username"
           placeholder="Choose up to 9 friends to chat with"
-          data={friends.usernames}
+          data={friends?.usernames}
         />
         <Button
           fullWidth
