@@ -24,7 +24,7 @@ import { ChatProvider } from "@/contexts/chatContext";
 import { NewChatModal } from '@/components/Messaging/NewChatModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
-
+import { useCache } from '@/contexts/queryCacheContext';
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -42,6 +42,7 @@ export default function Accord() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
+  const { lastFetched, setLastFetched } = useCache();
   // Default is to just display no username. This will never be the case as you can't be here without an account.
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
@@ -94,6 +95,7 @@ export default function Accord() {
               <Group>
                 <Switch
                   defaultChecked
+                  color="black"
                   label="Private mode"
                   onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
                   disabled={chatStarted}  // Disable the switch if the chat has started
@@ -136,21 +138,31 @@ export default function Accord() {
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-            {activeView === 'friends' && <FriendsTab sender={sender} senderID={senderID}  privateChat={privateMode} onMessageExchange={onMessageExchange} />}
-            {activeView === 'profile' &&
+          {activeView === 'friends' && 
+            <FriendsTab
+              sender={sender}
+              senderID={senderID}
+              privateChat={privateMode}
+              onMessageExchange={onMessageExchange}
+              lastFetched={lastFetched}
+              setLastFetched={setLastFetched}
+            />
+          }
+          {activeView === 'profile' &&
             <Tabs.Panel value="profile">
-            <div className="general-container">
-              <UserProfile />
-            </div>
-            </Tabs.Panel>}
-            {/* {activeView === 'message' && (
-              <Chat
-                senderUsername={sender}
-                receiverUsername={'receiver'}
-                privateChat={privateMode}
-                onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
-              />
-          )} */}
+              <div className="general-container">
+                <UserProfile />
+              </div>
+            </Tabs.Panel>
+          }
+          {/* {activeView === 'message' && (
+            <Chat
+              senderUsername={sender}
+              receiverUsername={'receiver'}
+              privateChat={privateMode}
+              onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+            />
+        )} */}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>

@@ -1,11 +1,10 @@
-// hooks/usefriendIDList.js
 import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { FetchStatusProps } from '@/types/accordTypes';
 
-export function useFriendList() {
+export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps) {
   const [friendIDList, setfriendIDList] = useState<string[]>([]);
   const [friendUsernames, setFriendUsernames] = useState<string[]>([]);
-  const [lastFetched, setLastFetched] = useState<number | null>(null);
   const { user } = useUser();
 
   const CACHE_DURATION = 60 * 1000; // Establishing a 1-minute cache duration

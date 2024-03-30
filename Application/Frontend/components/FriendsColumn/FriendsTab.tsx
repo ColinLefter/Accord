@@ -7,7 +7,7 @@ import { useRouter } from 'next/router';
 import { useUser } from '@clerk/nextjs';
 import { Chat } from '@/components/Messaging/Chat';
 import { useFriendList } from '@/hooks/useFriendList';
-
+import { FriendsTabProps } from '@/types/accordTypes';
 /**
  * FriendsTab provides a dedicated section within the application for displaying and interacting with
  * the user's friends list. It features a search bar allowing users to filter or search through their
@@ -24,22 +24,16 @@ import { useFriendList } from '@/hooks/useFriendList';
  * @returns The JSX element representing the friends tab section, including a search bar and a list of friends.
  */
 
-  // Function to call to go back to the last previous URL
-  function goBack() {
-    window.history.back();
-  }
-
-interface FriendsTabProps {
-  sender: string;
-  senderID: string;
-  privateChat: boolean;
-  onMessageExchange: () => void; // Function type that doesn't take arguments and returns void
+// Function to call to go back to the last previous URL
+function goBack() {
+window.history.back();
 }
 
 export function FriendsTab({sender, senderID, privateChat, onMessageExchange}: FriendsTabProps) {
     const { user } = useUser();
     const router = useRouter();
-    const friendUsernames = useFriendList();
+    const [lastFetched, setLastFetched] = useState<number | null>(null);
+    const friendUsernames = useFriendList({lastFetched, setLastFetched});
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [receiverUsername, setreceiverUsername] = useState<string>('');
     const [receiverID, setreceiverID] = useState<string>('');
