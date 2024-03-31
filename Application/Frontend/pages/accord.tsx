@@ -129,7 +129,7 @@ export default function Accord() {
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
                 <Text py="md">Direct Messages</Text>
-                <NewChatModal onCreateChat={handleCreateChat} />
+                <NewChatModal senderID={senderID} onCreateChat={handleCreateChat} />
               </Group>
               {Array(60)
                 .fill(0)

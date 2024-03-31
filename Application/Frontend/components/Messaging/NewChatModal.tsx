@@ -7,7 +7,7 @@ import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
 import { NewChatModalProps } from '@/accordTypes';
 
-export function NewChatModal({ onCreateChat }: NewChatModalProps) {
+export function NewChatModal({ senderID, onCreateChat }: NewChatModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const { lastFetched, setLastFetched } = useCache();
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
@@ -19,7 +19,8 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   }));
 
   const handleCreateChatClick = () => {
-    onCreateChat(selectedFriends);
+    const chatParticipants = [senderID, ...selectedFriends.filter(friendID => friendID !== senderID)]; // Just in case, although this should never happen
+    onCreateChat(chatParticipants);
     close(); // Close the modal
   };
 

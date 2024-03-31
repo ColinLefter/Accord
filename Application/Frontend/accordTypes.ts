@@ -35,6 +35,6 @@ export interface IconProps {
   color: string;
 }
 
-export interface NewChatModalProps {
+export interface NewChatModalProps extends NewFriendModalProps {
   onCreateChat: (recipients: string[]) => void;
 }
