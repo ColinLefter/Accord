@@ -13,14 +13,16 @@ export function NewChatModal({ senderID, onCreateChat }: NewChatModalProps) {
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const friends = useFriendList({lastFetched, setLastFetched});
 
+  console.log("Selected friends on component mount: ", selectedFriends);
+
   const friendOptions = friends.list.map(friend => ({
-    value: friend.id, // or friend.username, depending on what you want to use as the value
+    value: friend.id,
     label: friend.username,
   }));
 
   const handleCreateChatClick = () => {
-    const chatParticipants = [senderID, ...selectedFriends.filter(friendID => friendID !== senderID)]; // Just in case, although this should never happen
-    onCreateChat(chatParticipants);
+    console.log(selectedFriends);
+    onCreateChat(selectedFriends);
     close(); // Close the modal
   };
 
@@ -57,7 +59,9 @@ export function NewChatModal({ senderID, onCreateChat }: NewChatModalProps) {
           maxValues={9} // Anything more than that and it's a server
           label="Search your friends by username"
           placeholder="Choose up to 9 friends to chat with"
+          value={selectedFriends}
           data={friendOptions}
+          onChange={setSelectedFriends}
         />
         <Button
           fullWidth
