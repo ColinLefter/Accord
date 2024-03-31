@@ -29,27 +29,13 @@ function goBack() {
     window.history.back();
 }
 
-export function FriendsTab({senderUsername, senderID, privateChat, onMessageExchange}: FriendsTabProps) {
+export function FriendsTab({senderUsername, senderID, privateChat, onMessageExchange, lastFetched, setLastFetched }: FriendsTabProps) {
     const { user } = useUser();
     const router = useRouter();
-    const [lastFetched, setLastFetched] = useState<number | null>(null);
     const friends = useFriendList({lastFetched, setLastFetched});
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [receiverUsername, setreceiverUsername] = useState<string>('');
     const [receiverID, setReceiverID] = useState<string>('');
-    
-      /**
-       * Handles form submission, sending the login request to the server and processing
-       * the response to either proceed to the application or show error messages.
-       *
-       * @param event - The form submission event
-       */
-  
-      /**
-       * Updates form data state on user input.
-       *
-       * @param evt - The input change event
-       */
     
     const filteredFriendList = friends.list.filter((friend) =>
       friend.username.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by username
@@ -84,7 +70,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
                 placeholder="Search..."
                 leftSection={<IconSearch color="orange" stroke={1.5} />}
                 rightSection={
-                    <ActionIcon radius="xl" variant="filled">
+                    <ActionIcon color="black" radius="xl">
                         <IconArrowRight stroke={1.5} />
                     </ActionIcon>
                 }

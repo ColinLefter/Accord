@@ -12,7 +12,7 @@ export interface MessageProps {
   userProfileURL: string;
 }
 
-export interface NewFriendModalProps {
+export interface NewFriendModalProps extends FetchStatusProps {
   senderID: string;
 }
 

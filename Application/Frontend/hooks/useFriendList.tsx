@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 import { FetchStatusProps } from '@/accordTypes';
 
-export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps) {
+export function useFriendList({ lastFetched }: FetchStatusProps) {
   // If we never update the IDs or usernames, we still get an array, just that it's empty, so no errors will be thrown.
+  // CRITICAL: Notice how we are not including setLastFetched as part of the props here. If you use it here, you get an INFINITE LOOP. BE WARNED.
   const [friends, setFriends] = useState<{ username: string; id: string; }[]>([]);
   const [IDs, setIDs] = useState<string[]>([]);
   const { user } = useUser();
@@ -12,7 +13,8 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
 
   // Fetch IDs of friends
   useEffect(() => {
-    if (user && (lastFetched === null || Date.now() - lastFetched >= CACHE_DURATION)) {
+    // Cachine is temporarily disabled
+    if (user) { // && (lastFetched === null || Date.now() - lastFetched >= CACHE_DURATION)
       const fetchData = async () => {
         try {
           const response = await fetch('/api/get-ids-of-friends', {
@@ -26,7 +28,6 @@ export function useFriendList({ lastFetched, setLastFetched }: FetchStatusProps)
           if (response.ok) {
             const data = await response.json();
             setIDs(data.friendList); // friendList is now an array if user IDs
-            setLastFetched(Date.now()); // Updating the last fetched time
           } else {
             console.error('Failed to fetch friend list');
           }

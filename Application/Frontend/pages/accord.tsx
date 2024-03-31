@@ -123,13 +123,13 @@ export default function Accord() {
                     Friends
                   </Tabs.Tab>
                 </Tabs.List>
-                <AddFriendModal senderID={senderID} />
+                <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
               </Stack>
             </AppShell.Section>
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
                 <Text py="md">Direct Messages</Text>
-                <NewChatModal senderID={senderID} onCreateChat={handleCreateChat} />
+                <NewChatModal senderID={senderID} onCreateChat={handleCreateChat} lastFetched={lastFetched} setLastFetched={setLastFetched} />
               </Group>
               {Array(60)
                 .fill(0)

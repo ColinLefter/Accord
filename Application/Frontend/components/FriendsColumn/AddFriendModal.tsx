@@ -3,13 +3,15 @@ import { Modal, Tooltip, ActionIcon, Text, Stack, Button, TextInput } from '@man
 import { IconPlus } from '@tabler/icons-react';
 import { useState } from 'react';
 import { NewFriendModalProps } from '@/accordTypes';
+import { useEffect } from 'react';
 
-export function AddFriendModal({ senderID }: NewFriendModalProps) {
+export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const [friendUsername, setFriendUsername] = useState(''); // Track the username input for adding a friend
+  const [searchResult, setSearchResult] = useState<number>();
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
   const handleAddFriendClick = async () => {
-    close(); // Close the modal. Done here so that it is instant.
     if (friendUsername) {
       console.log(`Adding friend: ${friendUsername}`);
       try {
@@ -20,12 +22,11 @@ export function AddFriendModal({ senderID }: NewFriendModalProps) {
           },
           body: JSON.stringify({ senderID: senderID, friendUsername: friendUsername }),
         });
+
+        setSearchResult(response.status);
     
         if (response.ok) {
-          console.log(senderID);
-          console.log(friendUsername);
           const data = await response.json();
-          console.log(data.message); // Log the success message
           setFriendUsername(''); // Clear the input field to allow for further friend requests
         } else {
           console.error('Failed to add friend');
@@ -33,8 +34,25 @@ export function AddFriendModal({ senderID }: NewFriendModalProps) {
       } catch (error) {
         console.error('Error adding friend:', error);
       }
+    } else {
+      setErrorMessage('Please enter a username to add a friend.');
     }
   };
+
+  useEffect(() => {
+    // This useEffect will only run when searchResult changes
+    switch(searchResult) {
+      case 404:
+        setErrorMessage('This username does not exist.');
+        break;
+      default:
+        console.log("here");
+        setErrorMessage('');
+        setLastFetched(Date.now()); // Update the lastFetched timestamp to trigger a refetch of the friend list
+        close();
+        break;
+    }
+  }, [searchResult]); // Dependency array includes searchResult, so the effect runs when searchResult changes
 
   return (
     <>
@@ -74,6 +92,7 @@ export function AddFriendModal({ senderID }: NewFriendModalProps) {
       >
         <Stack>
           <TextInput
+            error={errorMessage}
             label="Search your friend by username"
             placeholder="accordUser1"
             value={friendUsername}

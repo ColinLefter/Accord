@@ -13,8 +13,6 @@ export function NewChatModal({ senderID, onCreateChat }: NewChatModalProps) {
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const friends = useFriendList({lastFetched, setLastFetched});
 
-  console.log("Selected friends on component mount: ", selectedFriends);
-
   const friendOptions = friends.list.map(friend => ({
     value: friend.id,
     label: friend.username,
