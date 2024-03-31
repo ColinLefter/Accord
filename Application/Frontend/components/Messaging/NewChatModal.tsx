@@ -13,6 +13,11 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
   const friends = useFriendList({lastFetched, setLastFetched});
 
+  const friendOptions = friends.list.map(friend => ({
+    value: friend.id, // or friend.username, depending on what you want to use as the value
+    label: friend.username,
+  }));
+
   const handleCreateChatClick = () => {
     onCreateChat(selectedFriends);
     close(); // Close the modal
@@ -51,7 +56,7 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
           maxValues={9} // Anything more than that and it's a server
           label="Search your friends by username"
           placeholder="Choose up to 9 friends to chat with"
-          data={friends?.usernames}
+          data={friendOptions}
         />
         <Button
           fullWidth
