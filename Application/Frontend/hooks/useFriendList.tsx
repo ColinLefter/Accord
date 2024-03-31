@@ -33,6 +33,7 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
   // CRITICAL: Notice how we are not including setLastFetched as part of the props here. If you use it here, you get an INFINITE LOOP. BE WARNED.
   const [friends, setFriends] = useState<{ username: string; id: string; }[]>([]);
   const [IDs, setIDs] = useState<string[]>([]);
+  const [usernames, setUsernames] = useState<string[]>([]);
   const { user } = useUser();
 
   const CACHE_DURATION = 5 * 1000; // Establishing a 5-second cache duration
@@ -65,28 +66,22 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
       fetchData();
     }
   }, [user, lastFetched]); // Dependencies listed here are correct
-  
-  // Fetch usernames using IDs
+
   useEffect(() => {
-    if (IDs.length > 0) {
+    if (user && IDs.length > 0) {
       const fetchData = async () => {
         try {
-          const response = await fetch('/api/get-usernames-of-friends', {
+          const response = await fetch('/api/get-id-username-pairs', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ IDs }),
+            body: JSON.stringify({ friendList: IDs }),
           });
-
+  
           if (response.ok) {
-            const usernames = await response.json();
-            // Map IDs to usernames to form the friends array
-            const updatedFriends = IDs.map((id, index) => ({
-              id,
-              username: usernames[index], // Assuming the order of usernames matches the order of IDs
-            }));
-            setFriends(updatedFriends);
+            const data = await response.json(); // Data is now called idUserNamePairs and is an array of id:username pairs
+            setFriends(data); // No need to map IDs to usernames since the backend does it
           } else {
             console.error('Failed to fetch friend usernames');
           }
@@ -94,10 +89,10 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
           console.error('Error fetching friend usernames:', error);
         }
       };
-
+  
       fetchData();
     }
-  }, [IDs]); // Removed lastFetched from dependency array to prevent re-fetching due to its update
+  }, [user, IDs]); // Adding 'IDs' as a dependency ensures this runs when IDs are fetched/updated
 
   // Return both the usernames and the IDs
   return { list: friends };

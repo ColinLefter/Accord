@@ -39,7 +39,11 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     
     const filteredFriendList = friends.list.filter((friend) =>
       friend.username.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by username
-    );    
+    );
+
+    filteredFriendList.map((friend, index) => (
+        console.log(index, ":", friend.username, friend.id)
+        ));
 
     const handleFriendClick = (friendUsername: string, friendID: string) => {
       setreceiverUsername(friendUsername);
