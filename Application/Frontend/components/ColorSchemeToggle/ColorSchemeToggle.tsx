@@ -1,8 +1,5 @@
 import { ActionIcon, useMantineColorScheme } from "@mantine/core";
-
-interface IconProps {
-  color: string;
-}
+import { IconProps } from "@/accordTypes";
 
 /**
  * SunIcon represents a sun-shaped icon, typically used to indicate a light mode theme in the UI.

@@ -28,7 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const user = await accountsCollection.findOne({ id: id }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
       // now user variable contains these data from the table
       if (user) { // Check if the user existed 
-        return res.status(200).json({ friendsList: user.friendsList}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
+        return res.status(200).json({ friendList: user.friendList}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {
         return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
       }

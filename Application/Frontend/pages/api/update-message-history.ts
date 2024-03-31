@@ -12,7 +12,7 @@ import { getMongoDbUri } from '@/lib/dbConfig';
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { channelKey, messageHistory, owner, members } = req.body; // Include owner and members in the request body
+    const { channelKey, messageHistory, owner, memberIDs } = req.body; // Include owner and members in the request body
     let client: MongoClient | null = null;
 
     try {
@@ -36,7 +36,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await chatsCollection.updateOne(
         { channelKey: channelKey },
         {
-          $setOnInsert: { owner: owner, memberList: members }, // IMPORTANT: This field is only set upon creation of a new document
+          $setOnInsert: { owner: owner, memberIDs: memberIDs }, // IMPORTANT: This field is only set upon creation of a new document
           $set: { messageHistory: messageHistory } // IMPORTANT: This field is updated or created in the document whether it is new or existing
         },
         { upsert: true }  // IMPORTANT: This option creates a new document if no document matches the query. New chats between users would cause this to trigger

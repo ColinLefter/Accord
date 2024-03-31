@@ -1,11 +1,18 @@
 import React from 'react';
-import { Avatar, Group, Text, TextInput, TextInputProps, ActionIcon, useMantineTheme, Stack, Paper  } from '@mantine/core';
+import { Avatar, Group, Text, TextInput, TextInputProps, ActionIcon, useMantineTheme, Stack, Paper, Center } from '@mantine/core';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from 'next/router';
 import { useUser } from '@clerk/nextjs';
 import { Chat } from '@/components/Messaging/Chat';
+import { useFriendList } from '@/hooks/useFriendList';
+import { FriendsTabProps } from '@/accordTypes';
+
+// Function to call to go back to the last previous URL
+function goBack() {
+    window.history.back();
+}
 
 /**
  * FriendsTab provides a dedicated section within the application for displaying and interacting with
@@ -22,83 +29,38 @@ import { Chat } from '@/components/Messaging/Chat';
  * 
  * @returns The JSX element representing the friends tab section, including a search bar and a list of friends.
  */
-
-  // Function to call to go back to the last previous URL
-  function goBack() {
-    window.history.back();
-  }
-
-interface FriendsTabProps {
-  sender: string;
-  privateChat: boolean;
-  onMessageExchange: () => void; // Function type that doesn't take arguments and returns void
-}
-
-export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabProps) {
-    const router = useRouter();
-    const [friendsList, setFriendsList] = useState<string[]>([]);
-    const [searchQuery, setSearchQuery] = useState<string>('');
-    const [activeChat, setActiveChat] = useState<string>(''); // State to manage active chat
+export function FriendsTab({senderUsername, senderID, privateChat, onMessageExchange, lastFetched, setLastFetched }: FriendsTabProps) {
     const { user } = useUser();
+    const router = useRouter();
+    const friends = useFriendList({lastFetched, setLastFetched});
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [receiverUsername, setreceiverUsername] = useState<string>('');
+    const [receiverID, setReceiverID] = useState<string>('');
     
-      /**
-       * Handles form submission, sending the login request to the server and processing
-       * the response to either proceed to the application or show error messages.
-       *
-       * @param event - The form submission event
-       */
-  
-      /**
-       * Updates form data state on user input.
-       *
-       * @param evt - The input change event
-       */
-      useEffect(() => {
-        if (user) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
-          const fetchData = async () => {
-            try {
-              const response = await fetch('/api/FriendsTab', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ id: user.id })
-              });
-    
-              if (response.ok) {
-                const data = await response.json();
-                setFriendsList(data.friendsList);
-              } else {
-                console.error('Failed to fetch friend list');
-              }
-            } catch (error) {
-              console.error('Error fetching friend list:', error);
-            }
-          };
-    
-          fetchData();
-        }
-      }, [user]); // Dependency array includes user, so effect runs when user changes
+    const filteredFriendList = friends.list.filter((friend) =>
+      friend.username.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by username
+    );    
 
-          // Filter friendsList based on search query
-    const filteredFriendsList = friendsList.filter((friendUsername) =>
-      friendUsername.toLowerCase().includes(searchQuery.toLowerCase()) // This means that the search is case-insensitive
-    );
-
-    const handleFriendClick = (friendUsername: string) => {
-      setActiveChat(friendUsername);
+    const handleFriendClick = (friendUsername: string, friendID: string) => {
+      setreceiverUsername(friendUsername);
+      setReceiverID(friendID);
     };
 
-    if (activeChat && user?.id) { // Ensure both activeChat and user.id are defined
-      return <Chat 
-          sender={sender}
-          receiver={activeChat} // The receiver is now the friend we clicked on.
-          privateChat={privateChat}
-          onMessageExchange={onMessageExchange}
-      />;
-  }
-    
+    if (receiverUsername && user?.id) { // Ensure both receiverUsername and user.id are defined
       return (
+        <Chat // Since this is the FriendsTab component, we will only every have one friend ID in receiverIDs as clicking on a friend starts a DM with just that friend.
+          senderID={senderID}
+          senderUsername={senderUsername}
+          receiverIDs={[receiverID]} // The Chat component will always expect an array of IDs, even if it's just one. This is to allow for group chats.
+          privateChat={privateChat}
+          lastFetched={lastFetched}
+          setLastFetched={setLastFetched}
+          onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+        />
+      );
+    }
+    
+    return (
         <Stack>
             {/** Search Box*/}
             <TextInput
@@ -108,7 +70,7 @@ export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabP
                 placeholder="Search..."
                 leftSection={<IconSearch color="orange" stroke={1.5} />}
                 rightSection={
-                    <ActionIcon radius="xl" variant="filled">
+                    <ActionIcon color="black" radius="xl">
                         <IconArrowRight stroke={1.5} />
                     </ActionIcon>
                 }
@@ -125,15 +87,37 @@ export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabP
             >
                 All friends
             </Text>
-            {/** Users that are in the friendsList*/}
-            {filteredFriendsList.map((friendUsername, index) => (
-                <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friendUsername)}>
-                    <Group py="10">
-                        <Avatar alt={`Friend ${index + 1}`} radius="xl"/>
-                        <Text size="sm">{friendUsername}</Text>
-                    </Group>
-                </Paper>
-            ))}
+            {/** Users that are in the friendList*/
+                filteredFriendList.length === 0 ? (
+                    <Paper shadow="xs" p="xl">
+                        <Center style={{ height: '100%' }}> {/* Ensure the Center component takes up full height */}
+                            <Text fw={400} size="xl" component="span"> {/* Wrap Text in span for inline behavior */}
+                                Welcome to{' '}
+                                <Text
+                                    variant="gradient"
+                                    fw={800}
+                                    size="xl"
+                                    component="span" // Use span here too for inline display
+                                    gradient={{ from: "pink", to: "yellow" }}
+                                    style={{ display: 'inline' }} // Ensure this Text is also inline
+                                >
+                                    Accord!
+                                </Text>
+                                {' '}Add some friends to get started!
+                            </Text>
+                        </Center>
+                    </Paper>
+                ) : (
+                    filteredFriendList.map((friend, index) => (
+                        <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friend.username, friend.id)}>
+                          <Group py="10">
+                            <Avatar alt={`Friend ${friend.username}`} radius="xl"/>
+                            <Text size="sm">{friend.username}</Text>
+                          </Group>
+                        </Paper>
+                      ))
+                )
+            }
         </Stack>
     );
 }
