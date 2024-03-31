@@ -34,7 +34,7 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   }));
 
   const handleCreateChatClick = () => {
-    console.log(selectedFriends);
+    console.log(" FriendList"+" "+ selectedFriends);
     onCreateChat(selectedFriends);
     close(); // Close the modal
   };
