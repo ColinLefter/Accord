@@ -24,18 +24,7 @@ import { MessageProps } from "@/accordTypes";
  * @param {MessageProps} props The properties passed to the Message component.
  * @returns {JSX.Element} The rendered Message component.
  */
-export function Message({ username, message, firstMessage, date }: MessageProps) {
-  const { user } = useUser();
-
-  const [userProfileURL, setUserProfileURL] = useState<string>(''); 
-
-  useEffect(() => {
-    if (user && user.imageUrl) {
-      // Set sender to user's username if user exists and username is not null/undefined
-      setUserProfileURL(user.imageUrl);
-    }
-  }, [user]); // Dependency array ensures this runs whenever `user` changes
-
+export function Message({ username, message, firstMessage, date, userProfileURL }: MessageProps) {
   return (
     <Group gap="xs">
       {/* Render the Avatar only if firstMessage is present; otherwise, render an empty space */}

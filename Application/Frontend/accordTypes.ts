@@ -7,9 +7,9 @@ export interface MessageProps {
   username: string;
   message: string;
   firstMessage?: boolean;
-  date?: string;
-  connectionId?: string;
-  data?: string;
+  date: string;
+  connectionId?: string; // This only exists when we receive a message, not when we send one, hence it is optional
+  userProfileURL: string;
 }
 
 export interface NewFriendModalProps {

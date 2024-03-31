@@ -7,6 +7,7 @@ import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
 import { ChatProps, MessageProps } from "@/accordTypes";
 import { createHash } from 'crypto';
+import { useUser } from '@clerk/nextjs';
 
 const generateHash = (input: string) => {
   return createHash('sha256').update(input).digest('hex');
@@ -26,6 +27,16 @@ const generateHash = (input: string) => {
  * It also interacts with backend APIs to fetch and update message history in MongoDB based on the chat's privacy settings.
  */
 export function MessagingInterface({ senderUsername, senderID, receiverIDs, privateChat, onMessageExchange }: ChatProps) {
+  const { user } = useUser();
+  const [userProfileURL, setUserProfileURL] = useState<string>(''); 
+
+  useEffect(() => {
+    if (user && user.imageUrl) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setUserProfileURL(user.imageUrl);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
+
   let messageEnd: HTMLDivElement | null = null;
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
@@ -60,7 +71,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
       message: text,
       date: date,
       connectionId: messageData.clientId,
-      data: text,
+      userProfileURL: messageData.data.userProfileURL
     };
   
     setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
@@ -127,7 +138,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
       username: senderUsername,
       message: messageText,
       date: dateStr,
-      data: messageText,
+      userProfileURL: userProfileURL
     };
   
     // Publish the message to the Ably channel. This is how we send messages to other users.
@@ -135,7 +146,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
     await channel.publish({
       name: senderUsername,
-      data: { text: messageText, date: dateStr }
+      data: { text: messageText, date: dateStr, userProfileURL: userProfileURL }
     });
   
     // Update the local state for the sender's UI. The message for the receiver
@@ -215,7 +226,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
       lastUsername = message.username;
       acc.push(
         <Stack key={index} gap="0" justify="flex-start">
-          <Message username={message.username} message={message.message} firstMessage={true} date={message.date} />
+          <Message username={message.username} message={message.message} firstMessage={true} date={message.date} userProfileURL={message.userProfileURL} />
         </Stack>
       );
     } else {
@@ -224,7 +235,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         acc[acc.length - 1],
         {},
         React.Children.toArray(acc[acc.length - 1].props.children).concat(
-          <Message key={index} username={message.username} message={message.message} date={message.date} />
+          <Message key={index} username={message.username} message={message.message} date={message.date} userProfileURL={message.userProfileURL} />
         )
       );
   
