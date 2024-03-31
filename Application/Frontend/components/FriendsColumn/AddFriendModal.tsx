@@ -85,7 +85,7 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
         color="black"
         onClick={open}
       >
-        Add Friend
+        Add friend
       </Button>
 
       <Modal
