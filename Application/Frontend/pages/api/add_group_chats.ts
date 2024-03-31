@@ -12,7 +12,17 @@ export default async function handler(req : NextApiRequest, res:NextApiResponse)
     if (!user){
         return res.status(401).json({error: "Authentication required"})
     }
-    if (req.method=="POST")
+    if (req.method=="POST"){
+        return res.status(405).end('Method ${req.method} Not Allowed');
+    }
+    const { senderID, friendUsername } = req.body;
+    const client = new MongoClient(getMongoDbUri());
+
+    try{
+        await client.connect();
+        const db = client.db('Accord');
+        const accountsCollection = db.collection('');
+    }
 
 }
 
