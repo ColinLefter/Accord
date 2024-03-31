@@ -28,11 +28,17 @@ import { Chat } from '@/components/Messaging/Chat';
     window.history.back();
   }
 
-export function FriendsTab(props: TextInputProps) {
+interface FriendsTabProps {
+  sender: string;
+  privateChat: boolean;
+  onMessageExchange: () => void; // Function type that doesn't take arguments and returns void
+}
+
+export function FriendsTab({sender, privateChat, onMessageExchange}: FriendsTabProps) {
     const router = useRouter();
     const [friendsList, setFriendsList] = useState<string[]>([]);
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [activeChat, setActiveChat] = useState(null); // State to manage active chat
+    const [activeChat, setActiveChat] = useState<string>(''); // State to manage active chat
     const { user } = useUser();
     
       /**
@@ -49,7 +55,6 @@ export function FriendsTab(props: TextInputProps) {
        */
       useEffect(() => {
         if (user) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
-          console.log(user.id);
           const fetchData = async () => {
             try {
               const response = await fetch('/api/FriendsTab', {
@@ -57,12 +62,11 @@ export function FriendsTab(props: TextInputProps) {
                 headers: {
                   'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id: user.id }), // Directly use user.username
+                body: JSON.stringify({ id: user.id })
               });
     
               if (response.ok) {
                 const data = await response.json();
-                console.log("My friends" + data.firstName);
                 setFriendsList(data.friendsList);
               } else {
                 console.error('Failed to fetch friend list');
@@ -77,21 +81,20 @@ export function FriendsTab(props: TextInputProps) {
       }, [user]); // Dependency array includes user, so effect runs when user changes
 
           // Filter friendsList based on search query
-    const filteredFriendsList = friendsList.filter((friend) =>
-      friend.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredFriendsList = friendsList.filter((friendUsername) =>
+      friendUsername.toLowerCase().includes(searchQuery.toLowerCase()) // This means that the search is case-insensitive
     );
 
-    const handleFriendClick = (friend: any) => {
-      // Assuming 'friend' can be used as 'receiver' in Chat
-      setActiveChat(friend);
+    const handleFriendClick = (friendUsername: string) => {
+      setActiveChat(friendUsername);
     };
 
     if (activeChat && user?.id) { // Ensure both activeChat and user.id are defined
       return <Chat 
-          sender={user.username as any}
-          receiver={activeChat} // The receiver is now the friend we clicked on
-          privateChat={true}
-          onMessageExchange={() => {}}
+          sender={sender}
+          receiver={activeChat} // The receiver is now the friend we clicked on.
+          privateChat={privateChat}
+          onMessageExchange={onMessageExchange}
       />;
   }
     
@@ -123,11 +126,11 @@ export function FriendsTab(props: TextInputProps) {
                 All friends
             </Text>
             {/** Users that are in the friendsList*/}
-            {filteredFriendsList.map((friend, index) => (
-                <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friend)}>
+            {filteredFriendsList.map((friendUsername, index) => (
+                <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friendUsername)}>
                     <Group py="10">
                         <Avatar alt={`Friend ${index + 1}`} radius="xl"/>
-                        <Text size="sm">{friend}</Text>
+                        <Text size="sm">{friendUsername}</Text>
                     </Group>
                 </Paper>
             ))}

@@ -1,6 +1,8 @@
 "use client";
 
 import { Group, Stack, Avatar, Text } from '@mantine/core';
+import { useUser } from '@clerk/nextjs';
+import { useState, useEffect } from 'react';
 
 interface MessageProps {
   username: string,
@@ -29,11 +31,22 @@ interface MessageProps {
  * @returns {JSX.Element} The rendered Message component.
  */
 export function Message({ username, message, firstMessage, date }: MessageProps) {
+  const { user } = useUser();
+
+  const [userProfileURL, setUserProfileURL] = useState<string>(''); 
+
+  useEffect(() => {
+    if (user && user.imageUrl) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setUserProfileURL(user.imageUrl);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
+
   return (
     <Group gap="xs">
       {/* Render the Avatar only if firstMessage is present; otherwise, render an empty space */}
       {firstMessage ? (
-        <Avatar radius="xl" />
+        <Avatar radius="xl" src={userProfileURL} />
       ) : (
         <div style={{ width: 38 }} /> // Adjusted width to match the Avatar size
       )}

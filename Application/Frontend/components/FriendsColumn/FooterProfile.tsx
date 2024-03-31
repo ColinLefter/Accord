@@ -2,7 +2,7 @@ import { Avatar, Group, Card, Tooltip, Text, Stack, ActionIcon } from '@mantine/
 import { IconSettings } from '@tabler/icons-react';
 import { AppLink } from  "@/components/AppLink";
 import { useRouter } from 'next/router';
-import { useUser, UserProfile } from '@clerk/nextjs';
+import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 /**
  * FooterProfile renders a user profile component typically used in the footer area of the application.
  * It displays an avatar that links to the user's profile and provides a quick navigation option to view
@@ -29,11 +29,7 @@ export function FooterProfile() {
     <Card>
       <Group justify="space-between">
         <Group>
-          <AppLink href="/">
-            <Tooltip label="Profile">
-              <Avatar radius="xl"/>
-            </Tooltip>
-          </AppLink>
+          <UserButton/>
           <Text>{user?.username}</Text>
         </Group>
         <Tooltip label="User Settings">

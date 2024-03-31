@@ -5,7 +5,6 @@ import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@ma
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
-import * as Ably from 'ably';
 
 export interface Message {
   username: string,
@@ -98,8 +97,10 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
         if (data.messageHistory && data.messageHistory.length > 0) {
           setReceivedMessages(data.messageHistory);
         }
-      } else {
-        console.error('Failed to fetch message history from MongoDB.');
+      } else if (response.status === 404) {
+        console.error("Chat history not found");
+      } else if (response.status === 500) {
+        console.error("Error fetching message history");
       }
     } catch (error) {
       console.error('Error fetching message history from MongoDB:', error);
@@ -151,6 +152,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
   
       // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
       // We are doing this to ensure that the chat history is always up to date.
+      console.log("Is chat private?", privateChat);
       if (!privateChat) {
         try {
           fetch('/api/update-message-history', {
@@ -161,8 +163,8 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
             body: JSON.stringify({
               channelKey,
               messageHistory: updatedHistory,
-              owner: sender, // hard-coded until we implement site-wide user authentication
-              members: [sender, receiver] // hard-coded until we implement site-wide user authentication
+              owner: sender,
+              members: [sender, receiver]
             }),
           });
         } catch (error) {

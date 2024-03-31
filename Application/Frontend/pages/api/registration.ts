@@ -49,7 +49,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         email: email,
         phone: phone,
         createdAt: createdAt,
-        friendsList: ["user1", "user2"] // Example initial friends list
+        friendsList: ["user1", "user2", "user3"] // Example initial friends list
       });
 
       return res.status(200).json({ message: 'Registration successful' });
