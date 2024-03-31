@@ -36,7 +36,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     const friends = useFriendList({lastFetched, setLastFetched});
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [receiverUsername, setreceiverUsername] = useState<string>('');
-    const [receiverID, setreceiverID] = useState<string>('');
+    const [receiverID, setReceiverID] = useState<string>('');
     
       /**
        * Handles form submission, sending the login request to the server and processing
@@ -51,20 +51,21 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
        * @param evt - The input change event
        */
     
-    const filteredfriendList = friends.usernames.filter((friendUsername: string) =>
-      friendUsername.toLowerCase().includes(searchQuery.toLowerCase()) // This means that the search is case-insensitive
-    );
+    const filteredFriendList = friends.list.filter((friend) =>
+      friend.username.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by username
+    );    
 
-    const handleFriendClick = (friendUsername: string) => {
+    const handleFriendClick = (friendUsername: string, friendID: string) => {
       setreceiverUsername(friendUsername);
+      setReceiverID(friendID);
     };
 
     if (receiverUsername && user?.id) { // Ensure both receiverUsername and user.id are defined
       return (
-        <Chat
+        <Chat // Since this is the FriendsTab component, we will only every have one friend ID in receiverIDs as clicking on a friend starts a DM with just that friend.
           senderID={senderID}
           senderUsername={senderUsername}
-          receiverIDs={[receiverUsername]} // The Chat component will always expect an array of IDs, even if it's just one
+          receiverIDs={[receiverID]} // The Chat component will always expect an array of IDs, even if it's just one. This is to allow for group chats.
           privateChat={privateChat}
           lastFetched={lastFetched}
           setLastFetched={setLastFetched}
@@ -101,7 +102,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
                 All friends
             </Text>
             {/** Users that are in the friendList*/
-                friends.usernames.length === 0 || friends.IDs.length === 0 ? (
+                filteredFriendList.length === 0 ? (
                     <Paper shadow="xs" p="xl">
                         <Center style={{ height: '100%' }}> {/* Ensure the Center component takes up full height */}
                             <Text fw={400} size="xl" component="span"> {/* Wrap Text in span for inline behavior */}
@@ -121,14 +122,14 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
                         </Center>
                     </Paper>
                 ) : (
-                    filteredfriendList.map((friendUsername: string, index: number) => (
-                        <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friendUsername)}>
-                            <Group py="10">
-                                <Avatar alt={`Friend ${index + 1}`} radius="xl"/>
-                                <Text size="sm">{friendUsername}</Text>
-                            </Group>
+                    filteredFriendList.map((friend, index) => (
+                        <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friend.username, friend.id)}>
+                          <Group py="10">
+                            <Avatar alt={`Friend ${friend.username}`} radius="xl"/>
+                            <Text size="sm">{friend.username}</Text>
+                          </Group>
                         </Paper>
-                    ))
+                      ))
                 )
             }
         </Stack>

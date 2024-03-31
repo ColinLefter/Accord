@@ -30,8 +30,9 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
   const [receivedMessages, setReceivedMessages] = useState<MessageProps[]>([]); // receivedMessages stores the on-screen chat history.
-  const participantIDs = [senderID, ...receiverIDs].sort(); // To allow for group chats. We also need to sort the key to counteract the swapping mechanism where sender and receiver becomes flipped.
-
+  const memberIDs = [senderID, ...receiverIDs] // / To allow for group chats, we are creating an array that contains the sender and the receivers.
+  memberIDs.sort(); // CRITICAL: Sorts in-place. We need to sort the key to counteract the swapping mechanism where sender and receiver becomes flipped.
+  console.log(memberIDs);
   // Retrieving the chat history and update function from the context
   const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty.
@@ -42,7 +43,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
 
-  const rawChannelKey = `chat:${participantIDs.join(",")}`;
+  const rawChannelKey = `chat:${memberIDs.join(",")}`;
   const channelKey = generateHash(rawChannelKey); // Generating a SHA-256 hash of a channel to compress it and also enforce security, privacy and uniqueness :D
   const { channel, ably } = useChannel(channelKey, (messageData) => {
     // This callback gets executed for any message received on this channel.
@@ -153,10 +154,10 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              channelKey,
+              channelKey: channelKey,
               messageHistory: updatedHistory,
               owner: senderUsername,
-              memberIDs: receiverIDs
+              memberIDs: memberIDs
             }),
           });
         } catch (error) {
