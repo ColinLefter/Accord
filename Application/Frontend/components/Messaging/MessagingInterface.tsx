@@ -38,6 +38,8 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   let messageEnd: HTMLDivElement | null = null;
+  const inputBoxRef = useRef(null);
+  const messageEndRef = React.useRef<HTMLDivElement>(null);; // Updated to use useRef
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
   const [receivedMessages, setReceivedMessages] = useState<MessageProps[]>([]); // receivedMessages stores the on-screen chat history.
@@ -47,8 +49,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   // Retrieving the chat history and update function from the context
   const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty.
-
-  const inputBoxRef = useRef(null);
 
   // useChannel is a react-hook API for subscribing to messages from an Ably channel.
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
@@ -257,9 +257,14 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
 
   const messageLabel = receiverIDs.length > 1 ? `Message everyone in the group` : `Send a DM`;
 
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [receivedMessages]); // Scrolls when receivedMessages updates  
+
   return (
     <div className="messaging-container">
-
       <Stack justify="space-between" style={{ height: '100%' }}>
         {/* All the message components exist here */}
         <Flex component={ScrollArea}>{messages}</Flex>
@@ -267,7 +272,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
           Keeps the message box scrolled to the most recent message (the one on the bottom).
           This empty div is then scrolled into view whenever the component re-renders.
         */}
-        <div ref={(element) => { messageEnd = element; }}></div>
+        <div ref={messageEndRef}></div>
           <form onSubmit={handleFormSubmission}>
             <Stack>
               <Group grow>
@@ -281,7 +286,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
                     onKeyDown={handleKeyPress}
                     onChange={(e) => setMessageText(e.target.value)}
                   />
-                  <Button type="submit" disabled={messageTextIsEmpty}>Send</Button>
               </Group>
             </Stack>
           </form>
