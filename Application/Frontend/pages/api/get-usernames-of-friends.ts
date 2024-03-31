@@ -2,6 +2,21 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
 
+/**
+ * Fetches usernames for a given list of user IDs from the Accord database.
+ * This endpoint accepts a POST request containing an array of IDs and returns
+ * an array of corresponding usernames. It queries the MongoDB 'Accounts' collection
+ * to find the users by ID.
+
+ * Responses:
+ * - 405 if the request method is not POST.
+ * - 400 if the provided IDs are not in an array format or the array is empty.
+ * - 200 with an array of usernames matching the provided IDs.
+ * - 500 for internal server errors, such as issues with database connectivity.
+
+ * @param {NextApiRequest} req The request object, expecting an array of 'IDs' in the body.
+ * @param {NextApiResponse} res The response object used to send back the usernames or error messages.
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', ['POST']);

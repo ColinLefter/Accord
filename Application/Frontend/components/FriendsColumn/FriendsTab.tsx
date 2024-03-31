@@ -8,6 +8,12 @@ import { useUser } from '@clerk/nextjs';
 import { Chat } from '@/components/Messaging/Chat';
 import { useFriendList } from '@/hooks/useFriendList';
 import { FriendsTabProps } from '@/accordTypes';
+
+// Function to call to go back to the last previous URL
+function goBack() {
+    window.history.back();
+}
+
 /**
  * FriendsTab provides a dedicated section within the application for displaying and interacting with
  * the user's friends list. It features a search bar allowing users to filter or search through their
@@ -23,12 +29,6 @@ import { FriendsTabProps } from '@/accordTypes';
  * 
  * @returns The JSX element representing the friends tab section, including a search bar and a list of friends.
  */
-
-// Function to call to go back to the last previous URL
-function goBack() {
-    window.history.back();
-}
-
 export function FriendsTab({senderUsername, senderID, privateChat, onMessageExchange, lastFetched, setLastFetched }: FriendsTabProps) {
     const { user } = useUser();
     const router = useRouter();

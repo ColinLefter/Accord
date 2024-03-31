@@ -14,17 +14,25 @@ const generateHash = (input: string) => {
 };
 
 /**
- * The MessagingInterface component manages and displays the chat interface, allowing users to send and receive messages.
- * It utilizes Ably's real-time messaging service for communication and maintains the chat history both locally and in MongoDB.
+ * Provides a comprehensive chat interface for real-time messaging within the application. This component integrates with Ably's real-time messaging service to manage and display interactive chat functionalities, such as sending and receiving messages, maintaining chat history, and providing a user-friendly messaging UI. It supports both private and group chat modes, enabling dynamic conversation flows.
+ *
+ * Key Features:
+ * - Real-time messaging powered by Ably.
+ * - Local and MongoDB-backed chat history management.
+ * - Dynamic UI for message input and display, with auto-scrolling to the latest message.
+ * - End-to-end privacy features for secure communications.
  *
  * Props:
- * - sender: The username of the user who is sending the message.
- * - receiver: The username of the user who is receiving the message.
- * - privateChat: A boolean indicating whether the chat is private.
- * - onMessageExchange: A callback function that is invoked whenever a message is sent or received, supporting end-to-end privacy features.
+ * - senderUsername: Username of the message sender.
+ * - senderID: Unique identifier of the message sender.
+ * - receiverIDs: Array of identifiers for the message recipients, supporting group chat functionality.
+ * - privateChat: Boolean flag to indicate whether the chat is private, affecting chat history management.
+ * - onMessageExchange: Callback function triggered on message send or receive, facilitating additional privacy controls.
  *
- * The component listens for incoming messages via the Ably channel, maintains local message history state, and provides a UI for sending new messages.
- * It also interacts with backend APIs to fetch and update message history in MongoDB based on the chat's privacy settings.
+ * The component's design ensures a seamless chat experience, with features like message grouping by sender, automatic scrolling to the most recent message, and a privacy-first approach to message history. It leverages the useChannel hook from Ably for subscribing to and publishing messages on designated channels, hashed for security and uniqueness.
+ *
+ * @param {ChatProps} props - The properties defining the chat's configuration and behavior, including details about the participants, privacy settings, and messaging callbacks.
+ * @returns {JSX.Element} A fully interactive chat interface component, ready for integration into the application's messaging feature set.
  */
 export function MessagingInterface({ senderUsername, senderID, receiverIDs, privateChat, onMessageExchange }: ChatProps) {
   const { user } = useUser();
