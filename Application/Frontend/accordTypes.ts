@@ -10,6 +10,15 @@ export interface MessageProps {
   date: string;
   connectionId?: string; // This only exists when we receive a message, not when we send one, hence it is optional
   userProfileURL: string;
+  onDeleteMessage: (id: string) => void
+}
+
+export interface DisplayedMessageProps extends MessageProps {
+  id: string; // ABSOLUTELY CRITICAL: The reason this is an OPTIONAL paramter is because we only have the ID when we receive a message, not when we send one
+}
+
+export interface MessageDropdownProps {
+  onDelete: () => void;
 }
 
 export interface NewFriendModalProps extends FetchStatusProps {

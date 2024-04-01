@@ -4,7 +4,7 @@ import { Group, Stack, Avatar, Text, Box, useMantineTheme, useComputedColorSchem
 import { useHover } from '@mantine/hooks';
 import { useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
-import { MessageProps } from "@/accordTypes";
+import { DisplayedMessageProps } from "@/accordTypes";
 import { MessageDropdown } from "@/components/Messaging/MessageDropdown";
 
 /**
@@ -28,7 +28,7 @@ import { MessageDropdown } from "@/components/Messaging/MessageDropdown";
  * @returns {JSX.Element} A JSX element representing a single message in the chat interface, potentially
  * including an avatar, username, timestamp, and message content.
  */
-export function Message({ username, message, firstMessage, date, userProfileURL }: MessageProps) {
+export function Message({ id, username, message, firstMessage, date, userProfileURL, onDeleteMessage }: DisplayedMessageProps) {
   const [isHovered, setIsHovered] = useState(false);
   
   const theme = useComputedColorScheme();
@@ -74,7 +74,7 @@ export function Message({ username, message, firstMessage, date, userProfileURL 
         </Stack>
       </Group>
       <div style={{ visibility: isHovered ? 'visible' : 'hidden' }}>
-        <MessageDropdown />
+        <MessageDropdown onDelete={() => onDeleteMessage(id)} />
       </div>
     </Group>
   );

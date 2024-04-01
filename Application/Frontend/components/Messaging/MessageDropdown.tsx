@@ -4,8 +4,9 @@ import {
   IconDotsVertical,
   IconCursorText
 } from '@tabler/icons-react';
+import { MessageDropdownProps } from '@/accordTypes';
 
-export function MessageDropdown() {
+export function MessageDropdown({ onDelete }: MessageDropdownProps) {
   const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
   return (
     <Menu shadow="md" position="bottom">
@@ -29,6 +30,7 @@ export function MessageDropdown() {
         <Menu.Item
           color="red"
           leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }} />}
+          onClick={() => onDelete()} // Call the deletion callback here
         >
           Delete message
         </Menu.Item>

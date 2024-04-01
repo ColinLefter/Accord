@@ -5,7 +5,7 @@ import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@ma
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
-import { ChatProps, MessageProps } from "@/accordTypes";
+import { ChatProps, MessageProps, DisplayedMessageProps } from "@/accordTypes";
 import { createHash } from 'crypto';
 import { useUser } from '@clerk/nextjs';
 
@@ -50,7 +50,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   const messageEndRef = React.useRef<HTMLDivElement>(null);; // Updated to use useRef
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
-  const [receivedMessages, setReceivedMessages] = useState<MessageProps[]>([]); // receivedMessages stores the on-screen chat history.
+  const [receivedMessages, setReceivedMessages] = useState<DisplayedMessageProps[]>([]); // receivedMessages stores the on-screen chat history.
   const memberIDs = [senderID, ...receiverIDs] // / To allow for group chats, we are creating an array that contains the sender and the receivers.
   memberIDs.sort(); // CRITICAL: Sorts in-place. We need to sort the key to counteract the swapping mechanism where sender and receiver becomes flipped.
   // Retrieving the chat history and update function from the context
@@ -60,7 +60,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   // useChannel is a react-hook API for subscribing to messages from an Ably channel.
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
-
   const rawChannelKey = `chat:${memberIDs.join(",")}`;
   const channelKey = generateHash(rawChannelKey); // Generating a SHA-256 hash of a channel to compress it and also enforce security, privacy and uniqueness :D
   const { channel, ably } = useChannel(channelKey, (messageData) => {
@@ -72,13 +71,15 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     }
   
     // For any message received from others, update the state.
-    const { text, date } = messageData.data;
-    const incomingMessage: MessageProps = {
+    const { text, date, id } = messageData.data;
+    const incomingMessage: DisplayedMessageProps = {
+      id: id,
       username: messageData.name,
       message: text,
       date: date,
       connectionId: messageData.clientId,
-      userProfileURL: messageData.data.userProfileURL
+      userProfileURL: messageData.data.userProfileURL,
+      onDeleteMessage: () => deleteMessage(id)
     };
   
     setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
@@ -139,19 +140,22 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
    */
   const sendChatMessage = async (messageText: string) => {
     const now = new Date();
+    const tempId = `temp-${now}`;
     const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
     const outgoingMessage = {
+      id: tempId, // this needs to be replaced with the real one once it is known. This is done to satisfy TypeScript
       username: senderUsername,
       message: messageText,
       date: dateStr,
-      userProfileURL: userProfileURL
+      userProfileURL: userProfileURL,
+    onDeleteMessage: () => {}, // replace with the actual function
     };
   
     // Publish the message to the Ably channel. This is how we send messages to other users.
     // We don't specify who the message is for as the way we handle who receives messages is by subscribing certain users to certain channels.
     // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
-    await channel.publish({
+    await channel.publish({ // Notice how we are not including the message ID when we publish a message. That is because it is set by Ably implicitly.
       name: senderUsername,
       data: { text: messageText, date: dateStr, userProfileURL: userProfileURL }
     });
@@ -232,7 +236,15 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
       lastUsername = message.username;
       acc.push(
         <Stack key={index} gap="0" justify="flex-start">
-          <Message username={message.username} message={message.message} firstMessage={true} date={message.date} userProfileURL={message.userProfileURL} />
+          <Message
+            id={message.id}
+            username={message.username}
+            message={message.message}
+            firstMessage={isFirstMessage}
+            date={message.date}
+            userProfileURL={message.userProfileURL}
+            onDeleteMessage={() => deleteMessage(message.id)}
+          />
         </Stack>
       );
     } else {
@@ -241,7 +253,15 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         acc[acc.length - 1],
         {},
         React.Children.toArray(acc[acc.length - 1].props.children).concat(
-          <Message key={index} username={message.username} message={message.message} date={message.date} userProfileURL={message.userProfileURL} />
+          <Message
+            id={message.id}
+            username={message.username}
+            message={message.message}
+            firstMessage={isFirstMessage}
+            date={message.date}
+            userProfileURL={message.userProfileURL}
+            onDeleteMessage={() => deleteMessage(message.id)}
+          />
         )
       );
   
@@ -267,7 +287,21 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     if (messageEndRef.current) {
       messageEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [receivedMessages]); // Scrolls when receivedMessages updates  
+  }, [receivedMessages]); // Scrolls when receivedMessages updates
+
+  const deleteMessage = async (messageId: any) => {
+    // Update local state to filter out the deleted message
+    setReceivedMessages(currentMessages => currentMessages.filter(message => message.id !== messageId));
+  
+    // Call your API to delete the message from the database
+    await fetch('/api/delete-message', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ messageId, channelKey }),
+    });
+  };
 
   return (
     <div className="messaging-container">
