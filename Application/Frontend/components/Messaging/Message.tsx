@@ -1,6 +1,7 @@
 "use client";
 
-import { Group, Stack, Avatar, Text } from '@mantine/core';
+import { Group, Stack, Avatar, Text, Box, useMantineTheme, useComputedColorScheme } from '@mantine/core';
+import { useHover } from '@mantine/hooks';
 import { useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 import { MessageProps } from "@/accordTypes";
@@ -28,8 +29,33 @@ import { MessageDropdown } from "@/components/Messaging/MessageDropdown";
  * including an avatar, username, timestamp, and message content.
  */
 export function Message({ username, message, firstMessage, date, userProfileURL }: MessageProps) {
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const theme = useComputedColorScheme();
+  const themes = useMantineTheme();
+  const { hovered, ref } = useHover();
+  const hightlightShade = theme === 'dark' ? themes.colors.dark[8] : themes.colors.gray[0];
+
+
+  console.log(themes.colors.light, "here");
+  console.log(themes.colors, "here2");
+
+  // themes.colors.dark[6]
+
+  const demoProps = hovered ? {
+    bg: hightlightShade
+  } : {};
+
   return (
-    <Group gap="xs" justify="space-between">
+    <Group
+      gap="xs"
+      justify="space-between"
+      ref={ref}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      color="black"
+      {...demoProps}
+    >
       {/* Render the Avatar only if firstMessage is present; otherwise, render an empty space */}
       <Group gap="xs">
         {firstMessage ? (
@@ -44,10 +70,12 @@ export function Message({ username, message, firstMessage, date, userProfileURL 
               <Text c="dimmed" size="xs">{date}</Text>
             </Group>
           )}
-          <Text>{message}</Text>
+          <Text >{message}</Text>
         </Stack>
       </Group>
-      <MessageDropdown/>
+      <div style={{ visibility: isHovered ? 'visible' : 'hidden' }}>
+        <MessageDropdown />
+      </div>
     </Group>
   );
 }

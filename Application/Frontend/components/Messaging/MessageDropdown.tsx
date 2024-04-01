@@ -1,18 +1,14 @@
 import { Menu, Button, Text, rem, ActionIcon, useComputedColorScheme } from '@mantine/core';
 import {
-  IconSettings,
-  IconSearch,
-  IconPhoto,
-  IconMessageCircle,
   IconTrash,
-  IconArrowsLeftRight,
-  IconDotsVertical
+  IconDotsVertical,
+  IconCursorText
 } from '@tabler/icons-react';
 
 export function MessageDropdown() {
   const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
   return (
-    <Menu shadow="md">
+    <Menu shadow="md" position="bottom">
       <Menu.Target>
       <ActionIcon variant="transparent" aria-label="Settings">
         <IconDotsVertical color={textColor} style={{ width: '70%', height: '70%' }} stroke={1.5} />
@@ -22,7 +18,7 @@ export function MessageDropdown() {
       <Menu.Dropdown>
         <Menu.Label>General</Menu.Label>
         <Menu.Item
-          leftSection={<IconSearch style={{ width: rem(14), height: rem(14) }} />}
+          leftSection={<IconCursorText style={{ width: rem(14), height: rem(14) }} stroke={1} />}
         >
           Edit Message
         </Menu.Item>
