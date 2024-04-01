@@ -4,6 +4,7 @@ import { Group, Stack, Avatar, Text } from '@mantine/core';
 import { useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 import { MessageProps } from "@/accordTypes";
+import { MessageDropdown } from "@/components/Messaging/MessageDropdown";
 
 /**
  * Renders a single message within a chat interface, displaying the sender's username, message content,
@@ -28,23 +29,25 @@ import { MessageProps } from "@/accordTypes";
  */
 export function Message({ username, message, firstMessage, date, userProfileURL }: MessageProps) {
   return (
-    <Group gap="xs">
+    <Group gap="xs" justify="space-between">
       {/* Render the Avatar only if firstMessage is present; otherwise, render an empty space */}
-      {firstMessage ? (
-        <Avatar radius="xl" src={userProfileURL} />
-      ) : (
-        <div style={{ width: 38 }} /> // Adjusted width to match the Avatar size
-      )}
-      
-      <Stack gap="0">
-        {firstMessage && (
-          <Group justify="flex-start" gap="xs">
-            <Text fw={500}>{username}</Text>
-            <Text c="dimmed" size="xs">{date}</Text>
-          </Group>
-        )}
-        <Text>{message}</Text>
-      </Stack>
+      <Group gap="xs">
+        {firstMessage ? (
+          <Avatar radius="xl" src={userProfileURL} />
+        ) : (
+          <div style={{ width: 38 }} /> // Adjusted width to match the Avatar size
+        )}      
+        <Stack gap="0">
+          {firstMessage && (
+            <Group justify="flex-start" gap="xs">
+              <Text fw={500}>{username}</Text>
+              <Text c="dimmed" size="xs">{date}</Text>
+            </Group>
+          )}
+          <Text>{message}</Text>
+        </Stack>
+      </Group>
+      <MessageDropdown/>
     </Group>
   );
 }

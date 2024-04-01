@@ -280,20 +280,16 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         */}
         <div ref={messageEndRef}></div>
           <form onSubmit={handleFormSubmission}>
-            <Stack>
-              <Group grow>
-                <Textarea
-                    ref={inputBoxRef}
-                    placeholder={messageLabel}
-                    autosize
-                    minRows={1}
-                    maxRows={10}
-                    value={messageText}
-                    onKeyDown={handleKeyPress}
-                    onChange={(e) => setMessageText(e.target.value)}
-                  />
-              </Group>
-            </Stack>
+            <Textarea
+                ref={inputBoxRef}
+                placeholder={messageLabel}
+                autosize
+                minRows={1}
+                maxRows={10}
+                value={messageText}
+                onKeyDown={handleKeyPress}
+                onChange={(e) => setMessageText(e.target.value)}
+              />
           </form>
       </Stack>
     </div>
