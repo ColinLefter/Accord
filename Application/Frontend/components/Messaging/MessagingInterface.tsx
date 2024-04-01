@@ -72,9 +72,10 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     // it's already added to the state when the user sends the message.
 
     if (messageData.name === 'messageDeleted') {
+      // console.log("Received message deletion event", messageData.data);
       // Message deletion event
       const { messageId } = messageData.data;
-      setReceivedMessages(currentMessages => currentMessages.filter(message => message.id !== messageId));
+      setReceivedMessages(currentMessages => currentMessages.filter(message => message.id !== messageId)); // exclude the one we just got
     } else if (messageData.name !== senderUsername) {
         // We know that the message is not from ourselves because we would block double messages here.      
         // For any message received from others, update the state.
@@ -154,7 +155,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     const tempId = `temp-${now}`;
     const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
     // NOTE: You may wask what's the difference between these two IDs? Well, clientID is not specific to each message, but to the user!
-    console.log("here is my client id: ", myAblyClientID);
     const outgoingMessage = {
       id: tempId, // this needs to be replaced with the real one once it is known. This is done to satisfy TypeScript
       clientID: senderID, // This is OUR client id with respect to our presence in the text channel.
@@ -170,7 +170,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     // Publish the message to the Ably channel. This is how we send messages to other users.
     // We don't specify who the message is for as the way we handle who receives messages is by subscribing certain users to certain channels.
     // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
-    console.log("my sender id: ", senderID);
     await channel.publish({ // Notice how we are not including the message ID when we publish a message. That is because it is set by Ably implicitly.
       name: senderUsername,
       data: { text: messageText, date: dateStr, userProfileURL: userProfileURL, clientID: senderID }

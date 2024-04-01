@@ -25,10 +25,6 @@ export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDrop
   // Check if it's the current user's message
   const myMessage = clientID === userID;
 
-  console.log("username", user?.username);
-  console.log("MY ID: ", user?.id);
-  console.log("clientID: ", clientID);
-
   const MenuItemWithOptionalTooltip = forwardRef<HTMLDivElement, { children: ReactNode, privateChat: boolean, onDelete: () => void }>(({ children, privateChat, onDelete }, ref) => {
     // Conditionally wrap the children in a Tooltip if privateChat is true
     const content = privateChat ? (
