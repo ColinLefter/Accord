@@ -7,7 +7,7 @@ import {
 import { MessageDropdownProps } from '@/accordTypes';
 import { forwardRef, ReactNode } from 'react';
 
-export function MessageDropdown({ privateChat, onDelete }: MessageDropdownProps) {
+export function MessageDropdown({ privateChat, myMessage, onDelete }: MessageDropdownProps) {
   const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
 
   const MenuItemWithOptionalTooltip = forwardRef<HTMLDivElement, { children: ReactNode, privateChat: boolean, onDelete: () => void }>(({ children, privateChat, onDelete }, ref) => {
@@ -52,7 +52,7 @@ export function MessageDropdown({ privateChat, onDelete }: MessageDropdownProps)
         <MenuItemWithOptionalTooltip privateChat={privateChat} onDelete={onDelete}>
           <Menu.Item
             color="red"
-            disabled={privateChat}
+            disabled={privateChat || !myMessage} // If it is not my message, I can't delete it!
             leftSection={<IconTrash style={{ width: 14, height: 14 }} />}
             onClick={onDelete}
           >

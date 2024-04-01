@@ -36,6 +36,7 @@ export function Message({
   date,
   userProfileURL,
   privateChat,
+  myMessage,
   onMessageExchange,
   onDeleteMessage}: DisplayedMessageProps) {
 
@@ -78,7 +79,12 @@ export function Message({
         </Stack>
       </Group>
       <div style={{ visibility: isHovered ? 'visible' : 'hidden' }}>
-        <MessageDropdown onDelete={() => onDeleteMessage(id)} privateChat={privateChat} onMessageExchange={onMessageExchange} />
+        <MessageDropdown
+          onDelete={() => onDeleteMessage(id)}
+          privateChat={privateChat}
+          onMessageExchange={onMessageExchange}
+          myMessage={myMessage}
+          />
       </div>
     </Group>
   );

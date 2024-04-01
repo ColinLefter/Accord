@@ -48,6 +48,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   let messageEnd: HTMLDivElement | null = null;
   const inputBoxRef = useRef(null);
   const messageEndRef = React.useRef<HTMLDivElement>(null);; // Updated to use useRef
+  const [myAblyClientID, setMyAblyClientID] = useState('');
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
   const [receivedMessages, setReceivedMessages] = useState<DisplayedMessageProps[]>([]); // receivedMessages stores the on-screen chat history.
@@ -62,35 +63,50 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
   const rawChannelKey = `chat:${memberIDs.join(",")}`;
   const channelKey = generateHash(rawChannelKey); // Generating a SHA-256 hash of a channel to compress it and also enforce security, privacy and uniqueness :D
+  // Look at how we obtain Ably. It's by opening a stream. We can't just pass around the Ably object because it comes with opening a stream.
+  // Therefore, we actually need to open it once and once only, which is why we need to pass the client associated with this stream to components that need it.
+  // There isn't some Ably client ID associated with an account, but rather one that is associated with a stream.
   const { channel, ably } = useChannel(channelKey, (messageData) => {
     // This callback gets executed for any message received on this channel.
     // If the sender is the current user, don't add the message to receivedMessages because
     // it's already added to the state when the user sends the message.
-    if (messageData.name === senderUsername) {
-      return;
-    }
-  
-    // For any message received from others, update the state.
-    const { text, date, id } = messageData.data;
-    const incomingMessage: DisplayedMessageProps = {
-      id: id,
-      privateChat: privateChat,
-      onMessageExchange: onMessageExchange,
-      username: messageData.name,
-      message: text,
-      date: date,
-      connectionId: messageData.clientId,
-      userProfileURL: messageData.data.userProfileURL,
-      onDeleteMessage: () => deleteMessage(id)
-    };
-  
-    setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
 
-    // IMPORTANT: Privacy feature.
-    // Every time we send receive a message, we call this function to let the parent component know that a message has been received. End-to-end privacy.
-    // This prevents jailbreaking the privacy feature by sending a message to a user and then having them switch the toggle off to capture the message history.
-    onMessageExchange();
+    if (messageData.name === 'messageDeleted') {
+      // Message deletion event
+      const { messageId } = messageData.data;
+      setReceivedMessages(currentMessages => currentMessages.filter(message => message.id !== messageId));
+    } else if (messageData.name !== senderUsername) {
+        // We know that the message is not from ourselves because we would block double messages here.      
+        // For any message received from others, update the state.
+        const { text, date, id, clientID } = messageData.data;
+        const incomingMessage: DisplayedMessageProps = {
+          id: id,
+          clientID: clientID, // Get the clientID of the user who sent the message. This is used to ensure that users can only delete their messages.
+          myMessage: clientID === myAblyClientID, // This is how we ensure that users can only delete their messages.
+          privateChat: privateChat,
+          onMessageExchange: onMessageExchange,
+          username: messageData.name,
+          message: text,
+          date: date,
+          connectionID: clientID,
+          userProfileURL: messageData.data.userProfileURL,
+          onDeleteMessage: () => deleteMessage(id)
+        };
+      
+        setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
+    
+        // IMPORTANT: Privacy feature.
+        // Every time we send receive a message, we call this function to let the parent component know that a message has been received. End-to-end privacy.
+        // This prevents jailbreaking the privacy feature by sending a message to a user and then having them switch the toggle off to capture the message history.
+        onMessageExchange();
+    }
   });
+
+  useEffect(() => {
+    if (ably && ably.clientId) {
+      setMyAblyClientID(ably.clientId);
+    }
+  }, [ably, ably.clientId]);
 
   // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it. We always fetch from MongoDB.
   // In terms of the privacy toggle, if we refresh our page, we load from MongoDB. That means if the toggle was on, no data was sent.
@@ -144,16 +160,19 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     const now = new Date();
     const tempId = `temp-${now}`;
     const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
-  
+    // NOTE: You may wask what's the difference between these two IDs? Well, clientID is not specific to each message, but to the user!
+    console.log(myAblyClientID);
     const outgoingMessage = {
       id: tempId, // this needs to be replaced with the real one once it is known. This is done to satisfy TypeScript
+      clientID: myAblyClientID, // This is OUR client id with respect to our presence in the text channel.
+      myMessage: tempId === myAblyClientID, // This is how we ensure that users can only delete their messages.
       privateChat: privateChat, // Bringing these two privacy features down to the message level unlocks immense possibilities for end-to-end privacy.
       onMessageExchange: onMessageExchange,
       username: senderUsername,
       message: messageText,
       date: dateStr,
       userProfileURL: userProfileURL,
-    onDeleteMessage: () => {}, // replace with the actual function
+      onDeleteMessage: deleteMessage, // replace with the actual function
     };
   
     // Publish the message to the Ably channel. This is how we send messages to other users.
@@ -161,7 +180,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
     await channel.publish({ // Notice how we are not including the message ID when we publish a message. That is because it is set by Ably implicitly.
       name: senderUsername,
-      data: { text: messageText, date: dateStr, userProfileURL: userProfileURL }
+      data: { text: messageText, date: dateStr, userProfileURL: userProfileURL, clientID: myAblyClientID }
     });
   
     // Update the local state for the sender's UI. The message for the receiver
@@ -241,6 +260,8 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
       acc.push(
         <Stack key={index} gap="0" justify="flex-start">
           <Message
+            clientID={message.clientID} // Get the clientID of the user who sent the message. This is used to ensure that users can only delete their messages.
+            myMessage={message.clientID === myAblyClientID} // This is how we ensure that users can only delete their messages.
             id={message.id}
             privateChat={privateChat}
             onMessageExchange={onMessageExchange}
@@ -260,6 +281,8 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         {},
         React.Children.toArray(acc[acc.length - 1].props.children).concat(
           <Message
+            clientID={message.clientID}
+            myMessage={message.clientID === myAblyClientID} // This is how we ensure that users can only delete their messages.
             id={message.id}
             privateChat={privateChat}
             onMessageExchange={onMessageExchange}
@@ -297,20 +320,25 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     }
   }, [receivedMessages]); // Scrolls when receivedMessages updates
 
-  const deleteMessage = async (messageId: any) => {
-    // Update local state to filter out the deleted message
-    setReceivedMessages(currentMessages => currentMessages.filter(message => message.id !== messageId));
-  
-    // Call your API to delete the message from the database
-    await fetch('/api/delete-message', {
+  const deleteMessage = async (messageId: string) => {
+    const response = await fetch('/api/delete-message', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ messageId, channelKey }),
     });
+  
+    if (response.ok) {
+      // The way we are reflecting the message deletion in real-time is by publishing a special message-deleted event to the channel.
+      // Publish a deletion event to the channel
+      channel.publish({
+        name: 'messageDeleted',
+        data: { messageId },
+      });
+    }
   };
-
+  
   return (
     <div className="messaging-container">
       <Stack justify="space-between" style={{ height: '100%' }}>
