@@ -46,12 +46,6 @@ export function Message({
   const { hovered, ref } = useHover();
   const hightlightShade = theme === 'dark' ? themes.colors.dark[8] : themes.colors.gray[0];
 
-
-  console.log(themes.colors.light, "here");
-  console.log(themes.colors, "here2");
-
-  // themes.colors.dark[6]
-
   const demoProps = hovered ? {
     bg: hightlightShade
   } : {};
