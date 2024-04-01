@@ -28,7 +28,17 @@ import { MessageDropdown } from "@/components/Messaging/MessageDropdown";
  * @returns {JSX.Element} A JSX element representing a single message in the chat interface, potentially
  * including an avatar, username, timestamp, and message content.
  */
-export function Message({ id, username, message, firstMessage, date, userProfileURL, onDeleteMessage }: DisplayedMessageProps) {
+export function Message({
+  id,
+  username, 
+  message,
+  firstMessage,
+  date,
+  userProfileURL,
+  privateChat,
+  onMessageExchange,
+  onDeleteMessage}: DisplayedMessageProps) {
+
   const [isHovered, setIsHovered] = useState(false);
   
   const theme = useComputedColorScheme();
@@ -74,7 +84,7 @@ export function Message({ id, username, message, firstMessage, date, userProfile
         </Stack>
       </Group>
       <div style={{ visibility: isHovered ? 'visible' : 'hidden' }}>
-        <MessageDropdown onDelete={() => onDeleteMessage(id)} />
+        <MessageDropdown onDelete={() => onDeleteMessage(id)} privateChat={privateChat} onMessageExchange={onMessageExchange} />
       </div>
     </Group>
   );

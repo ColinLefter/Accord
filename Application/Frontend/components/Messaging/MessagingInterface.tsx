@@ -74,6 +74,8 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     const { text, date, id } = messageData.data;
     const incomingMessage: DisplayedMessageProps = {
       id: id,
+      privateChat: privateChat,
+      onMessageExchange: onMessageExchange,
       username: messageData.name,
       message: text,
       date: date,
@@ -145,6 +147,8 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   
     const outgoingMessage = {
       id: tempId, // this needs to be replaced with the real one once it is known. This is done to satisfy TypeScript
+      privateChat: privateChat, // Bringing these two privacy features down to the message level unlocks immense possibilities for end-to-end privacy.
+      onMessageExchange: onMessageExchange,
       username: senderUsername,
       message: messageText,
       date: dateStr,
@@ -238,6 +242,8 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         <Stack key={index} gap="0" justify="flex-start">
           <Message
             id={message.id}
+            privateChat={privateChat}
+            onMessageExchange={onMessageExchange}
             username={message.username}
             message={message.message}
             firstMessage={isFirstMessage}
@@ -255,6 +261,8 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         React.Children.toArray(acc[acc.length - 1].props.children).concat(
           <Message
             id={message.id}
+            privateChat={privateChat}
+            onMessageExchange={onMessageExchange}
             username={message.username}
             message={message.message}
             firstMessage={isFirstMessage}

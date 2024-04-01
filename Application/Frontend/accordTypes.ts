@@ -1,3 +1,5 @@
+import { privateDecrypt } from "crypto";
+
 export interface FetchStatusProps {
   lastFetched: number | null;
   setLastFetched: (value: number | null) => void;
@@ -13,11 +15,11 @@ export interface MessageProps {
   onDeleteMessage: (id: string) => void
 }
 
-export interface DisplayedMessageProps extends MessageProps {
+export interface DisplayedMessageProps extends MessageProps, PrivacySettingsProps {
   id: string; // ABSOLUTELY CRITICAL: The reason this is an OPTIONAL paramter is because we only have the ID when we receive a message, not when we send one
 }
 
-export interface MessageDropdownProps {
+export interface MessageDropdownProps extends PrivacySettingsProps {
   onDelete: () => void;
 }
 
@@ -25,18 +27,15 @@ export interface NewFriendModalProps extends FetchStatusProps {
   senderID: string;
 }
 
-export interface FriendsTabProps extends FetchStatusProps, NewFriendModalProps {
+export interface FriendsTabProps extends FetchStatusProps, NewFriendModalProps, PrivacySettingsProps {
   senderUsername: string;
-  privateChat: boolean;
-  onMessageExchange: () => void;
 }
 
-export interface GeneralChatProps {
+export interface GeneralChatProps extends PrivacySettingsProps {
   receiverIDs: string[];
-  onMessageExchange: () => void;
 }
 
-export interface ChatProps extends FriendsTabProps {
+export interface ChatProps extends FriendsTabProps, PrivacySettingsProps {
   receiverIDs: string[];
 }
 
@@ -46,4 +45,9 @@ export interface IconProps {
 
 export interface NewChatModalProps extends NewFriendModalProps {
   onCreateChat: (recipients: string[]) => void;
+}
+
+export interface PrivacySettingsProps {
+  privateChat: boolean;
+  onMessageExchange: () => void;
 }
