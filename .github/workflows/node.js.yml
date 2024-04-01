@@ -33,5 +33,6 @@ jobs:
         npm: '10.24.0'
         cache: 'npm'
     - run: npm ci
+    - run: npm -v
     - run: npm test:jest
     
