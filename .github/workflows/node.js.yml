@@ -4,8 +4,12 @@
 name: Node.js CI For Accord
 
 on:
-  push: {}
-  pull_request: {}
+  push:
+    branches: main
+
+defaults:
+  run:
+    working-directory: ./Application/Frontend
 
 jobs:
   build:
@@ -14,7 +18,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [10.x, 14.x, 16.x, 18.x]
+        node-version: [10.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -28,7 +32,6 @@ jobs:
         # Check available npm versions: https://npmjs.com/package/npm/v/10.24.0
         npm: '10.24.0'
         cache: 'npm'
-    - run: cd Application/Frontend # Navigating to the Frontend folder before anything else
-    - run: npm install -g npm-check
-    - run: npm --version
+    - run: npm ci
     - run: npm test:jest
+    
