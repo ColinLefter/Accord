@@ -84,7 +84,6 @@ export function MemberList() {
     }
   }, [user]);
 
-  
 
   return (
     <Stack>
@@ -93,7 +92,6 @@ export function MemberList() {
         All members
       </Text>
 
-      {/** Display hardcoded member names */}
       {membersList.map((member, index) => (
         <div>
           <Menu shadow="md" width={230} withArrow>

@@ -3,6 +3,23 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
 
+/**
+ * Deletes a user from the Accord database. This endpoint requires a POST request with a user ID.
+ * If the ID is valid and found, the user is deleted. The operation reflects directly in the MongoDB
+ * 'Accounts' collection.
+
+ * Responses:
+ * - 400 for requests without an ID.
+ * - 200 if deletion is successful, along with a confirmation message.
+ * - 404 if the user ID is not found.
+ * - 500 for internal server errors, such as issues with database connectivity.
+
+ * The MongoDB URI is retrieved using `getMongoDbUri`, ensuring separation between the database
+ * configuration and API logic.
+
+ * @param {NextApiRequest} req The request object, expecting a 'id' in the body.
+ * @param {NextApiResponse} res The response object used to send back the status and messages.
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     const { id } = req.body; // Directly destructuring `id` from `req.body` because it's already an object

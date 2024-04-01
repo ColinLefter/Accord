@@ -1,30 +1,31 @@
 import "@mantine/core/styles.css";
 import { AppProps } from "next/app";
-import { MantineProvider, useComputedColorScheme } from "@mantine/core";
-import { ClerkProvider } from '@clerk/nextjs';
-import { dark } from '@clerk/themes';
+import RootLayout from '@/app/RootLayout'; // Make sure the path is correct
 import "../custom.css";
 
+/**
+ * The main application component that wraps all pages in the application.
+ * It imports global styles from Mantine and custom CSS, and wraps every page with the RootLayout component.
+ * This setup ensures that every page has consistent styling and layout behavior.
+
+ * The App component is the top-level component in Next.js applications. It's used to initialize pages.
+ * You can override it and control the page initialization, which allows you to do amazing things like:
+ * - Persisting layout between page changes
+ * - Keeping state when navigating pages
+ * - Custom error handling using componentDidCatch
+ * - Inject additional data into pages
+ * - Add global CSS
+
+ * @param {AppProps} { Component, pageProps } Destructured props object containing the active page and its props.
+ * Component: The active page that’s being rendered. This changes as you navigate between pages.
+ * pageProps: An object with the initial props that were preloaded for your page by one of Next.js' data fetching methods, if any.
+
+ * @returns A RootLayout component wrapping the active page.
+ */
 export default function App({ Component, pageProps }: AppProps) {
-  // Define a wrapper component inside App to access the Mantine theme
-  const WithProviders = () => {
-    const theme = useComputedColorScheme() === 'dark' ? dark : undefined;
-    const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
-
-    return (
-      <ClerkProvider
-        appearance={{
-          baseTheme: theme,
-          variables: { colorPrimary: textColor },
-        }}>
-        <Component {...pageProps} />
-      </ClerkProvider>
-    );
-  };
-
   return (
-    <MantineProvider>
-      <WithProviders />
-    </MantineProvider>
+    <RootLayout>
+      <Component {...pageProps} />
+    </RootLayout>
   );
 }

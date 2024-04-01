@@ -2,9 +2,28 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
 import { currentUser } from '@clerk/nextjs';
+import { getAuth } from '@clerk/nextjs/dist/types/server-helpers.server';
 
 let client: MongoClient | null = null;
 
+/**
+ * Retrieves a list of server IDs associated with the currently authenticated user.
+ * This endpoint requires authentication and responds with a list of server IDs from the 'ServersOfUsers' collection.
+ * It is designed to handle POST requests where the user's identity is determined through Clerk authentication.
+
+ * Responses:
+ * - 401 if authentication is required but the user is not authenticated.
+ * - 405 if the request method is not POST.
+ * - 200 with the list of server IDs associated with the user.
+ * - 404 if no servers are found for the user.
+ * - 500 for internal server errors, such as database connectivity issues.
+
+ * Note: If user information cannot be retrieved server-side due to Clerk limitations,
+ * it suggests passing the user as a parameter from the client-side where feasible.
+
+ * @param {NextApiRequest} req The request object, which does not require any specific parameters as it relies on user authentication.
+ * @param {NextApiResponse} res The response object used to send back the server IDs or error messages.
+ */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const user = await currentUser();
 

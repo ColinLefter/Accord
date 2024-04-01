@@ -7,7 +7,61 @@ interface SvixHeaders {
   "svix-timestamp"?: string;
   "svix-signature"?: string;
 }
- 
+
+/**
+ * This server-side function handles POST requests coming from Clerk via Svix webhooks. It verifies the
+ * authenticity of incoming webhook events using the Svix library and processes user-related events
+ * such as creation, updates, and deletion. It uses the Clerk-provided `UserJSON` data structure for
+ * user data and performs CRUD operations on a MongoDB database accordingly, by making calls to
+ * designated API endpoints for each operation.
+
+ * It is essential to set the `WEBHOOK_SECRET` environment variable to the value provided by Clerk in
+ * the dashboard for webhook verification to succeed. This function expects to receive Svix webhook
+ * events with headers containing `svix-id`, `svix-timestamp`, and `svix-signature` for security
+ * purposes. If any of these headers are missing, or if the webhook payload cannot be verified, it
+ * responds with an HTTP 400 error.
+
+ * On successful verification of the webhook payload, it identifies the event type (`user.created`,
+ * `user.updated`, `user.deleted`) and performs the corresponding database operation. For `user.created`
+ * and `user.updated` events, it extracts the user data from the event payload and sends it to
+ * the appropriate API endpoint. For `user.deleted` events, it only requires the user ID for
+ * the operation. Errors encountered during API calls are logged to the console.
+
+ * This function demonstrates a practical implementation of handling webhook events in a server-side
+ * environment, showcasing how to securely verify the source of the event, parse the event data,
+ * and act upon it by integrating with external systems or databases.
+
+ * Environment Variables:
+ * - `WEBHOOK_SECRET`: A secret key provided by Clerk used to verify the authenticity of incoming webhooks.
+
+ * Usage:
+ * Deploy this function as part of a serverless function or a server route handler that listens
+ * for POST requests. Ensure that the environment variable `WEBHOOK_SECRET` is correctly set in
+ * your deployment environment.
+
+ * Example Request Headers:
+ * ```
+ * svix-id: <unique-id>
+ * svix-timestamp: <timestamp>
+ * svix-signature: <signature>
+ * ```
+
+ * Example Payload:
+ * ```
+ * {
+ *   "type": "user.created",
+ *   "data": {
+ *     "id": "user_123",
+ *     "first_name": "Jane",
+ *     "last_name": "Doe",
+ *     "username": "janedoe",
+ *     ...
+ *   }
+ * }
+ * ```
+
+ * @param {Request} req The incoming request object, containing headers and a JSON body with the webhook event data.
+ */
 export default async function POST(req: Request) {
   if  (req.method === 'POST') {
     // You can find this in the Clerk Dashboard -> Webhooks -> choose the webhook

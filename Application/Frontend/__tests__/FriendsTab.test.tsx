@@ -1,5 +1,5 @@
 import { MongoClient } from 'mongodb';
-import handler from '@/pages/api/FriendsTab'; 
+import handler from '@/pages/api/get-ids-of-friends'; 
 import { NextApiRequest, NextApiResponse } from 'next';
 
 // Mock MongoClient and dbCollection

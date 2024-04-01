@@ -5,8 +5,8 @@ import { ServerList } from "@/components/LeftSidebar/ServerList";
 export default function LeftSidebar() {
   return (
     <div>
-      {/* <ServerList/> */}
-      <ChannelList/>
+      <ServerList/>
+      {/* <ChannelList/> */}
     </div>
   );
 }
