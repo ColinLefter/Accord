@@ -1,5 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import Ably from 'ably/promises';
+import { getAuth } from "@clerk/nextjs/server";
 
 /**
  * This API endpoint is designed to facilitate token requests for clients using the Ably Realtime service.
@@ -37,11 +38,18 @@ import Ably from 'ably/promises';
  * @param {NextApiResponse} res The Next.js API response object.
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+  const { userId } = getAuth(req);
+
   if (req.method === 'POST') {
     const ably = new Ably.Rest.Promise({ key: process.env.ABLY_API_KEY_PUBLISH_SUBSCRIBE });
-    
+
+    if (userId === null) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
+
     try {
-      const tokenRequestData = await ably.auth.createTokenRequest({ clientId: 'accord-systems-messaging' }); // We are creating a token request for the client
+      const tokenRequestData = await ably.auth.createTokenRequest({ clientId: userId }); // We are creating a token request for the client
       res.status(200).json(tokenRequestData);
     } catch (error) {
       console.error('Ably token request error:', error);

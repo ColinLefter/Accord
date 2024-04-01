@@ -1,9 +1,11 @@
 "use client";
 
-import { Group, Stack, Avatar, Text } from '@mantine/core';
+import { Group, Stack, Avatar, Text, Box, useMantineTheme, useComputedColorScheme } from '@mantine/core';
+import { useHover } from '@mantine/hooks';
 import { useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
-import { MessageProps } from "@/accordTypes";
+import { DisplayedMessageProps } from "@/accordTypes";
+import { MessageDropdown } from "@/components/Messaging/MessageDropdown";
 
 /**
  * Renders a single message within a chat interface, displaying the sender's username, message content,
@@ -26,25 +28,64 @@ import { MessageProps } from "@/accordTypes";
  * @returns {JSX.Element} A JSX element representing a single message in the chat interface, potentially
  * including an avatar, username, timestamp, and message content.
  */
-export function Message({ username, message, firstMessage, date, userProfileURL }: MessageProps) {
+export function Message({
+  id,
+  clientID,
+  username, 
+  message,
+  firstMessage,
+  date,
+  userProfileURL,
+  privateChat,
+  onMessageExchange,
+  onDeleteMessage}: DisplayedMessageProps) {
+
+  const [isHovered, setIsHovered] = useState(false);
+  
+  const theme = useComputedColorScheme();
+  const themes = useMantineTheme();
+  const { hovered, ref } = useHover();
+  const hightlightShade = theme === 'dark' ? themes.colors.dark[8] : themes.colors.gray[0];
+
+  const demoProps = hovered ? {
+    bg: hightlightShade
+  } : {};
+
   return (
-    <Group gap="xs">
+    <Group
+      gap="xs"
+      justify="space-between"
+      ref={ref}
+      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => setIsHovered(true)}
+      color="black"
+      {...demoProps}
+    >
       {/* Render the Avatar only if firstMessage is present; otherwise, render an empty space */}
-      {firstMessage ? (
-        <Avatar radius="xl" src={userProfileURL} />
-      ) : (
-        <div style={{ width: 38 }} /> // Adjusted width to match the Avatar size
-      )}
-      
-      <Stack gap="0">
-        {firstMessage && (
-          <Group justify="flex-start" gap="xs">
-            <Text fw={500}>{username}</Text>
-            <Text c="dimmed" size="xs">{date}</Text>
-          </Group>
-        )}
-        <Text>{message}</Text>
-      </Stack>
+      <Group gap="xs">
+        {firstMessage ? (
+          <Avatar radius="xl" src={userProfileURL} />
+        ) : (
+          <div style={{ width: 38 }} /> // Adjusted width to match the Avatar size
+        )}      
+        <Stack gap="0">
+          {firstMessage && (
+            <Group justify="flex-start" gap="xs">
+              <Text fw={500}>{username}</Text>
+              <Text c="dimmed" size="xs">{date}</Text>
+            </Group>
+          )}
+          <Text >{message}</Text>
+        </Stack>
+      </Group>
+      <div style={{ visibility: isHovered ? 'visible' : 'hidden' }}>
+        <MessageDropdown
+          clientID={clientID}
+          onDelete={() => onDeleteMessage(id)}
+          privateChat={privateChat}
+          onMessageExchange={onMessageExchange}
+          />
+      </div>
     </Group>
   );
 }
