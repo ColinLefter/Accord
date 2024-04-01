@@ -31,7 +31,6 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
    */
   const handleAddFriendClick = async () => {
     if (friendUsername) {
-      console.log(`Adding friend: ${friendUsername}`);
       try {
         const response = await fetch('/api/add-friend', {
           method: 'POST',
@@ -70,7 +69,6 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
         setErrorMessage('This username does not exist.');
         break;
       default:
-        console.log("here");
         setErrorMessage('');
         setLastFetched(Date.now()); // Update the lastFetched timestamp to trigger a refetch of the friend list
         close();
