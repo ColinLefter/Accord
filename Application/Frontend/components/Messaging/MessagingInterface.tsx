@@ -53,7 +53,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   const [receivedMessages, setReceivedMessages] = useState<MessageProps[]>([]); // receivedMessages stores the on-screen chat history.
   const memberIDs = [senderID, ...receiverIDs] // / To allow for group chats, we are creating an array that contains the sender and the receivers.
   memberIDs.sort(); // CRITICAL: Sorts in-place. We need to sort the key to counteract the swapping mechanism where sender and receiver becomes flipped.
-  console.log(memberIDs);
   // Retrieving the chat history and update function from the context
   const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty.
@@ -164,7 +163,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   
       // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
       // We are doing this to ensure that the chat history is always up to date.
-      console.log("Is chat private?", privateChat);
       if (!privateChat) {
         try {
           fetch('/api/update-message-history', {
