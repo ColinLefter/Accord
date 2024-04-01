@@ -4,7 +4,6 @@ export interface FetchStatusProps {
 }
 
 export interface MessageProps {
-  myMessage: boolean; // This is a boolean flag that is acts as a calculated field.
   username: string;
   message: string;
   firstMessage?: boolean;
@@ -20,7 +19,7 @@ export interface DisplayedMessageProps extends MessageProps, PrivacySettingsProp
 }
 
 export interface MessageDropdownProps extends PrivacySettingsProps {
-  myMessage: boolean;
+  clientID: string;
   onDelete: () => void;
 }
 

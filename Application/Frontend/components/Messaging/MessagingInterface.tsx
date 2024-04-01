@@ -82,7 +82,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         const incomingMessage: DisplayedMessageProps = {
           id: id,
           clientID: clientID, // Get the clientID of the user who sent the message. This is used to ensure that users can only delete their messages.
-          myMessage: clientID === myAblyClientID, // This is how we ensure that users can only delete their messages.
           privateChat: privateChat,
           onMessageExchange: onMessageExchange,
           username: messageData.name,
@@ -101,12 +100,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         onMessageExchange();
     }
   });
-
-  useEffect(() => {
-    if (ably && ably.clientId) {
-      setMyAblyClientID(ably.clientId);
-    }
-  }, [ably, ably.clientId]);
 
   // IMPORTANT: We need to fetch chat history when the component mounts. This is how we do it. We always fetch from MongoDB.
   // In terms of the privacy toggle, if we refresh our page, we load from MongoDB. That means if the toggle was on, no data was sent.
@@ -161,11 +154,10 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     const tempId = `temp-${now}`;
     const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
     // NOTE: You may wask what's the difference between these two IDs? Well, clientID is not specific to each message, but to the user!
-    console.log(myAblyClientID);
+    console.log("here is my client id: ", myAblyClientID);
     const outgoingMessage = {
       id: tempId, // this needs to be replaced with the real one once it is known. This is done to satisfy TypeScript
-      clientID: myAblyClientID, // This is OUR client id with respect to our presence in the text channel.
-      myMessage: tempId === myAblyClientID, // This is how we ensure that users can only delete their messages.
+      clientID: senderID, // This is OUR client id with respect to our presence in the text channel.
       privateChat: privateChat, // Bringing these two privacy features down to the message level unlocks immense possibilities for end-to-end privacy.
       onMessageExchange: onMessageExchange,
       username: senderUsername,
@@ -178,9 +170,10 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     // Publish the message to the Ably channel. This is how we send messages to other users.
     // We don't specify who the message is for as the way we handle who receives messages is by subscribing certain users to certain channels.
     // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
+    console.log("my sender id: ", senderID);
     await channel.publish({ // Notice how we are not including the message ID when we publish a message. That is because it is set by Ably implicitly.
       name: senderUsername,
-      data: { text: messageText, date: dateStr, userProfileURL: userProfileURL, clientID: myAblyClientID }
+      data: { text: messageText, date: dateStr, userProfileURL: userProfileURL, clientID: senderID }
     });
   
     // Update the local state for the sender's UI. The message for the receiver
@@ -261,7 +254,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         <Stack key={index} gap="0" justify="flex-start">
           <Message
             clientID={message.clientID} // Get the clientID of the user who sent the message. This is used to ensure that users can only delete their messages.
-            myMessage={message.clientID === myAblyClientID} // This is how we ensure that users can only delete their messages.
             id={message.id}
             privateChat={privateChat}
             onMessageExchange={onMessageExchange}
@@ -282,7 +274,6 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
         React.Children.toArray(acc[acc.length - 1].props.children).concat(
           <Message
             clientID={message.clientID}
-            myMessage={message.clientID === myAblyClientID} // This is how we ensure that users can only delete their messages.
             id={message.id}
             privateChat={privateChat}
             onMessageExchange={onMessageExchange}

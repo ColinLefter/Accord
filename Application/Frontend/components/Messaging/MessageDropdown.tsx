@@ -5,10 +5,29 @@ import {
   IconCursorText
 } from '@tabler/icons-react';
 import { MessageDropdownProps } from '@/accordTypes';
-import { forwardRef, ReactNode } from 'react';
+import { useState, useEffect, forwardRef, ReactNode } from 'react';
+import { useUser } from '@clerk/nextjs';
 
-export function MessageDropdown({ privateChat, myMessage, onDelete }: MessageDropdownProps) {
+export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDropdownProps) {
+  const { user } = useUser();
+  const [userID, setUserID] = useState<string | null>(null);
+  const [readyToDelete, setReadyToDelete] = useState(false);
   const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
+
+  // Effect to check for user id availability
+  useEffect(() => {
+    if (user && user.id) {
+      setUserID(user.id);
+      setReadyToDelete(true);
+    }
+  }, [user?.id]);
+
+  // Check if it's the current user's message
+  const myMessage = clientID === userID;
+
+  console.log("username", user?.username);
+  console.log("MY ID: ", user?.id);
+  console.log("clientID: ", clientID);
 
   const MenuItemWithOptionalTooltip = forwardRef<HTMLDivElement, { children: ReactNode, privateChat: boolean, onDelete: () => void }>(({ children, privateChat, onDelete }, ref) => {
     // Conditionally wrap the children in a Tooltip if privateChat is true

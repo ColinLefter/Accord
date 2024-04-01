@@ -28,6 +28,7 @@ export default function RootLayout({ children }: any) { // The one time where 'a
     authMethod: 'POST', // Explicitly specify to use POST
     authHeaders: { 'Content-Type': 'application/json' },
   });
+
     // Define a wrapper component inside App to access the Mantine theme
   const WithProviders = () => {
     const theme = useComputedColorScheme() === 'dark' ? dark : undefined;

@@ -30,13 +30,13 @@ import { MessageDropdown } from "@/components/Messaging/MessageDropdown";
  */
 export function Message({
   id,
+  clientID,
   username, 
   message,
   firstMessage,
   date,
   userProfileURL,
   privateChat,
-  myMessage,
   onMessageExchange,
   onDeleteMessage}: DisplayedMessageProps) {
 
@@ -80,10 +80,10 @@ export function Message({
       </Group>
       <div style={{ visibility: isHovered ? 'visible' : 'hidden' }}>
         <MessageDropdown
+          clientID={clientID}
           onDelete={() => onDeleteMessage(id)}
           privateChat={privateChat}
           onMessageExchange={onMessageExchange}
-          myMessage={myMessage}
           />
       </div>
     </Group>
