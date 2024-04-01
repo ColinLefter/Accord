@@ -4,31 +4,33 @@ import {
   AppShell,
   Burger,
   Group,
-  Stack,
   Skeleton,
   ScrollArea,
-  Button,
   Text,
   Tooltip,
-  useComputedColorScheme,
   ActionIcon,
-  Container,
   Tabs,
-  Switch
+  Switch,
+  Stack
 } from '@mantine/core';
-import { IconUsers, IconPlus, IconUserCircle } from "@tabler/icons-react";
+import { IconUsers, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
 import { Logo } from "@/components/Logo";
 import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
 import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeToggle";
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
-import { DirectMessageModal } from '@/components/Messaging/DirectMessageModal';
+import { NewChatModal } from '@/components/Messaging/NewChatModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
+
 import { ServerList } from '@/components/LeftSidebar/ServerList';
+
+
+import { useCache } from '@/contexts/queryCacheContext';
+import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -43,27 +45,37 @@ import { ServerList } from '@/components/LeftSidebar/ServerList';
  * appropriate color scheme based on user preferences or system settings.
  */
 export default function Accord() {
+  const { user } = useUser();
+
+  const { lastFetched, setLastFetched } = useCache();
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
+  // Default is to just display no username. This will never be the case as you can't be here without an account.
+  // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
+  const [sender, setSender] = useState<string>(''); 
+  const [senderID, setSenderID] = useState<string>('');
+  const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
 
-  const { user } = useUser();
-
-  // IMPORTANT: We are hardcoding user1 as the user who is currently signed in.
-  // In the final implementation, we would extract the sender from the user's session via a site-wide authentication provider.
-  // Receiver would come from clicking on a friend in the dropdown that appears when clicking the "Send DM" button.
-  // It would also come from clicking on a friend in the FriendsTab component as that would trigger the chat to open.
-  // Every time we click on a friend who we want to chat with, we check if they are currently subscribed to the chat channel, and if not, we subscribe them.
-  // This involves writing a query to the database to check who is in this chat (i.e. who is subscribed to this channel).
-  // As for example the sender of this chat will be user1 and the receiver will be user2, but this will be flipped for user2 as they will be the sender in that case.
-  const sender = user?.username;
+  // Function to handle chat creation from modal
+  const handleCreateChat = (recipients: string[]) => {
+    setSelectedRecipients(recipients); // Update the recipients state
+    setActiveView('chat'); // 'chat' is the view for showing the chat interface
+  };
+  
+  useEffect(() => {
+    if (user && user.username && user.id) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setSender(user.username);
+      setSenderID(user.id);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   // note: we are manually handling the currently selected tab via states
   const handleTabSelection = (value: string) => setActiveView(value);
-  const handleMessageIconClick = () => setActiveView('message');
 
   // Function to handle message sending from the Chat component
   // This should be passed down and invoked whenever a message is sent or received
@@ -95,41 +107,34 @@ export default function Accord() {
               <Group>
                 <Switch
                   defaultChecked
+                  color="black"
                   label="Private mode"
                   onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
                   disabled={chatStarted}  // Disable the switch if the chat has started
                 />
                 <ColorSchemeToggle/>
-                <UserButton/>
               </Group>
             </Group>
           </AppShell.Header>
           <AppShell.Navbar p="md">
             <AppShell.Section grow>
-              <Tabs.List grow>
-                <Tabs.Tab
-                  value="friends"
-                  onClick={() => handleTabSelection('friends')}
-                  leftSection={<IconUsers />}
-                >
-                  Friends
-                </Tabs.Tab>
-                <Tabs.Tab
-                  value="profile"
-                  onClick={() => handleTabSelection('profile')}
-                  leftSection={<IconUserCircle />}
-                >
-                </Tabs.Tab>
-              </Tabs.List>
+              <Stack gap="xs">
+                <Tabs.List grow>
+                  <Tabs.Tab
+                    value="friends"
+                    onClick={() => handleTabSelection('friends')}
+                    leftSection={<IconUsers />}
+                  >
+                    Friends
+                  </Tabs.Tab>
+                </Tabs.List>
+                <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+              </Stack>
             </AppShell.Section>
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
                 <Text py="md">Direct Messages</Text>
-                <Tooltip label="Send DM">
-                  <ActionIcon variant="default" aria-label="Plus" onClick={handleMessageIconClick}>
-                    <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
-                  </ActionIcon>
-                </Tooltip>
+                <NewChatModal senderID={senderID} onCreateChat={handleCreateChat} lastFetched={lastFetched} setLastFetched={setLastFetched} />
               </Group>
               {Array(60)
                 .fill(0)
@@ -142,21 +147,37 @@ export default function Accord() {
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-            {activeView === 'friends' && <ServerList/>}
-            {activeView === 'profile' &&
+
+
+          {activeView === 'friends' && 
+            <FriendsTab
+              senderUsername={sender}
+              senderID={senderID}
+              privateChat={privateMode}
+              onMessageExchange={onMessageExchange}
+              lastFetched={lastFetched}
+              setLastFetched={setLastFetched}
+            />
+          }
+          {activeView === 'profile' &&
             <Tabs.Panel value="profile">
-                  <div className="general-container">
-                  <UserProfile/>
-                  </div>
-            </Tabs.Panel>}
-            {/* {activeView === 'message' && (
-              <Chat
-                sender={sender}
-                receiver={receiver}
-                privateChat={privateMode}
-                onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
-              />
-          )} */}
+              <div className="general-container">
+                <UserProfile />
+              </div>
+            </Tabs.Panel>
+          }
+          {activeView === 'chat' && (
+            <Chat
+              senderID={senderID}
+              senderUsername={sender}
+              receiverIDs={selectedRecipients}
+              privateChat={privateMode}
+              lastFetched={lastFetched}
+              setLastFetched={setLastFetched}
+              onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+            />
+          )}
+
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>

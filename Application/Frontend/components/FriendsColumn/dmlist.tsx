@@ -1,6 +1,6 @@
 // components/FriendList.tsx
 import React, { useState, useEffect } from 'react';
-import FriendComponent from '../FriendProfile/FriendComponet';
+import FriendComponent from '../FriendProfile/FriendComponent';
 
 type Friend = {
   name: string;

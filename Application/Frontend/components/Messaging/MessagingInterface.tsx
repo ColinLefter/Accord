@@ -1,74 +1,84 @@
 "use client";
 
-import { Message } from './Message';
+import { Message } from "@/components/Messaging/Message";
 import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@mantine/core';
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
-import * as Ably from 'ably';
+import { ChatProps, MessageProps } from "@/accordTypes";
+import { createHash } from 'crypto';
+import { useUser } from '@clerk/nextjs';
 
-export interface Message {
-  username: string,
-  message: string,
-  firstMessage?: boolean,
-  date?: string,
-  connectionId?: string,
-  data?: string,
-}
-
-interface MessagingInterfaceProps {
-  sender: string;
-  receiver: string;
-  privateChat: boolean;
-  onMessageExchange: () => void; // Include in the props of MessagingInterface
-}
+const generateHash = (input: string) => {
+  return createHash('sha256').update(input).digest('hex');
+};
 
 /**
- * The MessagingInterface component manages and displays the chat interface, allowing users to send and receive messages.
- * It utilizes Ably's real-time messaging service for communication and maintains the chat history both locally and in MongoDB.
+ * Provides a comprehensive chat interface for real-time messaging within the application. This component integrates with Ably's real-time messaging service to manage and display interactive chat functionalities, such as sending and receiving messages, maintaining chat history, and providing a user-friendly messaging UI. It supports both private and group chat modes, enabling dynamic conversation flows.
+ *
+ * Key Features:
+ * - Real-time messaging powered by Ably.
+ * - Local and MongoDB-backed chat history management.
+ * - Dynamic UI for message input and display, with auto-scrolling to the latest message.
+ * - End-to-end privacy features for secure communications.
  *
  * Props:
- * - sender: The username of the user who is sending the message.
- * - receiver: The username of the user who is receiving the message.
- * - privateChat: A boolean indicating whether the chat is private.
- * - onMessageExchange: A callback function that is invoked whenever a message is sent or received, supporting end-to-end privacy features.
+ * - senderUsername: Username of the message sender.
+ * - senderID: Unique identifier of the message sender.
+ * - receiverIDs: Array of identifiers for the message recipients, supporting group chat functionality.
+ * - privateChat: Boolean flag to indicate whether the chat is private, affecting chat history management.
+ * - onMessageExchange: Callback function triggered on message send or receive, facilitating additional privacy controls.
  *
- * The component listens for incoming messages via the Ably channel, maintains local message history state, and provides a UI for sending new messages.
- * It also interacts with backend APIs to fetch and update message history in MongoDB based on the chat's privacy settings.
+ * The component's design ensures a seamless chat experience, with features like message grouping by sender, automatic scrolling to the most recent message, and a privacy-first approach to message history. It leverages the useChannel hook from Ably for subscribing to and publishing messages on designated channels, hashed for security and uniqueness.
+ *
+ * @param {ChatProps} props - The properties defining the chat's configuration and behavior, including details about the participants, privacy settings, and messaging callbacks.
+ * @returns {JSX.Element} A fully interactive chat interface component, ready for integration into the application's messaging feature set.
  */
-export function MessagingInterface({ sender, receiver, privateChat, onMessageExchange  }: MessagingInterfaceProps) {
+export function MessagingInterface({ senderUsername, senderID, receiverIDs, privateChat, onMessageExchange }: ChatProps) {
+  const { user } = useUser();
+  const [userProfileURL, setUserProfileURL] = useState<string>(''); 
+
+  useEffect(() => {
+    if (user && user.imageUrl) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setUserProfileURL(user.imageUrl);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
+
   let messageEnd: HTMLDivElement | null = null;
+  const inputBoxRef = useRef(null);
+  const messageEndRef = React.useRef<HTMLDivElement>(null);; // Updated to use useRef
 
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
-  const [receivedMessages, setReceivedMessages] = useState<Message[]>([]); // receivedMessages stores the on-screen chat history.
-
+  const [receivedMessages, setReceivedMessages] = useState<MessageProps[]>([]); // receivedMessages stores the on-screen chat history.
+  const memberIDs = [senderID, ...receiverIDs] // / To allow for group chats, we are creating an array that contains the sender and the receivers.
+  memberIDs.sort(); // CRITICAL: Sorts in-place. We need to sort the key to counteract the swapping mechanism where sender and receiver becomes flipped.
   // Retrieving the chat history and update function from the context
   const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty.
-
-  const inputBoxRef = useRef(null);
 
   // useChannel is a react-hook API for subscribing to messages from an Ably channel.
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
 
-  const channelKey = `chat:${[sender, receiver].sort().join(",")}`; // We must counteract the swapping mechanism by sorting the names alphabetically.  
+  const rawChannelKey = `chat:${memberIDs.join(",")}`;
+  const channelKey = generateHash(rawChannelKey); // Generating a SHA-256 hash of a channel to compress it and also enforce security, privacy and uniqueness :D
   const { channel, ably } = useChannel(channelKey, (messageData) => {
     // This callback gets executed for any message received on this channel.
     // If the sender is the current user, don't add the message to receivedMessages because
     // it's already added to the state when the user sends the message.
-    if (messageData.name === sender) {
+    if (messageData.name === senderUsername) {
       return;
     }
   
     // For any message received from others, update the state.
     const { text, date } = messageData.data;
-    const incomingMessage: Message = {
+    const incomingMessage: MessageProps = {
       username: messageData.name,
       message: text,
       date: date,
       connectionId: messageData.clientId,
-      data: text,
+      userProfileURL: messageData.data.userProfileURL
     };
   
     setReceivedMessages((prevMessages) => [...prevMessages, incomingMessage]);
@@ -98,8 +108,10 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
         if (data.messageHistory && data.messageHistory.length > 0) {
           setReceivedMessages(data.messageHistory);
         }
-      } else {
-        console.error('Failed to fetch message history from MongoDB.');
+      } else if (response.status === 404) {
+        console.error("Chat history not found");
+      } else if (response.status === 500) {
+        console.error("Error fetching message history");
       }
     } catch (error) {
       console.error('Error fetching message history from MongoDB:', error);
@@ -130,18 +142,18 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     const dateStr = `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')} ${now.getHours().toString().padStart(2, '0')}:${now.getMinutes().toString().padStart(2, '0')}`;
   
     const outgoingMessage = {
-      username: sender,
+      username: senderUsername,
       message: messageText,
       date: dateStr,
-      data: messageText,
+      userProfileURL: userProfileURL
     };
   
     // Publish the message to the Ably channel. This is how we send messages to other users.
     // We don't specify who the message is for as the way we handle who receives messages is by subscribing certain users to certain channels.
     // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
     await channel.publish({
-      name: sender,
-      data: { text: messageText, date: dateStr }
+      name: senderUsername,
+      data: { text: messageText, date: dateStr, userProfileURL: userProfileURL }
     });
   
     // Update the local state for the sender's UI. The message for the receiver
@@ -159,10 +171,10 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-              channelKey,
+              channelKey: channelKey,
               messageHistory: updatedHistory,
-              owner: sender, // hard-coded until we implement site-wide user authentication
-              members: [sender, receiver] // hard-coded until we implement site-wide user authentication
+              owner: senderUsername,
+              memberIDs: memberIDs
             }),
           });
         } catch (error) {
@@ -220,7 +232,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
       lastUsername = message.username;
       acc.push(
         <Stack key={index} gap="0" justify="flex-start">
-          <Message username={message.username} message={message.message} firstMessage={true} date={message.date} />
+          <Message username={message.username} message={message.message} firstMessage={true} date={message.date} userProfileURL={message.userProfileURL} />
         </Stack>
       );
     } else {
@@ -229,7 +241,7 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
         acc[acc.length - 1],
         {},
         React.Children.toArray(acc[acc.length - 1].props.children).concat(
-          <Message key={index} username={message.username} message={message.message} date={message.date} />
+          <Message key={index} username={message.username} message={message.message} date={message.date} userProfileURL={message.userProfileURL} />
         )
       );
   
@@ -249,9 +261,16 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
     setReceivedMessages(chatHistory);
   }, [chatHistory]);
 
+  const messageLabel = receiverIDs.length > 1 ? `Message everyone in the group` : `Send a DM`;
+
+  useEffect(() => {
+    if (messageEndRef.current) {
+      messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [receivedMessages]); // Scrolls when receivedMessages updates  
+
   return (
     <div className="messaging-container">
-
       <Stack justify="space-between" style={{ height: '100%' }}>
         {/* All the message components exist here */}
         <Flex component={ScrollArea}>{messages}</Flex>
@@ -259,13 +278,13 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
           Keeps the message box scrolled to the most recent message (the one on the bottom).
           This empty div is then scrolled into view whenever the component re-renders.
         */}
-        <div ref={(element) => { messageEnd = element; }}></div>
+        <div ref={messageEndRef}></div>
           <form onSubmit={handleFormSubmission}>
             <Stack>
               <Group grow>
                 <Textarea
                     ref={inputBoxRef}
-                    placeholder={`Message @${receiver}`}
+                    placeholder={messageLabel}
                     autosize
                     minRows={1}
                     maxRows={10}
@@ -273,7 +292,6 @@ export function MessagingInterface({ sender, receiver, privateChat, onMessageExc
                     onKeyDown={handleKeyPress}
                     onChange={(e) => setMessageText(e.target.value)}
                   />
-                  <Button type="submit" disabled={messageTextIsEmpty}>Send</Button>
               </Group>
             </Stack>
           </form>
