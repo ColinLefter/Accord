@@ -3,14 +3,13 @@ import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
 
 /**
- * Handles the addition of a friend between two users in the Accord application. It accepts a POST
+ * Handles the addition of a friend request between two users in the Accord application. It accepts a POST
  * request containing the `senderID` and `friendUsername`. This endpoint interacts with a MongoDB
- * database to update the friend lists for both the sender and the recipient (friend).
+ * database to update the friend request lists for both the sender and the recipient (friend).
 
  * The process involves looking up the friend by their username in the 'Accounts' collection. If the
  * friend is found, both the sender's and friend's documents are updated to include each other's ID
- * in their respective `friendList` fields. This operation ensures that the friendship connection is
- * mutual.
+ * in their respective `SentPendingFriendList` and `ReceivedPendingFriendList` fields.
 
  * The MongoDB URI is obtained from a separate configuration file (`getMongoDbUri`), abstracting the
  * details of database connection strings and credentials.
@@ -22,8 +21,8 @@ import { getMongoDbUri } from '@/lib/dbConfig';
  * - Returns a 500 status code if an internal server error occurs during database operations.
 
  * Success Response:
- * - On successfully adding the friend, responds with a 200 status code and a message indicating
- *   the friend was added successfully.
+ * - On successfully sending the friend request, responds with a 200 status code and a message indicating
+ *   the friend request was sent successfully.
 
  * Environment Variables:
  * - Ensure the MongoDB credentials and URI are properly configured and accessible to the handler
@@ -61,13 +60,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(400).json({ error: 'Invalid senderID or friendID' });
     }    
 
-    // Add friend to the sender's friendList
-    await accountsCollection.updateOne({ id: senderID }, { $addToSet: { friendList: friend.id } });
+    // Add friend to the sender's SentPendingFriendList and vice versa
+    await accountsCollection.updateOne({ id: senderID }, { $addToSet: { SentPendingFriendList: friend.id } });
+    await accountsCollection.updateOne({ id: friend.id }, { $addToSet: { ReceivedPendingFriendList: senderID } });
 
-    // Add sender to the friend's friendList
-    await accountsCollection.updateOne({ id: friend.id }, { $addToSet: { friendList: senderID } });
-
-    res.status(200).json({ message: 'Friend added successfully' });
+    res.status(200).json({ message: 'Friend request sent successfully' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Internal server error' });
