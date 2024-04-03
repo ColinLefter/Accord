@@ -10,7 +10,7 @@ export default function ChatFetcher() {
   const fetchChatHistory = async () => {
     setError(''); // Reset error message
     try {
-      const response = await fetch('/api/get_chats', {
+      const response = await fetch('/api/get_chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
