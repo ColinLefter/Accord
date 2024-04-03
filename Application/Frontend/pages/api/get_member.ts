@@ -5,7 +5,7 @@ import { getMongoDbUri } from '@/lib/dbConfig';
 /**
  * API endpoint handler for fetching the members of a chat from the MongoDB database.
  * This handler responds to POST requests with a specific channel key and retrieves
- * the corresponding chat members.
+ * the corresponding chat members or other words the user id of user.
  *
  * @param {NextApiRequest} req The incoming HTTP request. Expects a POST method
  * with a body containing the 'channelKey' to identify the chat whose members are being requested.
