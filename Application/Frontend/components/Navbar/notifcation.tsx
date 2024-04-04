@@ -23,7 +23,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),
       });
-      const receivedResponse = await fetch('/api/Get-Pending-FriendRequest', {
+      const receivedResponse = await fetch('/api/Get-Pending-Friend-Request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),
