@@ -84,7 +84,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   return (
     <Menu width={300} position="bottom-end">
       <Menu.Target>
-        <Button><span>Inbox Icon</span></Button>
+        <Button><span>Inbox </span></Button>
       </Menu.Target>
       <Menu.Dropdown>
         <Text size="lg" px={10} py={5} style={{ fontWeight: 500, textAlign: 'center' }}>Inbox</Text>
