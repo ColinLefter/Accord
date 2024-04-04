@@ -6,7 +6,7 @@ const App = () => {
   return (
     <div>
       {/* Other components */}
-      <InboxDropdown userId={'user_2eHnI6SD0sIToIMcS5DqAfEBp1K'} />
+      <InboxDropdown userId={'user_2eLZbDAS203WeCpTZtygDESX4tL'} />
       {/* Other components */}
     </div>
   );
