@@ -1,8 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
-import { currentUser } from '@clerk/nextjs';
-import { getAuth } from '@clerk/nextjs/dist/types/server-helpers.server';
 
 let client: MongoClient | null = null;
 
@@ -25,24 +23,24 @@ let client: MongoClient | null = null;
  * @param {NextApiResponse} res The response object used to send back the server IDs or error messages.
  */
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const user = await currentUser();
-
-  // Immediately handle the case where user is null.
-  // There is a possibility that we will always get this error, in which case we need to pass the user as a parameter to the function from the client-side.
-  // That is because we cannot use useEffect on the server-side as that is a client-side hook, but if we can pass it from the client-side, that solves the problem.
-  if (!user) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-
   if (req.method === 'POST') {
     try {
+      const { username } = req.body;
+
+      // Immediately handle the case where user is null.
+      // There is a possibility that we will always get this error, in which case we need to pass the user as a parameter to the function from the client-side.
+      // That is because we cannot use useEffect on the server-side as that is a client-side hook, but if we can pass it from the client-side, that solves the problem.
+      if (!username) {
+        return res.status(401).json({ error: 'Username not provied. Please sign in.' }); // Will never be reached anyway as you need to be signed in to even get here.
+      }
+
       client = new MongoClient(getMongoDbUri());
       await client.connect();
       const db = client.db('Accord');
 
       const serversCollection = db.collection("ServersOfUsers");
-      // Here, you can safely use user.username because you've already checked if user is null.
-      const listOfServerIDs = await serversCollection.findOne({ userName: user.username });
+      // Here, you can safely use username because you've already checked if user is null.
+      const listOfServerIDs = await serversCollection.findOne({ userName: username });
       console.log(listOfServerIDs);
       if (listOfServerIDs) {
         return res.status(200).json({ listOfServerIDs: listOfServerIDs.serverIDList });

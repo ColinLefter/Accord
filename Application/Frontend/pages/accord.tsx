@@ -24,7 +24,7 @@ import React, { useEffect, useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
 import { NewChatModal } from '@/components/Messaging/NewChatModal';
 import classes from "@/components/tabstyling.module.css";
-import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
+import { useUser, UserProfile } from '@clerk/nextjs';
 
 import { ServerList } from '@/components/LeftSidebar/ServerList';
 
@@ -147,8 +147,6 @@ export default function Accord() {
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-
-
           {activeView === 'friends' && 
             <FriendsTab
               senderUsername={sender}
@@ -177,7 +175,6 @@ export default function Accord() {
               onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
             />
           )}
-
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>

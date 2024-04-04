@@ -2,17 +2,25 @@
 import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
 import React, { useState, useEffect } from 'react';
 import { IconPhoto, IconMessageCircle, IconSettings, IconPinInvoke } from '@tabler/icons-react';
+import { useUser, UserProfile } from '@clerk/nextjs';
 
 export function ServerList() {
   const iconStyle = { width: rem(12), height: rem(12) };
-
-  
-  
   const [tabs, setTabs] = useState([{_id: "",  serverName: 'Server 1', serverID: '2', serverDesc: "This is server 1" }]);
   const [activeTab, setActiveTab] = useState('2');
   const [tabCounter, setTabCounter] = useState(2);
   const [newTabName, setNewTabName] = useState('');
   const [isAdding, setIsAdding] = useState(true);
+  const [username, setUsername] = useState('');
+
+  const { user } = useUser();
+
+  useEffect(() => {
+    if (user && user.username) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setUsername(user.username);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
   
   const getServersOfLoggedInUser = async ()  => {
 
@@ -21,6 +29,9 @@ export function ServerList() {
     headers: {
       'Content-Type': 'application/json',
     },
+    body: JSON.stringify({
+      username: username
+    }),
   });
   const data = await response.json(); 
   if (!response.ok) {
