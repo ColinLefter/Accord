@@ -19,12 +19,12 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   const fetchFriendRequests = async () => {
     setLoading(true);
     try {
-      const sentResponse = await fetch('/api/Get_SentFriendRequest', {
+      const sentResponse = await fetch('/api/Get-SentFriendRequest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),
       });
-      const receivedResponse = await fetch('/api/Get_pendingFriendRequest', {
+      const receivedResponse = await fetch('/api/Get-pendingFriendRequest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),
@@ -53,7 +53,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
 
   // Function to fetch usernames by friend IDs
   const fetchUsernames = async (friendIds: string[], setFunction: React.Dispatch<React.SetStateAction<FriendRequest[]>>) => {
-    const requests = friendIds.map(id => fetch('/api/get_username_from_id', {
+    const requests = friendIds.map(id => fetch('/api/get-username-from-id', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ userID: id }),
