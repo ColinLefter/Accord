@@ -18,12 +18,12 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   const fetchFriendRequests = async () => {
     setLoading(true);
     try {
-      const sentResponse = await fetch('/api/Get-SentFriendRequest', {
+      const sentResponse = await fetch('/api/Get-Sent-Friend-Request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),
       });
-      const receivedResponse = await fetch('/api/Get-pendingFriendRequest', {
+      const receivedResponse = await fetch('/api/Get-pending-FriendRequest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),
