@@ -7,7 +7,7 @@ interface FriendRequest {
 }
 
 interface InboxDropdownProps {
-  userId: string; // Accept userId as a prop
+  userId: string;
 }
 
 const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
@@ -15,7 +15,6 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  // Function to fetch friend requests (both sent and received)
   const fetchFriendRequests = async () => {
     setLoading(true);
     try {
@@ -51,7 +50,6 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
     }
   };
 
-  // Function to fetch usernames by friend IDs
   const fetchUsernames = async (friendIds: string[], setFunction: React.Dispatch<React.SetStateAction<FriendRequest[]>>) => {
     const requests = friendIds.map(id => fetch('/api/get-username-from-id', {
       method: 'POST',
@@ -77,6 +75,22 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
     }
   };
 
+  const acceptFriendRequest = async (friendId: string) => {
+    try {
+      const response = await fetch('/api/accept-friend-request', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId, friendId }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to accept friend request');
+      }
+      fetchFriendRequests();
+    } catch (error) {
+      console.error('Failed to accept friend request:', error);
+    }
+  };
+
   useEffect(() => {
     if (userId) fetchFriendRequests();
   }, [userId]);
@@ -84,20 +98,24 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   return (
     <Menu width={300} position="bottom-end">
       <Menu.Target>
-        <Button><span>Inbox </span></Button>
+        <Button><span>Inbox</span></Button>
       </Menu.Target>
       <Menu.Dropdown>
         <Text size="lg" px={10} py={5} style={{ fontWeight: 500, textAlign: 'center' }}>Inbox</Text>
         <Divider />
-        <Menu.Label>Sent friend Requests</Menu.Label>
+        <Menu.Label>Sent Friend Requests</Menu.Label>
         {loading ? <Notification title="Loading..." /> : sentRequests.map((item) => (
-          <Notification key={item.id} title={`Friend request Sent to ${item.username}`} icon={<span>✉️</span>} />
+          <Notification key={item.id} title={`Friend request sent to ${item.username}`} icon={<span>✉️</span>} />
         ))}
         {sentRequests.length === 0 && !loading && <Text>No sent requests</Text>}
         <Divider />
-        <Menu.Label>Received Friend  Requests</Menu.Label>
-        {receivedRequests.map((item) => (
-          <Notification key={item.id} title={`Friend Request From ${item.username}`} icon={<span>📬</span>} />
+        <Menu.Label>Received Friend Requests</Menu.Label>
+        {loading ? <Notification title="Loading..." /> : receivedRequests.map((item) => (
+          <Notification key={item.id} title={`Friend request from ${item.username}`} icon={<span>📬</span>}>
+            <Button size="xs" onClick={() => acceptFriendRequest(item.id)}>
+              Accept
+            </Button>
+          </Notification>
         ))}
         {receivedRequests.length === 0 && !loading && <Text>No received requests</Text>}
       </Menu.Dropdown>
