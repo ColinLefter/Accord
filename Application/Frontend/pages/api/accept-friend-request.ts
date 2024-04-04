@@ -25,11 +25,6 @@ import { getMongoDbUri } from '@/lib/dbConfig';
  * - Ensure the MongoDB credentials and URI are properly configured and accessible to the handler
  *   through environment variables or a configuration file.
 
- * Usage:
- * Deploy this function as part of your Next.js API routes. Make sure to handle client-side
- * requests appropriately, ensuring that `userId` and `friendId` are provided in the
- * POST request body.
-
  * @param {NextApiRequest} req The Next.js API request object.
  * @param {NextApiResponse} res The Next.js API response object.
  */
