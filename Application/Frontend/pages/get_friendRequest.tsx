@@ -30,6 +30,7 @@ const FetchPendingListPage: FC = () => {
   };
 
   const fetchUsernames = async (friendIds: string[]) => {
+    // Process each friend ID to fetch the corresponding username
     const requests = friendIds.map(async (id) => {
       const response = await fetch('/api/get_username_from_id', {
         method: 'POST',
@@ -46,6 +47,7 @@ const FetchPendingListPage: FC = () => {
     });
 
     try {
+      // Wait for all username fetches to complete
       const resultList = await Promise.all(requests);
       setPendingList(resultList);
     } catch (error) {
@@ -64,14 +66,14 @@ const FetchPendingListPage: FC = () => {
         required
       />
       <Button onClick={fetchPendingList} loading={loading} mt="md">
-        Fetch Sent Friend Request List
+        Fetch sentFriend request List
       </Button>
       {pendingList.length > 0 && (
         <Box mt="md">
-          <Title order={4} style={{ textAlign: 'center' }}>Sent Friend Request List</Title>
+          <Title order={4} style={{ textAlign: 'center' }}>Sent FriendRequest List</Title>
           <List>
             {pendingList.map((item, index) => (
-              <List.Item key={index}>{item.username}</List.Item> // Display only the username
+              <List.Item key={index}>{item.username} (ID: {item.id})</List.Item> // Display the username and ID
             ))}
           </List>
         </Box>

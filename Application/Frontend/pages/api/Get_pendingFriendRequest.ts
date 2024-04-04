@@ -29,7 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Now user variable contains these data from the table
       if (user) { // Check if the user existed
         // Return the array ReceivedPendingFriendList of this user
-        return res.status(200).json({ ReceivedPendingFriendList: user.PendingFriendList});
+        return res.status(200).json({ ReceivedPendingFriendList: user.ReceivedPendingFriendList});
       } else {
         return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
       }

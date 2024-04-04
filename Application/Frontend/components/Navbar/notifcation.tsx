@@ -1,7 +1,7 @@
 import React, { useState, useEffect, FC } from 'react';
 import { Menu, Divider, Text, Notification, Button } from '@mantine/core';
 
-interface PendingRequest {
+interface FriendRequest {
   id: string;
   username: string;
 }
@@ -11,86 +11,95 @@ interface InboxDropdownProps {
 }
 
 const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
-  const [pendingList, setPendingList] = useState<PendingRequest[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
+  const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  const fetchPendingList = async () => {
+  // Function to fetch friend requests (both sent and received)
+  const fetchFriendRequests = async () => {
     setLoading(true);
     try {
-      const response = await fetch('/api/Get_SentFriendRequest', {
+      const sentResponse = await fetch('/api/Get_SentFriendRequest', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: userId }),
+      });
+      const receivedResponse = await fetch('/api/Get_pendingFriendRequest', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),
       });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch');
+      if (!sentResponse.ok || !receivedResponse.ok) {
+        throw new Error('Failed to fetch friend requests');
       }
 
-      const data = await response.json();
-      const friendIds = data.ReceivedPendingFriendList || [];
-      await fetchUsernames(friendIds);
+      const sentData = await sentResponse.json();
+      const receivedData = await receivedResponse.json();
+
+      const sentFriendIds = sentData.ReceivedPendingFriendList || [];
+      const receivedFriendIds = receivedData.ReceivedPendingFriendList || [];
+
+      await Promise.all([
+        fetchUsernames(sentFriendIds, setSentRequests),
+        fetchUsernames(receivedFriendIds, setReceivedRequests)
+      ]);
     } catch (error) {
-      console.error('Failed to fetch the pending list:', error);
+      console.error('Failed to fetch the friend requests:', error);
     } finally {
       setLoading(false);
     }
   };
 
-  const fetchUsernames = async (friendIds: string[]) => {
-    const requests = friendIds.map(async (id) => {
-      const response = await fetch('/api/get_username_from_id', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userID: id }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch username for ID ${id}`);
-      }
-
-      const data = await response.json();
-      return { id, username: data.username };
-    });
+  // Function to fetch usernames by friend IDs
+  const fetchUsernames = async (friendIds: string[], setFunction: React.Dispatch<React.SetStateAction<FriendRequest[]>>) => {
+    const requests = friendIds.map(id => fetch('/api/get_username_from_id', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userID: id }),
+    }));
 
     try {
-      const resultList = await Promise.all(requests);
-      setPendingList(resultList);
+      const responses = await Promise.all(requests);
+      const users = await Promise.all(responses.map(res => {
+        if (!res.ok) {
+          throw new Error(`Failed to fetch username for an ID`);
+        }
+        return res.json();
+      }));
+
+      setFunction(users.map((user, index) => ({
+        id: friendIds[index],
+        username: user.username,
+      })));
     } catch (error) {
       console.error('Failed to fetch usernames:', error);
     }
   };
 
   useEffect(() => {
-    if (userId) fetchPendingList();
-  }, [userId]); // Fetch pending list when userId changes
+    if (userId) fetchFriendRequests();
+  }, [userId]);
 
   return (
     <Menu width={300} position="bottom-end">
       <Menu.Target>
-        <Button>
-          {/* You can replace this with an actual icon */}
-          <span>Inbox </span>
-        </Button>
+        <Button><span>Inbox Icon</span></Button>
       </Menu.Target>
-
       <Menu.Dropdown>
-        <Text size="lg" px={10} py={5} style={{ fontWeight: 500, textAlign: 'center' }}>
-          Inbox
-        </Text>
+        <Text size="lg" px={10} py={5} style={{ fontWeight: 500, textAlign: 'center' }}>Inbox</Text>
         <Divider />
-        <Menu.Label>For You</Menu.Label>
-        {loading ? (
-          <Notification title="Loading..." />
-        ) : (
-          pendingList.length > 0 ? (
-            pendingList.map((item) => (
-              <Notification key={item.id} title={`Friend request sent to ${item.username}`} icon={<span>✉️</span>} />
-            ))
-          ) : (
-            <Notification title="No pending requests" />
-          )
-        )}
+        <Menu.Label>Sent friend Requests</Menu.Label>
+        {loading ? <Notification title="Loading..." /> : sentRequests.map((item) => (
+          <Notification key={item.id} title={`Friend request Sent to ${item.username}`} icon={<span>✉️</span>} />
+        ))}
+        {sentRequests.length === 0 && !loading && <Text>No sent requests</Text>}
+        <Divider />
+        <Menu.Label>Received Friend  Requests</Menu.Label>
+        {receivedRequests.map((item) => (
+          <Notification key={item.id} title={`Friend Request From ${item.username}`} icon={<span>📬</span>} />
+        ))}
+        {receivedRequests.length === 0 && !loading && <Text>No received requests</Text>}
       </Menu.Dropdown>
     </Menu>
   );
