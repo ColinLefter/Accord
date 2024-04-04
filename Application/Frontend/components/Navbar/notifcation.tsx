@@ -107,7 +107,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
         {loading ? <Notification title="Loading..." /> : sentRequests.map((item) => (
           <Notification key={item.id} title={`Friend request sent to ${item.username}`} icon={<span>✉️</span>} />
         ))}
-        {sentRequests.length === 0 && !loading && <Text>No sent requests</Text>}
+        {sentRequests.length === 0 && !loading && <Text>No sent friend requests</Text>}
         <Divider />
         <Menu.Label>Received Friend Requests</Menu.Label>
         {loading ? <Notification title="Loading..." /> : receivedRequests.map((item) => (
@@ -117,7 +117,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
             </Button>
           </Notification>
         ))}
-        {receivedRequests.length === 0 && !loading && <Text>No received requests</Text>}
+        {receivedRequests.length === 0 && !loading && <Text>No received friend requests</Text>}
       </Menu.Dropdown>
     </Menu>
   );
