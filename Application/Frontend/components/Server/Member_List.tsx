@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Avatar, Group, Text, Stack, Paper, Button, Menu, rem } from '@mantine/core';
-import { IconSettings, IconMessageCircle, IconPhoto, IconSearch, IconArrowsLeftRight, IconTrash } from '@tabler/icons-react';
+import { IconSettings, IconMessageCircle, IconPhoto, IconSearch, IconArrowsLeftRight, IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
 
 export function MemberList() {
@@ -94,7 +94,7 @@ export function MemberList() {
 
       {membersList.map((member, index) => (
         <div>
-          <Menu shadow="md" width={230} withArrow>
+          <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
                   <Button variant="filled" style={{width: "200px"}}>
                       <Group py="10">
@@ -106,14 +106,25 @@ export function MemberList() {
 
               <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
-                <Menu.Item color="red" leftSection={<IconTrash style={{ width: rem(14), height: rem(14) }}/>}>
+                <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
+                  
+                  <Button color='green'  onClick={() => removeMember(member)}>Promote to Admin</Button>
+                </Menu.Item>
+
+                <Menu.Item color="red" leftSection={<IconTrash style={{ width: rem(14)  , height: rem(14) }}/>}>
                   
                   <Button color='red'  onClick={() => removeMember(member)}>Remove From Server</Button>
                 </Menu.Item>
               </Menu.Dropdown>
             </Menu>
+            
         </div>
       ))}
+      <Button color='green' variant="filled" style={{width: "200px"}} leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}>
+                <Group py="10">
+                    <Text size="sm">Add member</Text>
+                  </Group>
+            </Button>
     </Stack>
   );
 }

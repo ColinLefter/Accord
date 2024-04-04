@@ -27,6 +27,7 @@ import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 
 import { ServerList } from '@/components/LeftSidebar/ServerList';
+import { MemberList } from '@/components/Server/Member_List';
 
 
 import { useCache } from '@/contexts/queryCacheContext';
@@ -59,6 +60,7 @@ export default function Accord() {
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
 
   // Function to handle chat creation from modal
   const handleCreateChat = (recipients: string[]) => {
@@ -95,7 +97,7 @@ export default function Accord() {
             collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
           }}
           padding="md"
-          aside={{ width: 120, breakpoint: 'sm' }}
+          aside={{ width: 250, breakpoint: 'sm' }}
         >
           <AppShell.Header>
             <Group justify="space-between" className="center" px="md">
@@ -186,7 +188,8 @@ export default function Accord() {
               .map((_, index) => (
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))} */}
-              <ServerList/>
+              {/* <ServerList/> */}
+              <MemberList/>
           </AppShell.Aside>
         </AppShell>
       </Tabs>
