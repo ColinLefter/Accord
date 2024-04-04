@@ -15,7 +15,7 @@ export default authMiddleware({
     '/api/get-ids-of-friends',
     '/api/get-usernames-of-friends',
     '/api/get-message-history',
-    '/api/getServersListOfUser',
+    '/api/get-server-members',
     '/api/initializingServerList',
     '/api/login',
     '/api/registration',
@@ -23,7 +23,7 @@ export default authMiddleware({
     '/api/testMongoDB',
     '/api/update-message-history',
     '/api/update-user-data',
-    '/api/userSettings'
+    '/api/userSettings',
   ],
   // Prevent the specified routes from accessing authentication information:
   // ignoredRoutes: [''],

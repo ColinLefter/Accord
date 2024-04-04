@@ -1,8 +1,7 @@
 
 import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
 import React, { useState, useEffect } from 'react';
-import { IconPhoto, IconMessageCircle, IconSettings, IconPinInvoke } from '@tabler/icons-react';
-import { useUser, UserProfile } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 
 export function ServerList() {
   const iconStyle = { width: rem(12), height: rem(12) };
@@ -21,10 +20,11 @@ export function ServerList() {
       setUsername(user.username);
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
+
+  console.log("Username: " + username);
   
   const getServersOfLoggedInUser = async ()  => {
-
-    const response = await fetch('/api/getServersListOfUser', {
+    const response = await fetch('/api/get-server-members', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -35,7 +35,7 @@ export function ServerList() {
   });
   const data = await response.json(); 
   if (!response.ok) {
-    throw new Error('Failed to add server');
+    console.log(response.statusText);
   }
 
   // Handle success
@@ -56,7 +56,9 @@ export function ServerList() {
    
   let xd:any
   const getServersFromServerIDList = async () => {
-    getServersOfLoggedInUser()
+    if (user) {
+      getServersOfLoggedInUser()
+    }
     let serverArray = []
     let serverObj = {}
     //alert(ServerIDArray)
