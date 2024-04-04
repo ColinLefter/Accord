@@ -46,7 +46,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const accountsCollection = db.collection("Accounts");
 
       // Query the database for the given userID
-      const user = await accountsCollection.findOne({ id: userID }, { projection: { _id: 0, userName: 1 } });
+      const user = await accountsCollection.findOne({ id: userID });
+
 
       if (user) {
         // Return the username associated with the userID
