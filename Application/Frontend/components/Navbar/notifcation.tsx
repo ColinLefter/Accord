@@ -70,7 +70,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
       <Menu.Target>
         <Button>
           {/* You can replace this with an actual icon */}
-          <span>Inbox Icon</span>
+          <span>Inbox </span>
         </Button>
       </Menu.Target>
 

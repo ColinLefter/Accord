@@ -31,6 +31,8 @@ import { ServerList } from '@/components/LeftSidebar/ServerList';
 
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
+import InboxDropdown from '../components/Navbar/notifcation';
+
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -113,6 +115,7 @@ export default function Accord() {
                   disabled={chatStarted}  // Disable the switch if the chat has started
                 />
                 <ColorSchemeToggle/>
+                {user && user.id && <InboxDropdown userId={user.id} />} {/* Conditionally render InboxDropdown */}
               </Group>
             </Group>
           </AppShell.Header>
