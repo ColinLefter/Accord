@@ -3,7 +3,7 @@
 import React from "react";
 import { ClerkProvider } from '@clerk/nextjs';
 import { CacheProvider } from '@/contexts/queryCacheContext';
-import { MantineProvider, useComputedColorScheme, createTheme, getThemeColor } from "@mantine/core";
+import { MantineProvider, useComputedColorScheme, createTheme, getThemeColor, MantineGradient, virtualColor } from "@mantine/core";
 import * as Ably from 'ably';
 import { AppProps } from "next/app";
 import { dark } from '@clerk/themes';
@@ -34,19 +34,33 @@ export default function RootLayout({ children }: any) { // The one time where 'a
 
   const customDarkTheme = createTheme({
     colors: {
+      primary: virtualColor({
+        name: 'primary',
+        dark: 'orange',
+        light: 'orange',
+      }),
       dark: [
-        '#FAFAFA', // Primary
-        "#000000",
-        "#010101",
-        "#010101",
-        "#121212",
+        '#FAFAFA',
+        "#c9c9c9",
+        '#FAFAFA',
+        '#FAFAFA', // In-component text
+        "#191919", // outlines
         "#040404",
-        "#070707",
-        "#0a0a0a",
-        "#0e0e0e",
+        "#191919", // Accent
+        "#101010", // Main background
+        "#262626", // Primary color
         "#121212"
-      ],
-    }
+      ]
+    },
+    white: "#FAFAFA",
+    autoContrast: true,
+    defaultGradient: { from: "pink", to: "yellow" },
+    shadows: {
+      sm: '1px 1px 3px rgba(100, 100, 100, .25)',
+      md: '1px 1px 3px rgba(100, 100, 100, .25)',
+      xl: '5px 5px 3px rgba(40, 40, 40, .25)',
+    },
+    primaryColor: 'primary'
   });
   
   const WithProviders = () => {

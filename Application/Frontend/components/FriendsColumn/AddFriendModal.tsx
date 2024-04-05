@@ -80,8 +80,8 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
     <>
       <Button
         fullWidth
-        color="black"
         onClick={open}
+        variant="gradient"
       >
         Add friend
       </Button>
@@ -100,7 +100,6 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
               fw={500}
               size="xl"
               component="span"
-              gradient={{ from: "pink", to: "yellow" }}
             >
               Add a Friend
             </Text>
@@ -123,7 +122,6 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
           <Button
             fullWidth
             variant="gradient"
-            gradient={{ from: "pink", to: "yellow" }}
             onClick={handleAddFriendClick} // Fix to use correct handler
           >
             Add Friend

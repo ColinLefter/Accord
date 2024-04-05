@@ -36,6 +36,8 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [receiverUsername, setreceiverUsername] = useState<string>('');
     const [receiverID, setReceiverID] = useState<string>('');
+
+    const theme = useMantineTheme();
     
     const filteredFriendList = friends.list.filter((friend) =>
       friend.username.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by username
@@ -70,7 +72,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
                 placeholder="Search..."
                 leftSection={<IconSearch color="orange" stroke={1.5} />}
                 rightSection={
-                    <ActionIcon color="black" radius="xl">
+                    <ActionIcon radius="xl" variant="gradient">
                         <IconArrowRight stroke={1.5} />
                     </ActionIcon>
                 }
@@ -109,7 +111,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
                     </Paper>
                 ) : (
                     filteredFriendList.map((friend, index) => (
-                        <Paper color="black" shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friend.username, friend.id)}>
+                        <Paper shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friend.username, friend.id)}>
                           <Group py="10">
                             <Avatar alt={`Friend ${friend.username}`} radius="xl"/>
                             <Text size="sm">{friend.username}</Text>

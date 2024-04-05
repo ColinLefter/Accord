@@ -11,7 +11,8 @@ import {
   ActionIcon,
   Tabs,
   Switch,
-  Stack
+  Stack,
+  Button
 } from '@mantine/core';
 import { IconUsers, IconUserCircle } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
@@ -86,7 +87,7 @@ export default function Accord() {
   // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
     <ChatProvider>
-      <Tabs variant="unstyled" classNames={classes} value={activeView}>
+      <Tabs value={activeView}>
         <AppShell
           header={{ height: 50 }}
           navbar={{
@@ -118,21 +119,20 @@ export default function Accord() {
           <AppShell.Navbar p="md">
             <AppShell.Section grow>
               <Stack gap="xs">
-                <Tabs.List grow>
-                  <Tabs.Tab
-                    value="friends"
-                    onClick={() => handleTabSelection('friends')}
-                    leftSection={<IconUsers />}
-                  >
-                    Friends
-                  </Tabs.Tab>
-                </Tabs.List>
+                <Button
+                  value="friends"
+                  onClick={() => handleTabSelection('friends')}
+                  leftSection={<IconUsers />}
+                  variant="gradient"
+                >
+                  Friends
+                </Button>
                 <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
               </Stack>
             </AppShell.Section>
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
-                <Text py="md">Direct Messages</Text>
+                <Text py="md">Text Channels</Text>
                 <NewChatModal senderID={senderID} onCreateChat={handleCreateChat} lastFetched={lastFetched} setLastFetched={setLastFetched} />
               </Group>
               {Array(60)
