@@ -41,6 +41,7 @@
     "@babel/core": "^7.23.2",
     "@clerk/nextjs": "^4.29.9",
     "@clerk/themes": "^1.7.10",
+    "@mantine/notifications": "^7.7.1",
     "@next/eslint-plugin-next": "^14.0.1",
     "@storybook/addon-essentials": "^7.5.2",
     "@storybook/addon-styling-webpack": "^0.0.5",
