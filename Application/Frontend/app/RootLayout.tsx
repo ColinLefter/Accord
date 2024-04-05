@@ -3,7 +3,7 @@
 import React from "react";
 import { ClerkProvider } from '@clerk/nextjs';
 import { CacheProvider } from '@/contexts/queryCacheContext';
-import { MantineProvider, useComputedColorScheme } from "@mantine/core";
+import { MantineProvider, useComputedColorScheme, createTheme, getThemeColor } from "@mantine/core";
 import * as Ably from 'ably';
 import { AppProps } from "next/app";
 import { dark } from '@clerk/themes';
@@ -31,6 +31,23 @@ export default function RootLayout({ children }: any) { // The one time where 'a
     authMethod: 'POST', // Explicitly specify to use POST
     authHeaders: { 'Content-Type': 'application/json' },
   });
+
+  const customDarkTheme = createTheme({
+    colors: {
+      dark: [
+        '#FAFAFA', // Primary
+        "#000000",
+        "#010101",
+        "#010101",
+        "#121212",
+        "#040404",
+        "#070707",
+        "#0a0a0a",
+        "#0e0e0e",
+        "#121212"
+      ],
+    }
+  });
   
   const WithProviders = () => {
     const theme = useComputedColorScheme() === 'dark' ? dark : undefined;
@@ -57,7 +74,7 @@ export default function RootLayout({ children }: any) { // The one time where 'a
   }
 
   return (
-    <MantineProvider defaultColorScheme={themePreference}>
+    <MantineProvider defaultColorScheme={themePreference} theme={customDarkTheme}>
       <WithProviders />
     </MantineProvider>
   );

@@ -107,7 +107,6 @@ export default function Accord() {
               <Group>
                 <Switch
                   defaultChecked
-                  color="black"
                   label="Private mode"
                   onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
                   disabled={chatStarted}  // Disable the switch if the chat has started
