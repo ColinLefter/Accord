@@ -1,9 +1,0 @@
-{
-  "/_app": "pages/_app.js",
-  "/_error": "pages/_error.js",
-  "/_document": "pages/_document.js",
-  "/api/get-ids-of-friends": "pages/api/get-ids-of-friends.js",
-  "/accord": "pages/accord.js",
-  "/api/get-id-username-pairs": "pages/api/get-id-username-pairs.js",
-  "/api/ably-auth": "pages/api/ably-auth.js"
-}
