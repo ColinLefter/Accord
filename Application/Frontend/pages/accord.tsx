@@ -189,7 +189,7 @@ export default function Accord() {
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))} */}
               {/* <ServerList/> */}
-              <MemberList/>
+              <MemberList isAdmin = {isAdmin}/>
           </AppShell.Aside>
         </AppShell>
       </Tabs>

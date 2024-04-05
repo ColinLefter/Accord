@@ -3,9 +3,8 @@ import { Avatar, Group, Text, Stack, Paper, Button, Menu, rem } from '@mantine/c
 import { IconSettings, IconMessageCircle, IconPhoto, IconSearch, IconArrowsLeftRight, IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
 
-export function MemberList() {
+export function MemberList({isAdmin}: any) {
   // Hardcoded member list
-
   const [membersList, setMembersList] = useState<string[]>([]);
   const [serverID, setServerID] = useState<string>("2");
   const { user } = useUser();
@@ -104,7 +103,7 @@ export function MemberList() {
                   </Button>
               </Menu.Target>
 
-              <Menu.Dropdown>
+            {isAdmin && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
                   
@@ -115,16 +114,16 @@ export function MemberList() {
                   
                   <Button color='red'  onClick={() => removeMember(member)}>Remove From Server</Button>
                 </Menu.Item>
-              </Menu.Dropdown>
+              </Menu.Dropdown>}
+              
             </Menu>
-            
         </div>
       ))}
       <Button color='green' variant="filled" style={{width: "200px"}} leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}>
-                <Group py="10">
-                    <Text size="sm">Add member</Text>
-                  </Group>
-            </Button>
+          <Group py="10">
+              <Text size="sm">Add member</Text>
+            </Group>
+      </Button>
     </Stack>
   );
 }
