@@ -19,5 +19,5 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: "10.x"
-    - run: npm ci
+    - run: npm install -g npm
     - run: npm test:jest
