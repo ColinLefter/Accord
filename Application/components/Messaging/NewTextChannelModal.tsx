@@ -6,6 +6,7 @@ import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
 import { NewChatModalProps } from '@/accordTypes';
+import { notifications } from '@mantine/notifications';
 
 /**
  * NewChatModal facilitates the creation of new chat sessions, allowing users to select friends for group chats or direct messages (DMs).
@@ -45,6 +46,10 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   const handleCreateChatClick = () => {
     console.log(selectedFriends);
     onCreateChat(selectedFriends);
+    notifications.show({
+      title: 'Created a new text channel!',
+      message: `Channel participants: ${selectedFriends.join(', ')}`,
+    });
     close(); // Close the modal
   };
 

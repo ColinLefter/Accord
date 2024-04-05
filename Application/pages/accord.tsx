@@ -26,10 +26,6 @@ import { ChatProvider } from "@/contexts/chatContext";
 import { NewChatModal } from '@/components/Messaging/NewTextChannelModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserProfile } from '@clerk/nextjs';
-
-import { ServerList } from '@/components/LeftSidebar/ServerList';
-
-
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 
