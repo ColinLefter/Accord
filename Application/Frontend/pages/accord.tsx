@@ -186,7 +186,7 @@ export default function Accord() {
               .map((_, index) => (
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))} */}
-              <ServerList/>
+              {/* <ServerList/> */}
           </AppShell.Aside>
         </AppShell>
       </Tabs>

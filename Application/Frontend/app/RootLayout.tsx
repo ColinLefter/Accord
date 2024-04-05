@@ -8,6 +8,7 @@ import * as Ably from 'ably';
 import { AppProps } from "next/app";
 import { dark } from '@clerk/themes';
 import { AblyProvider } from 'ably/react';
+import { useState, useEffect } from 'react';
 
 /**
  * RootLayout wraps the entire application with necessary providers and theme configurations.
@@ -23,16 +24,22 @@ import { AblyProvider } from 'ably/react';
  * real-time messaging and authentication services.
  */
 export default function RootLayout({ children }: any) { // The one time where 'any' is actually justified
+  const [themePreference, setThemePreference] = useState<'light' | 'dark'>('light');
+
   const client = new Ably.Realtime.Promise({
     authUrl: '/api/ably-auth',
     authMethod: 'POST', // Explicitly specify to use POST
     authHeaders: { 'Content-Type': 'application/json' },
   });
-
-    // Define a wrapper component inside App to access the Mantine theme
+  
   const WithProviders = () => {
     const theme = useComputedColorScheme() === 'dark' ? dark : undefined;
     const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
+    useEffect(() => {
+      const theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      setThemePreference(theme);
+    }, []);
+  
   
     return (
       <ClerkProvider
@@ -50,7 +57,7 @@ export default function RootLayout({ children }: any) { // The one time where 'a
   }
 
   return (
-    <MantineProvider>
+    <MantineProvider defaultColorScheme={themePreference}>
       <WithProviders />
     </MantineProvider>
   );
