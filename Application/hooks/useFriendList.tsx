@@ -35,6 +35,7 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
   const [IDs, setIDs] = useState<string[]>([]);
   const [usernames, setUsernames] = useState<string[]>([]);
   const { user } = useUser();
+  const [loading, setLoading] = useState(true);
 
   const CACHE_DURATION = 5 * 1000; // Establishing a 5-second cache duration
 
@@ -54,10 +55,12 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
 
           if (response.ok) {
             const data = await response.json();
-            setIDs(data.friendList); // friendList is now an array if user IDs
-          } else {
+            setIDs(data.friendList); // If IDs are fetched
+            if(data.friendList.length === 0) setLoading(false); // If no IDs, then we're not loading anymore
+        } else {
             console.error('Failed to fetch friend list');
-          }
+            setLoading(false); // If the fetch fails, we're not loading anymore
+        }
         } catch (error) {
           console.error('Error fetching friend list:', error);
         }
@@ -80,11 +83,13 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
           });
   
           if (response.ok) {
-            const data = await response.json(); // Data is now called idUserNamePairs and is an array of id:username pairs
-            setFriends(data); // No need to map IDs to usernames since the backend does it
-          } else {
+            const data = await response.json(); 
+            setFriends(data); // After setting friends based on usernames
+            setLoading(false); // Data has been fetched and set, loading is complete
+        } else {
             console.error('Failed to fetch friend usernames');
-          }
+            setLoading(false); // If the fetch fails, we're not loading anymore
+        }
         } catch (error) {
           console.error('Error fetching friend usernames:', error);
         }
@@ -95,5 +100,5 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
   }, [user, IDs]); // Adding 'IDs' as a dependency ensures this runs when IDs are fetched/updated
 
   // Return both the usernames and the IDs
-  return { list: friends };
+  return { list: friends, isLoading: loading };
 }

@@ -1,5 +1,16 @@
 import React from 'react';
-import { Avatar, Group, Text, TextInput, TextInputProps, ActionIcon, useMantineTheme, Stack, Paper, Center } from '@mantine/core';
+import {
+    Avatar,
+    Group,
+    Text,
+    TextInput,
+    TextInputProps,
+    ActionIcon,
+    useMantineTheme,
+    Stack,
+    Paper,
+    Center
+} from '@mantine/core';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
 import { FormEvent, useEffect, useState } from "react";
 import Link from "next/link";
@@ -8,6 +19,7 @@ import { useUser } from '@clerk/nextjs';
 import { Chat } from '@/components/Messaging/Chat';
 import { useFriendList } from '@/hooks/useFriendList';
 import { FriendsTabProps } from '@/accordTypes';
+import { FriendsLoading } from '@/components/FriendsColumn/FriendsLoading';
 
 // Function to call to go back to the last previous URL
 function goBack() {
@@ -32,14 +44,14 @@ function goBack() {
 export function FriendsTab({senderUsername, senderID, privateChat, onMessageExchange, lastFetched, setLastFetched }: FriendsTabProps) {
     const { user } = useUser();
     const router = useRouter();
-    const friends = useFriendList({lastFetched, setLastFetched});
+    const { list: friends, isLoading } = useFriendList({lastFetched, setLastFetched});
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [receiverUsername, setreceiverUsername] = useState<string>('');
     const [receiverID, setReceiverID] = useState<string>('');
 
     const theme = useMantineTheme();
     
-    const filteredFriendList = friends.list.filter((friend) =>
+    const filteredFriendList = friends.filter((friend) =>
       friend.username.toLowerCase().includes(searchQuery.toLowerCase()) // Filter by username
     );
 
@@ -89,19 +101,21 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
             >
                 All friends
             </Text>
-            {/** Users that are in the friendList*/
-                filteredFriendList.length === 0 ? (
+            {isLoading ? (
+                <FriendsLoading numFriends={4} /> // This part renders if the data is still being fetched
+            ) : (
+                filteredFriendList.length === 0 ? ( // This part renders once the data has been fetched
                     <Paper shadow="xs" p="xl">
-                        <Center style={{ height: '100%' }}> {/* Ensure the Center component takes up full height */}
-                            <Text fw={400} size="xl" component="span"> {/* Wrap Text in span for inline behavior */}
+                        <Center style={{ height: '100%' }}>
+                            <Text fw={400} size="xl" component="span">
                                 Welcome to{' '}
                                 <Text
                                     variant="gradient"
                                     fw={800}
                                     size="xl"
-                                    component="span" // Use span here too for inline display
+                                    component="span"
                                     gradient={{ from: "pink", to: "yellow" }}
-                                    style={{ display: 'inline' }} // Ensure this Text is also inline
+                                    style={{ display: 'inline' }}
                                 >
                                     Accord!
                                 </Text>
@@ -112,14 +126,14 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
                 ) : (
                     filteredFriendList.map((friend, index) => (
                         <Paper shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friend.username, friend.id)}>
-                          <Group py="10">
-                            <Avatar alt={`Friend ${friend.username}`} radius="xl"/>
-                            <Text size="sm">{friend.username}</Text>
-                          </Group>
+                            <Group py="10">
+                                <Avatar alt={`Friend ${friend.username}`} radius="xl"/>
+                                <Text size="sm">{friend.username}</Text>
+                            </Group>
                         </Paper>
-                      ))
+                    ))
                 )
-            }
+            )}
         </Stack>
     );
 }
