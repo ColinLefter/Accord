@@ -22,7 +22,7 @@ import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
 import React, { useEffect, useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
-import { NewChatModal } from '@/components/Messaging/NewChatModal';
+import { NewChatModal } from '@/components/Messaging/NewTextChannelModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 

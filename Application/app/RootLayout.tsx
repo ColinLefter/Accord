@@ -9,6 +9,8 @@ import { AppProps } from "next/app";
 import { dark } from '@clerk/themes';
 import { AblyProvider } from 'ably/react';
 import { useState, useEffect } from 'react';
+import { Notifications } from '@mantine/notifications';
+import '@mantine/notifications/styles.css';
 
 /**
  * RootLayout wraps the entire application with necessary providers and theme configurations.
@@ -89,6 +91,7 @@ export default function RootLayout({ children }: any) { // The one time where 'a
 
   return (
     <MantineProvider defaultColorScheme={themePreference} theme={customDarkTheme}>
+      <Notifications />
       <WithProviders />
     </MantineProvider>
   );

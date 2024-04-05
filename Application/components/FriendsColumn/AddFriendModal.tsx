@@ -46,12 +46,10 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
         setSearchResult(response.status);
     
         if (response.ok) {
-          {() =>
-            notifications.show({
-              title: 'Friend request sent',
-              message: '@' + friendUsername,
-            })
-          }
+          notifications.show({
+            title: 'Friend request sent!',
+            message: `@${friendUsername}`,
+          });
           setFriendUsername(''); // Clear the input field to allow for further friend requests
         } else {
           console.error('Failed to add friend');
