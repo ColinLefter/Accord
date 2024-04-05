@@ -20,4 +20,4 @@ jobs:
       with:
         node-version: "20.x"
     - run: npm install -g npm
-    - run: npm test:jest
+    - run: npm run test:jest
