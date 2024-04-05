@@ -1,0 +1,43 @@
+.root {
+  padding-top: rem(80px);
+  padding-bottom: rem(80px);
+}
+
+.title {
+  font-weight: 900;
+  font-size: rem(34px);
+  margin-bottom: var(--mantine-spacing-md);
+  font-family:
+    Greycliff CF,
+    var(--mantine-font-family);
+
+  @media (max-width: 600px) {
+    font-size: rem(32px);
+  }
+}
+
+.control {
+  @media (max-width: 600px) {
+    width: 100%;
+  }
+}
+
+.mobileImage {
+  @media (min-width: 48em) {
+    display: none;
+  }
+}
+
+.desktopImage {
+  @media (max-width: 47.99em) {
+    display: none;
+  }
+}
+
+.general-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  min-height: 100vh; /* Ensure it covers the full viewport height */
+}

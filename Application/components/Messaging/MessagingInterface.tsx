@@ -294,7 +294,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   
   useEffect(() => {
     if (messageEnd) {
-      messageEnd.scrollIntoView({ behavior: 'smooth' });
+      (messageEnd as HTMLElement).scrollIntoView({ behavior: 'smooth' }); // This is still not working for some reason
     }
   }, [receivedMessages]);
 
