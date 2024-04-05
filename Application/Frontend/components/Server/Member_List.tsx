@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Avatar, Group, Text, Stack, Paper, Button, Menu, rem } from '@mantine/core';
 import { IconSettings, IconMessageCircle, IconPhoto, IconSearch, IconArrowsLeftRight, IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
+import { channel } from 'diagnostics_channel';
 
-export function MemberList({isAdmin}: any) {
+export function MemberList({isAdmin, chatID}: any) {
   // Hardcoded member list
   const [membersList, setMembersList] = useState<string[]>([]);
-  const [serverID, setServerID] = useState<string>("2");
+  const [membersListName, setMembersListName] = useState<string[]>([]);
+  const [channelKey, setChannelKey] = useState<string>(chatID);
   const { user } = useUser();
 
 //   function handleButtonClick(member: String) {
@@ -29,7 +31,7 @@ export function MemberList({isAdmin}: any) {
             'Content-Type': 'application/json',
           },
           //-----------------------------------------------------------------------------------------------------------------------------------------------
-          body: JSON.stringify({ member: member , serverID: serverID}),                              // Change this when we put in the Appshell (It is a String NOT int)
+          body: JSON.stringify({ member: member , channelKey: channelKey}),                              // Change this when we put in the Appshell (It is a String NOT int)
           //------------------------------------------------------------------------------------------------------------------------------------------------
         });
 
@@ -51,6 +53,29 @@ export function MemberList({isAdmin}: any) {
       }
   }
 
+  const fetchUserName = async (memberIDs: String[]) => {
+    try {
+      const response = await fetch('/api/ID-to-User-Name', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        //-----------------------------------------------------------------------------------------------------------------------------------------------
+        body: JSON.stringify({ memberIDs: memberIDs}),                              // Change this when we put in the Appshell (It is a String NOT int)
+        //------------------------------------------------------------------------------------------------------------------------------------------------
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        console.log("My users:" + data.userArray);
+        setMembersList(data.userArray);
+      } else {
+        console.error('Failed to fetch member list');
+      }
+    } catch (error) {
+      console.error('Error fetching member list:', error);
+    }
+  };
 
   useEffect(() => {
     if (user) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
@@ -63,14 +88,15 @@ export function MemberList({isAdmin}: any) {
               'Content-Type': 'application/json',
             },
             //-----------------------------------------------------------------------------------------------------------------------------------------------
-            body: JSON.stringify({ serverID: serverID }),                              // Change this when we put in the Appshell (It is a String NOT int)
+            body: JSON.stringify({ channelKey: channelKey }),                              // Change this when we put in the Appshell (It is a String NOT int)
             //------------------------------------------------------------------------------------------------------------------------------------------------
           });
 
           if (response.ok) {
             const data = await response.json();
-            console.log("My server:" + data.serverID);
-            setMembersList(data.memberList);
+            console.log("My server:" + data.memberIDs);
+            //setMembersList(data.memberIDs);
+            return data.memberIDs;
           } else {
             console.error('Failed to fetch member list');
           }
@@ -79,7 +105,11 @@ export function MemberList({isAdmin}: any) {
         }
       };
 
-      fetchData();
+      fetchData().then(value => {
+        console.log("AAAAAAAAAAAAAAAAAAAAAAAAA");
+        console.log(value);
+        fetchUserName(value);
+      });
     }
   }, [user]);
 
@@ -90,14 +120,13 @@ export function MemberList({isAdmin}: any) {
       <Text fw={500} className="text-xl" component="span" size="xl">
         All members
       </Text>
-
       {membersList.map((member, index) => (
         <div>
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
                   <Button variant="filled" style={{width: "200px"}}>
                       <Group py="10">
-                          <Avatar alt={`Member ${index + 1}`} radius="xl" />
+                          {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
                           <Text size="sm">{member}</Text>
                         </Group>
                   </Button>

@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { MemberList } from '@/components/Server/Member_List'; // Assuming the component is located in the specified directory
+
 
 
 //NOTE: This Page needs to be deleted in the final implementation. It is only here for Adhoc TESTING!!!
@@ -19,9 +20,11 @@ import { MemberList } from '@/components/Server/Member_List'; // Assuming the co
  *   accessible and user-friendly across various devices and user demographics.
  */
 export default function MemberListPage() {
+  const [chatID, setChatID] = useState<string>("b0b407caf9a1caaec74ed3f089ccb0916418e64984c9045b27361c920bff83df")
+  const [isAdmin, setIsAdmin] = useState(true);
   return (
     <div className="member-list-container">
-      <MemberList />
+      <MemberList isAdmin ={isAdmin} chatID = {chatID}/>
     </div>
   );
 }

@@ -59,6 +59,7 @@ export default function Accord() {
   const [sender, setSender] = useState<string>(''); 
   const [senderID, setSenderID] = useState<string>('');
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
+  const [chatID, setChatID] = useState<string>("b0b407caf9a1caaec74ed3f089ccb0916418e64984c9045b27361c920bff83df")
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
@@ -189,7 +190,7 @@ export default function Accord() {
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))} */}
               <ServerList/>
-              {/* <MemberList isAdmin = {isAdmin}/> */}
+              {/* <MemberList isAdmin = {isAdmin} chatID = {chatID}/> */}
           </AppShell.Aside>
         </AppShell>
       </Tabs>
