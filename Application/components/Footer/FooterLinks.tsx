@@ -29,6 +29,15 @@ const data = [
   },
 ];
 
+/**
+ * Renders the footer section of the application with links to GitHub, the project repository,
+ * and community resources. It also includes social media icons for further engagement.
+ * 
+ * The footer dynamically generates groups of links based on predefined data. Each group represents
+ * a different category, such as links to individual GitHub profiles, project information, and
+ * community resources. This component utilizes Mantine's UI components for consistent styling
+ * and responsiveness across the application.
+ */
 export function FooterLinks() {
   const groups = data.map((group) => {
     const links = group.links.map((link, index) => (

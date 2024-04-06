@@ -14,7 +14,10 @@ const generateHash = (input: string) => {
 };
 
 /**
- * Provides a comprehensive chat interface for real-time messaging within the application. This component integrates with Ably's real-time messaging service to manage and display interactive chat functionalities, such as sending and receiving messages, maintaining chat history, and providing a user-friendly messaging UI. It supports both private and group chat modes, enabling dynamic conversation flows.
+ * Provides a comprehensive chat interface for real-time messaging within the application.
+ * This component integrates with Ably's real-time messaging service to manage and display interactive chat functionalities,
+ * such as sending and receiving messages, maintaining chat history, and providing a user-friendly messaging UI.
+ * It supports both private and group chat modes, enabling dynamic conversation flows.
  *
  * Key Features:
  * - Real-time messaging powered by Ably.
@@ -29,9 +32,12 @@ const generateHash = (input: string) => {
  * - privateChat: Boolean flag to indicate whether the chat is private, affecting chat history management.
  * - onMessageExchange: Callback function triggered on message send or receive, facilitating additional privacy controls.
  *
- * The component's design ensures a seamless chat experience, with features like message grouping by sender, automatic scrolling to the most recent message, and a privacy-first approach to message history. It leverages the useChannel hook from Ably for subscribing to and publishing messages on designated channels, hashed for security and uniqueness.
+ * The component's design ensures a seamless chat experience, with features like message grouping by sender,
+ * automatic scrolling to the most recent message, and a privacy-first approach to message history.
+ * It leverages the useChannel hook from Ably for subscribing to and publishing messages on designated channels, hashed for security and uniqueness.
  *
- * @param {ChatProps} props - The properties defining the chat's configuration and behavior, including details about the participants, privacy settings, and messaging callbacks.
+ * @param {ChatProps} props - The properties defining the chat's configuration and behavior, including details about the participants,
+ * privacy settings, and messaging callbacks.
  * @returns {JSX.Element} A fully interactive chat interface component, ready for integration into the application's messaging feature set.
  */
 export function MessagingInterface({ senderUsername, senderID, receiverIDs, privateChat, onMessageExchange }: ChatProps) {

@@ -13,6 +13,19 @@ import { IconGauge, IconUser, IconCookie } from '@tabler/icons-react';
 import classes from './FeatureCards.module.css';
 import { TextChannelDemo } from "@/components/TextChannels/TextChannelDemo"
 
+/**
+ * A component that displays a collection of feature cards, highlighting key aspects
+ * of the text channels within the application.
+ *
+ * This component presents an overview of the application's text channel features, emphasizing
+ * user-centric design and privacy-first messaging capabilities. It showcases the ability to create
+ * direct messages or group chats and highlights the private mode feature that ensures message
+ * confidentiality by making messages disappear under certain conditions.
+ * 
+ * @returns {JSX.Element} A container with a badge, title, description, and a demonstration of
+ * text channels, arranged to visually communicate the features and benefits of the platform's
+ * text channels.
+ */
 export function FeatureCards() {
   return (
     <Container fluid py="xl" className={classes.container}>

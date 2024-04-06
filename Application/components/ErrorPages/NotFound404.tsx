@@ -2,6 +2,17 @@ import { Image, Container, Title, Text, Button, SimpleGrid, Center } from '@mant
 import classes from './NotFound404.module.css';
 import Link from "next/link";
 
+/**
+ * Renders a custom 404 Not Found page designed to handle instances where a user attempts to navigate to
+ * a non-existent page within the application. This component provides both a visual cue in the form of an
+ * illustrative image and a textual explanation that the requested page could not be found.
+ *
+ * The layout adapts responsively to different screen sizes, offering an optimized viewing experience across
+ * devices. Users are presented with an option to return to the homepage, facilitating easy navigation back
+ * to the main content of the application.
+ *
+ * @returns {JSX.Element} A visually engaging and informative 404 Not Found page with a link back to the homepage.
+ */
 export function NotFound404() {
   return (
     <div className="general-contaienr"> {/* Not vertically centering for some reaosn */}

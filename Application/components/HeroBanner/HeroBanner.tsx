@@ -7,6 +7,18 @@ import { useComputedColorScheme, useMantineTheme } from "@mantine/core";
 import React, { useState, useEffect } from 'react';
 import { FeatureCards } from "@/components/FeatureCards/FeatureCards";
 
+/**
+ * Displays a hero banner featuring a dynamic background video, an opacity mask for readability,
+ * and a concise presentation of the platform's core feature: privacy-first text channels.
+ *
+ * The banner dynamically adjusts its background video according to the current color scheme,
+ * ensuring optimal visibility and thematic consistency. It incorporates a series of decorative
+ * dots for additional visual interest and utilizes Mantine components to layout the title,
+ * descriptive text, and calls to action in a visually engaging manner.
+ *
+ * This component acts as the primary visual and informational introduction to the platform,
+ * encapsulating its ethos and inviting user engagement through prominently placed calls to action.
+ */
 export function HeroBanner() {
   const colorScheme = useComputedColorScheme();
   const theme = useMantineTheme();

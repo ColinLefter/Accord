@@ -56,6 +56,42 @@ const initialData = initData([
   id: `${channel.symbol}-${index}`, // Ensuring that each item has a unique id
 }));
 
+/**
+ * Demonstrates a draggable list of text channels, showcasing dynamic reordering capabilities.
+ * Each text channel displays its name, members, and creation date, emphasizing the application's
+ * focus on collaboration and community engagement.
+ *
+ * This component leverages the `@hello-pangea/dnd` library for drag-and-drop functionality, allowing
+ * users to intuitively reorder text channels as needed. The text channels are initialized with mock data,
+ * including a dynamically generated creation date and a symbol derived from the channel name.
+ *
+ * @returns {JSX.Element} A list of draggable text channel items within a drag-and-drop context.
+ */
+
+/**
+ * Formats a JavaScript Date object into a human-readable string in the format "1st January 2024".
+ *
+ * @param {Date} date The date to format.
+ * @returns {string} The formatted date string.
+ */
+
+/**
+ * Reorders an array by moving an item from one index to another.
+ * This utility function is used to update the list state after a drag-and-drop operation.
+ *
+ * @param {Array} list The array to reorder.
+ * @param {number} startIndex The index of the item to move.
+ * @param {number} endIndex The index to move the item to.
+ * @returns {Array} The reordered array.
+ */
+
+/**
+ * Initializes the text channel data with mock information, including channel names, members,
+ * and dynamically generated creation dates and symbols.
+ *
+ * @param {Array} textChannels An array of text channel objects to initialize.
+ * @returns {Array} The initialized text channel data, each with a unique ID.
+ */
 export function TextChannelDemo() {
   const [state, handlers] = useListState(initialData);
 
