@@ -85,14 +85,18 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
       if (!response.ok) {
         throw new Error('Failed to accept friend request');
       }
-      fetchFriendRequests();
+      fetchFriendRequests(); // Refresh data after accepting a request
     } catch (error) {
       console.error('Failed to accept friend request:', error);
     }
   };
 
   useEffect(() => {
-    if (userId) fetchFriendRequests();
+    if (userId) {
+      fetchFriendRequests(); // Initial fetch
+      const intervalId = setInterval(fetchFriendRequests, 10000); // Poll every 5 seconds
+      return () => clearInterval(intervalId); // Cleanup on component unmount
+    }
   }, [userId]);
 
   return (
