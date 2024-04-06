@@ -9,7 +9,7 @@ on:
 
 defaults:
   run:
-    working-directory: ./Application/Frontend
+    working-directory: ./Application
 
 jobs:
   build:
@@ -20,4 +20,5 @@ jobs:
       with:
         node-version: "20.x"
     - run: npm install -g npm
+    - run: npm install --save-dev jest
     - run: npm run test:jest
