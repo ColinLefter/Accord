@@ -94,7 +94,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   useEffect(() => {
     if (userId) {
       fetchFriendRequests(); // Initial fetch
-      const intervalId = setInterval(fetchFriendRequests, 10000); // Poll every 5 seconds
+      const intervalId = setInterval(fetchFriendRequests, 15000); // Poll every 5 seconds
       return () => clearInterval(intervalId); // Cleanup on component unmount
     }
   }, [userId]);
