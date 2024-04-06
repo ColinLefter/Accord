@@ -84,11 +84,31 @@
   }
 }
 
+/* HeroBanner.module.css */
 .videoWrapper {
   position: relative;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  height: auto; /* Adjust based on your video aspect ratio or leave as auto */
+  z-index: 1;
+}
+
+.contentOverVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2; /* Ensure the content is above the video */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.afterVideoContent {
+  z-index: 3; /* This ensures content is positioned correctly in the document flow */
+  margin-top: -5%; /* Adjust based on your needs to remove any unwanted gap */
 }
 
 .backgroundVideo {

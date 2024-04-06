@@ -24,14 +24,19 @@
 import { Navbar } from "@/components/Navbar/Navbar";
 import { HeroBanner } from "@/components/HeroBanner/HeroBanner";
 import { FooterLinks } from "@/components/Footer/FooterLinks";
-
+import { FeatureCards } from "@/components/FeatureCards/FeatureCards";
+import { Container, Box } from "@mantine/core";
+import classes from '@/components/FeatureCards/FeatureCards.module.css';
 
 export default function HomePage() {
   return (
     <>
       <Navbar />
-      <HeroBanner/>
-      <FooterLinks/>
+        <HeroBanner/>
+        <Container pl="5%" pr="5%" mt="3%" fluid className={classes.container}>
+          <FeatureCards/>
+          <FooterLinks/>
+        </Container>
     </>
   );
 }

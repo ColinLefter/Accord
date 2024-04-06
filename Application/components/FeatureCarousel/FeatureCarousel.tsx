@@ -4,14 +4,14 @@ import { Image } from "@mantine/core";
 export function FeatureCarousel() {
   return (
     <Carousel
-    withIndicators
-    height={200}
-    slideSize="33.333333%"
-    slideGap="md"
-    loop
-    align="start"
-    slidesToScroll={5}
-    orientation="horizontal"
+      withIndicators
+      height={200}
+      slideSize="33.333333%"
+      slideGap="md"
+      loop
+      align="start"
+      slidesToScroll={5}
+      orientation="horizontal"
     >
       <Carousel.Slide>
         <Image src="/Feature1.png" alt="Image 1" />
