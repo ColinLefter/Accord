@@ -26,14 +26,6 @@ import { ChatProvider } from "@/contexts/chatContext";
 import { NewChatModal } from '@/components/Messaging/NewTextChannelModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserProfile } from '@clerk/nextjs';
-<<<<<<< HEAD:Application/pages/accord.tsx
-=======
-
-import { ServerList } from '@/components/LeftSidebar/ServerList';
-import { MemberList } from '@/components/Server/Member_List';
-
-
->>>>>>> main:Application/Frontend/pages/accord.tsx
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 import InboxDropdown from '../components/Navbar/notifcation';
@@ -190,12 +182,7 @@ export default function Accord() {
               .map((_, index) => (
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))} */}
-<<<<<<< HEAD:Application/pages/accord.tsx
               {/* <ServerList/> */}
-=======
-              <ServerList/>
-              {/* <MemberList isAdmin = {isAdmin}/> */}
->>>>>>> main:Application/Frontend/pages/accord.tsx
           </AppShell.Aside>
         </AppShell>
       </Tabs>
