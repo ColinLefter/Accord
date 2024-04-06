@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useDisclosure } from '@mantine/hooks';
 import { Modal, Text, Stack, Button, TextInput } from '@mantine/core';
 import { NewFriendModalProps } from '@/accordTypes'; // Make sure this path is correct for your project
-import { showNotification } from '@mantine/notifications';
 
 export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
@@ -25,29 +24,17 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
 
         if (response.ok) {
           setFriendUsername('');
-          // Use Mantine's showNotification for success message
-          showNotification({
-            title: 'Success',
-            message: `Friend request sent to ${friendUsername}!`,
-            color: 'green',
-          });
+          // Update to handle success without showNotification
+          setErrorMessage('Friend request sent successfully.');
         } else {
           console.error('Failed to add friend');
-          // Use Mantine's showNotification for error message
-          showNotification({
-            title: 'Error',
-            message: 'Failed to send friend request.',
-            color: 'red',
-          });
+          // Update to handle error without showNotification
+          setErrorMessage('Failed to send friend request.');
         }
       } catch (error) {
         console.error('Error adding friend:', error);
-        // Use Mantine's showNotification for network or server errors
-        showNotification({
-          title: 'Error',
-          message: 'An error occurred while sending the friend request.',
-          color: 'red',
-        });
+        // Update to handle error without showNotification
+        setErrorMessage('An error occurred while sending the friend request.');
       }
     } else {
       setErrorMessage('Please enter a username to add a friend.');
