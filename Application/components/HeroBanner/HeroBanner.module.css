@@ -1,0 +1,170 @@
+.wrapper {
+  position: relative;
+  padding-top: rem(0px);
+  padding-bottom: rem(0px);
+
+  @media (max-width: var(--mantine-breakpoint-sm)) {
+    padding-top: rem(0px);
+    padding-bottom: rem(0px);
+  }
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+}
+
+.dots {
+  position: absolute;
+  color: var(--mantine-color-gray-1);
+
+  @media (max-width: var(--mantine-breakpoint-sm)) {
+    display: none;
+  }
+}
+
+.dotsLeft {
+  left: 0;
+  top: 0;
+}
+
+.title {
+  text-align: center;
+  font-weight: 300;
+  font-size: rem(160px);
+  letter-spacing: -1px;
+  color: light-dark(var(--mantine-color-black), var(--mantine-color-white));
+  margin-bottom: var(--mantine-spacing-xs);
+  font-family:
+    Greycliff CF,
+    var(--mantine-font-family);
+
+  @media (max-width: var(--mantine-breakpoint-xs)) {
+    font-size: rem(28px);
+    text-align: left;
+  }
+}
+
+.highlight {
+  color: light-dark(var(--mantine-color-blue-6), var(--mantine-color-blue-4));
+}
+
+.description {
+  text-align: center;
+
+  @media (max-width: var(--mantine-breakpoint-xs)) {
+    text-align: left;
+    font-size: var(--mantine-font-size-md);
+  }
+}
+
+.controls {
+  margin-top: var(--mantine-spacing-lg);
+  display: flex;
+  justify-content: center;
+
+  @media (max-width: var(--mantine-breakpoint-xs)) {
+    flex-direction: column;
+  }
+}
+
+.control {
+  &:not(:first-of-type) {
+    margin-left: var(--mantine-spacing-md);
+  }
+
+  @media (max-width: mantine-breakpoint-xs) {
+    height: rem(42px);
+    font-size: var(--mantine-font-size-md);
+
+    &:not(:first-of-type) {
+      margin-top: var(--mantine-spacing-md);
+      margin-left: 0;
+    }
+  }
+}
+
+/* HeroBanner.module.css */
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  height: auto; /* Adjust based on your video aspect ratio or leave as auto */
+  z-index: 1;
+}
+
+.contentOverVideo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 2; /* Ensure the content is above the video */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem;
+}
+
+.afterVideoContent {
+  z-index: 3; /* This ensures content is positioned correctly in the document flow */
+  margin-top: -5%; /* Adjust based on your needs to remove any unwanted gap */
+}
+
+.backgroundVideo {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Cover the whole area without distorting the video */
+  top: 0;
+  left: 0;
+}
+
+.wrapper {
+  position: relative;
+  z-index: 0; /* Ensure this is behind all other content */
+}
+
+.videoWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* Ensure video is always in the background */
+}
+
+.inner {
+  z-index: 1; /* This ensures `.inner` content is above the video */
+  position: relative;
+}
+
+.blackOpacityMask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.70);
+  z-index: 2;
+}
+
+.whiteOpacityMask {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+  z-index: 2;
+}
+
+.videoCentered {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
