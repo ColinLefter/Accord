@@ -85,20 +85,24 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
       if (!response.ok) {
         throw new Error('Failed to accept friend request');
       }
-      fetchFriendRequests();
+      fetchFriendRequests(); // Refresh data after accepting a request
     } catch (error) {
       console.error('Failed to accept friend request:', error);
     }
   };
 
   useEffect(() => {
-    if (userId) fetchFriendRequests();
+    if (userId) {
+      fetchFriendRequests(); // Initial fetch
+      const intervalId = setInterval(fetchFriendRequests, 15000); // Poll every 15 seconds
+      return () => clearInterval(intervalId); // Cleanup on component unmount
+    }
   }, [userId]);
 
   return (
     <Menu width={300} position="bottom-end">
       <Menu.Target>
-        <Button variant="gradient"><span>Inbox</span></Button>
+        <Button><span>Inbox</span></Button>
       </Menu.Target>
       <Menu.Dropdown>
         <Text size="lg" px={10} py={5} style={{ fontWeight: 500, textAlign: 'center' }}>Inbox</Text>
