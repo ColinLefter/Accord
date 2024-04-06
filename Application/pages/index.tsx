@@ -24,6 +24,7 @@
 import { Navbar } from "@/components/Navbar/Navbar";
 import { HeroBanner } from "@/components/HeroBanner/HeroBanner";
 import { FooterLinks } from "@/components/Footer/FooterLinks";
+import { LargeToggle } from "@/components/HomePageContent/LargeToggle";
 
 export default function HomePage() {
   return (

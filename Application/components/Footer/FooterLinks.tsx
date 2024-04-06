@@ -61,7 +61,7 @@ export function FooterLinks() {
         </div>
         <div className={classes.groups}>{groups}</div>
       </Container>
-      <Container className={classes.afterFooter}>
+      <Container className={classes.afterFooter} size="95%">
         <Text c="dimmed" size="sm">
           © 2024 {<Logo size="md" />}
         </Text>
