@@ -1,5 +1,6 @@
 import AppLink from "@/components/AppLink";
 import { Text } from "@mantine/core";
+import { LogoProps } from "@/accordTypes";
 
 /**
  * Logo renders the application's logo, styled with a gradient and encapsulated within a clickable area
@@ -13,13 +14,16 @@ import { Text } from "@mantine/core";
  *
  * @returns The JSX element representing the application's logo, styled and wrapped in a navigational link.
  */
-export function Logo() {
+export function Logo(props: LogoProps = {}) {
+  // Destructure props with default values inside the function body
+  const { fw = 800, size = "xl" } = props;
+
   return (
     <AppLink href="/">
       <Text
         variant="gradient"
-        fw={800}
-        size="xl"
+        fw={fw}
+        size={size}
         component="span"
         gradient={{ from: "pink", to: "yellow" }}
       >

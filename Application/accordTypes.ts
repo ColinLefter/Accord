@@ -51,3 +51,13 @@ export interface PrivacySettingsProps {
 export interface FriendsLoadingProps {
   numFriends: number;
 }
+
+export interface LogoProps {
+  size?: string;
+  fw?: number;
+}
+
+export interface DotsProps extends React.ComponentPropsWithoutRef<'svg'> {
+  size?: number;
+  radius?: number;
+}

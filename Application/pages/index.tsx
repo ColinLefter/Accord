@@ -22,11 +22,15 @@
  *   of additional features and components.
  */
 import { Navbar } from "@/components/Navbar/Navbar";
+import { HeroBanner } from "@/components/HeroBanner/HeroBanner";
+import { FooterLinks } from "@/components/Footer/FooterLinks";
 
 export default function HomePage() {
   return (
     <>
       <Navbar />
+      <HeroBanner/>
+      <FooterLinks/>
     </>
   );
 }

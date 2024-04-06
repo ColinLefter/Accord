@@ -26,6 +26,10 @@ import {
   IconFingerprint,
   IconCoin,
   IconChevronDown,
+  IconAntennaBars2,
+  IconGhost2Filled,
+  IconMessages,
+  IconSettings
 } from "@tabler/icons-react";
 import classes from "./Navbar.module.css";
 import Link from "next/link";
@@ -37,15 +41,27 @@ import { UserButton } from "@clerk/nextjs";
 
 const mockdata = [
   {
-    icon: IconCode,
+    icon: IconAntennaBars2,
     title: "Direct Messaging",
     description: "Message your friends in real-time.",
   },
   {
-    icon: IconCoin,
-    title: "Discussion Threads",
+    icon: IconMessages,
+    title: "Text Channels",
     description:
-      "Create or join a Discussion Thread to hold group conversations.",
+      "Create or join a Text Channel to hold group conversations.",
+  },
+  {
+    icon: IconSettings,
+    title: "Admin Controls",
+    description:
+      "Manage your Text Channels with ease using our admin tools.",
+  },
+  {
+    icon: IconGhost2Filled,
+    title: "Private Mode",
+    description:
+      "One-time conversations with messages deleted upon leaving the chat.",
   },
 ];
 
@@ -86,7 +102,6 @@ export function Navbar() {
         <ThemeIcon size={34} variant="default" radius="md">
           <item.icon
             style={{ width: rem(22), height: rem(22) }}
-            color={theme.colors.blue[6]}
           />
         </ThemeIcon>
         <div>
@@ -122,7 +137,6 @@ export function Navbar() {
                     </Box>
                     <IconChevronDown
                       style={{ width: rem(16), height: rem(16) }}
-                      color={theme.colors.blue[6]}
                     />
                   </Center>
                 </a>
@@ -131,9 +145,6 @@ export function Navbar() {
               <HoverCard.Dropdown style={{ overflow: "hidden" }}>
                 <Group justify="space-between" px="md">
                   <Text fw={500}>Features</Text>
-                  <Anchor href="#" fz="xs">
-                    View all
-                  </Anchor>
                 </Group>
 
                 <Divider my="sm" />
@@ -145,15 +156,15 @@ export function Navbar() {
                 <div className={classes.dropdownFooter}>
                   <Group justify="space-between">
                     <div>
-                      <Text fw={500} fz="sm">
+                      <Text fw={500} fz="sm" variant="gradient">
                         Get started
                       </Text>
                       <Text size="xs" c="dimmed">
-                        Start chatting with your friends on the browser TODAY!
+                        Launch accord to get started with real-time privacy-first text channels.
                       </Text>
                     </div>
                     <Link href="/accord">
-                      <Button name ="Get started">Get started</Button>
+                      <Button name ="Get started" variant="gradient">Get started</Button>
                     </Link>
                   </Group>
                 </div>
@@ -198,7 +209,6 @@ export function Navbar() {
               </Box>
               <IconChevronDown
                 style={{ width: rem(16), height: rem(16) }}
-                color={theme.colors.blue[6]}
               />
             </Center>
           </UnstyledButton>
