@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  "compilerOptions": {
-    "module": "CommonJS",
-    "target": "ES2018"
-  },
-  "include": ["proxyServer.ts", "otherNodeScripts/**/*"]
-}
