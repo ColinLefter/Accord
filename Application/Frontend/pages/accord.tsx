@@ -183,14 +183,14 @@ export default function Accord() {
           )}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
-            <Text>Servers</Text>
+            {/* <Text>Servers</Text>*/}
             {/* {Array(60)
               .fill(0)
               .map((_, index) => (
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))} */}
-              <ServerList/>
-              {/* <MemberList isAdmin = {isAdmin} chatID = {chatID}/> */}
+              {/* <ServerList/> */}
+              <MemberList isAdmin = {isAdmin} chatID = {chatID}/>
           </AppShell.Aside>
         </AppShell>
       </Tabs>

@@ -14,7 +14,7 @@ import { getMongoDbUri } from '@/lib/dbConfig';
   // Reader starts from here
 export default async function handler(req: NextApiRequest, res: NextApiResponse) { 
   if (req.method === 'POST') { 
-    const { member, serverID } = req.body; // Intaking the data that has been sent from the client-side
+    const { member, channelKey, newChannelKey } = req.body; // Intaking the data that has been sent from the client-side
     let client: MongoClient | null = null; // We need to assign something to the client so TypeScript is aware that it can be null if the connection fails 
 
     try { //creating and establishing connections to the DB
@@ -23,14 +23,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const db = client.db('Accord');
 
       // Reach into the db, and grab the Accounts table
-      const accountsCollection = db.collection("Servers");
+      const accountsCollection = db.collection("Chats");
 
-      const filter = { serverID: serverID };
-      const updateDocument = { $pull: { memberList: member } };
+      const filter = { channelKey: channelKey };
+      const updateMemberList = { $pull: { memberIDs: member } };
+
+      const updateChannelKey = { $set: { channelKey: newChannelKey } };
 
       // Querying the database by the username we received
-      const removedMember = await accountsCollection.updateOne( filter, updateDocument ); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
-      // now user variable contains these data from the table
+      const removedMember = await accountsCollection.updateOne( filter, updateMemberList ); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
+      const result = await accountsCollection.updateOne( filter, updateChannelKey );
+
+
       if (removedMember) { // Check if the user existed 
         return res.status(200).json({ matchedCount: removedMember.matchedCount}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {
