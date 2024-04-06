@@ -4,6 +4,7 @@ import { Dots } from './Dots';
 import classes from './HeroBanner.module.css';
 import Link from "next/link";
 import { useComputedColorScheme, useMantineTheme } from "@mantine/core";
+import { FeatureCarousel } from "@/components/FeatureCarousel/FeatureCarousel";
 
 export function HeroBanner() {
   const colorScheme = useComputedColorScheme();
