@@ -206,12 +206,10 @@ export function MemberList({isAdmin, chatID}: any) {
             {isAdmin && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
-                  
                   <Button color='green'  onClick={() => removeMember(member, index)}>Promote to Admin</Button>
                 </Menu.Item>
 
                 <Menu.Item color="red" leftSection={<IconTrash style={{ width: rem(14)  , height: rem(14) }}/>}>
-                  
                   <Button color='red'  onClick={() => removeMember(member, index)}>Remove From Server</Button>
                 </Menu.Item>
               </Menu.Dropdown>}
