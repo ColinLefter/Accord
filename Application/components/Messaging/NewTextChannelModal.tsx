@@ -34,6 +34,7 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const { lastFetched, setLastFetched } = useCache();
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [selectedFriendUsernames, setSelectedFriendUsernames] = useState<string[]>([]);
   const friends = useFriendList({lastFetched, setLastFetched});
 
   const theme = useMantineTheme();
@@ -43,12 +44,23 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
     label: friend.username,
   }));
 
+  useEffect(() => {
+    const selectedUsernames = selectedFriends.map(friendId => {
+      // Find the friend object by id
+      const friend = friends.list.find(friend => friend.id === friendId);
+      // Return the username, or a placeholder if not found
+      return friend ? friend.username : 'Unknown User';
+    });
+    
+    setSelectedFriendUsernames(selectedUsernames);
+  }, [selectedFriends, friends.list]);
+
   const handleCreateChatClick = () => {
     console.log(selectedFriends);
     onCreateChat(selectedFriends);
     notifications.show({
       title: 'Created a new text channel!',
-      message: `Channel participants: ${selectedFriends.join(', ')}`,
+      message: `Added ${selectedFriendUsernames.join(', ')}`,
     });
     close(); // Close the modal
   };
@@ -82,7 +94,6 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
           clearable
           searchable
           nothingFoundMessage="No matching user found"
-          maxValues={9} // Anything more than that and it's a server
           placeholder="Choose up to 9 friends to chat with"
           value={selectedFriends}
           data={friendOptions}
