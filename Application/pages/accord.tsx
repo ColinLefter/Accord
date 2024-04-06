@@ -28,8 +28,6 @@ import classes from "@/components/tabstyling.module.css";
 import { useUser, UserProfile } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
-import InboxDropdown from '../components/Navbar/notifcation';
-
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -107,12 +105,12 @@ export default function Accord() {
               <Group>
                 <Switch
                   defaultChecked
+                  color="gray" // May not be the best color choice, but it looks better than orange
                   label="Private mode"
                   onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
                   disabled={chatStarted}  // Disable the switch if the chat has started
                 />
                 <ColorSchemeToggle/>
-                {user && user.id && <InboxDropdown userId={user.id} />} {/* Conditionally render InboxDropdown */}
               </Group>
             </Group>
           </AppShell.Header>

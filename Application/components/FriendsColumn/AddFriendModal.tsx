@@ -41,21 +41,13 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
           setFriendUsername(''); // Clear the input field to allow for further friend requests
         } else {
           console.error('Failed to add friend');
-          // Use Mantine's showNotification for error message
-          showNotification({
-            title: 'Error',
-            message: 'Failed to send friend request.',
-            color: 'red',
-          });
+          // Update to handle error without showNotification
+          setErrorMessage('Failed to send friend request.');
         }
       } catch (error) {
         console.error('Error adding friend:', error);
-        // Use Mantine's showNotification for network or server errors
-        showNotification({
-          title: 'Error',
-          message: 'An error occurred while sending the friend request.',
-          color: 'red',
-        });
+        // Update to handle error without showNotification
+        setErrorMessage('An error occurred while sending the friend request.');
       }
     } else {
       setErrorMessage('Please enter a username to add a friend.');
@@ -122,7 +114,7 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
           <Button
             fullWidth
             variant="gradient"
-            onClick={handleAddFriendClick} // Fix to use correct handler
+            onClick={handleAddFriendClick}
           >
             Add Friend
           </Button>

@@ -3,6 +3,8 @@ import { IconSettings } from '@tabler/icons-react';
 import { AppLink } from  "@/components/AppLink";
 import { useRouter } from 'next/router';
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
+import { useEffect, useState } from 'react';
+import InboxDropdown from '@/components/Navbar/notifcation';
 /**
  * FooterProfile renders a user profile component typically used in the footer area of the application.
  * It displays an avatar that links to the user's profile and provides a quick navigation option to view
@@ -18,12 +20,15 @@ import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
  * and settings, encapsulated within a card layout for distinct visual separation.
  */
 export function FooterProfile() {
+  const [userID, setUserID] = useState<string>(''); // Initialize with empty string
   const { user } = useUser();
-  const router = useRouter();
 
-  const handleUserSettingsClick = () => {
-    router.push('/');
-  };
+  useEffect(() => {
+    if (user && user.username && user.id) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setUserID(user.id);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   return (
     <Card>
@@ -33,9 +38,7 @@ export function FooterProfile() {
           <Text>{user?.username}</Text>
         </Group>
         <Tooltip label="User Settings">
-          <ActionIcon variant="default" aria-label="Settings" onClick={handleUserSettingsClick}>
-            <IconSettings style={{ width: '70%', height: '70%' }} stroke={1.5} />
-          </ActionIcon>
+          {user && user.id && <InboxDropdown userId={user.id} />}
         </Tooltip>
       </Group>
     </Card>
