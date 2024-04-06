@@ -26,7 +26,11 @@ import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
 import React, { useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
+<<<<<<< HEAD:Application/pages/server_appshell.tsx
 import { NewChatModal } from '@/components/Messaging/NewTextChannelModal';
+=======
+import { NewChatModal } from '@/components/Messaging/NewChatModal';
+>>>>>>> main:Application/Frontend/pages/server_appshell.tsx
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 

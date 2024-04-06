@@ -26,8 +26,18 @@ import { ChatProvider } from "@/contexts/chatContext";
 import { NewChatModal } from '@/components/Messaging/NewTextChannelModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserProfile } from '@clerk/nextjs';
+<<<<<<< HEAD:Application/pages/accord.tsx
+=======
+
+import { ServerList } from '@/components/LeftSidebar/ServerList';
+import { MemberList } from '@/components/Server/Member_List';
+
+
+>>>>>>> main:Application/Frontend/pages/accord.tsx
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
+import InboxDropdown from '../components/Navbar/notifcation';
+
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -56,6 +66,7 @@ export default function Accord() {
 
   const [privateMode, setPrivateMode] = useState(true);
   const [chatStarted, setChatStarted] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(true);
 
   // Function to handle chat creation from modal
   const handleCreateChat = (recipients: string[]) => {
@@ -92,7 +103,7 @@ export default function Accord() {
             collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
           }}
           padding="md"
-          aside={{ width: 120, breakpoint: 'sm' }}
+          aside={{ width: 250, breakpoint: 'sm' }}
         >
           <AppShell.Header>
             <Group justify="space-between" className="center" px="md">
@@ -109,6 +120,7 @@ export default function Accord() {
                   disabled={chatStarted}  // Disable the switch if the chat has started
                 />
                 <ColorSchemeToggle/>
+                {user && user.id && <InboxDropdown userId={user.id} />} {/* Conditionally render InboxDropdown */}
               </Group>
             </Group>
           </AppShell.Header>
@@ -142,8 +154,6 @@ export default function Accord() {
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-
-
           {activeView === 'friends' && 
             <FriendsTab
               senderUsername={sender}
@@ -172,7 +182,6 @@ export default function Accord() {
               onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
             />
           )}
-
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
             <Text>Servers</Text>
@@ -181,7 +190,12 @@ export default function Accord() {
               .map((_, index) => (
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))} */}
+<<<<<<< HEAD:Application/pages/accord.tsx
               {/* <ServerList/> */}
+=======
+              <ServerList/>
+              {/* <MemberList isAdmin = {isAdmin}/> */}
+>>>>>>> main:Application/Frontend/pages/accord.tsx
           </AppShell.Aside>
         </AppShell>
       </Tabs>

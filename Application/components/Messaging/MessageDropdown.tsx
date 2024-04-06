@@ -1,4 +1,4 @@
-import { Menu, Button, Text, rem, ActionIcon, useComputedColorScheme, Tooltip } from '@mantine/core';
+import { Menu, Button, Text, rem, ActionIcon, useComputedColorScheme, Tooltip, MantineTransition } from '@mantine/core';
 import {
   IconTrash,
   IconDotsVertical,
@@ -52,7 +52,7 @@ export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDrop
         variant="gradient"
         offset={10}
         position="left-end"
-        transitionProps={{ transition: 'fade-left', duration: 300 }}
+        transitionProps={{ transition: 'fade-left' as MantineTransition, duration: 300 }}
         >
         <div ref={ref}>{children}</div>
       </Tooltip>

@@ -198,7 +198,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
             body: JSON.stringify({
               channelKey: channelKey,
               messageHistory: updatedHistory,
-              owner: senderUsername,
+              owner: senderID,
               memberIDs: memberIDs
             }),
           });

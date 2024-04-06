@@ -1,7 +1,7 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code, and run tests across different versions of the node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Accord-test-runner
+name: Accord test runner
 
 on:
   push:
@@ -13,26 +13,11 @@ defaults:
 
 jobs:
   build:
-
-    runs-on: [ubuntu-latest, windows-latest, macos-latest]
-
-    strategy:
-      matrix:
-        node-version: [10.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
+    - uses: actions/setup-node@v3
       with:
-        node-version: ${{ matrix.node-version }}
-        # Use a specific npm version for Node.js 10.x
-        # Adjust the version according to your requirement
-        # Check available npm versions: https://npmjs.com/package/npm/v/10.24.0
-        npm: '10.24.0'
-        cache: 'npm'
-    - run: npm ci
-    - run: npm -v
-    - run: npm test:jest
-    
+        node-version: "20.x"
+    - run: npm install -g npm
+    - run: npm run test:jest
