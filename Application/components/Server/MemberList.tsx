@@ -16,14 +16,12 @@ export function MemberList({isAdmin, chatID}: any) {
   // Hardcoded member list
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
-  // const [membersIDListToSort, setMembersIDListToSort] = useState<string[]>([]);
   const [channelKey, setChannelKey] = useState<string>(chatID);
   const [opened, { open, close }] = useDisclosure(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [friendUsername, setFriendUsername] = useState('');
   const [searchResult, setSearchResult] = useState<number | null>(null);
   const { user } = useUser();
-
 
   const removeMember = async(member: String, index: any) =>{
       console.log(membersIDList[index] + " ahahahahahah")
@@ -103,7 +101,7 @@ export function MemberList({isAdmin, chatID}: any) {
           // Use Mantine's showNotification for success message
           showNotification({
             title: 'Success',
-            message: `${friendUsername} was added to the chats!`,
+            message: `${friendUsername} was added to the chat!`,
             color: 'green',
           });
           const data = await response.json();
@@ -195,7 +193,7 @@ export function MemberList({isAdmin, chatID}: any) {
         <div>
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
-                  <Button variant="filled" style={{width: "200px"}}>
+                  <Button fullWidth variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
                           <Text size="sm">{member}</Text>
