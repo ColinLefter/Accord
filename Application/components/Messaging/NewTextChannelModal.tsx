@@ -1,8 +1,7 @@
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tooltip, ActionIcon, Text, MultiSelect, Stack, Group, Button, useMantineTheme } from '@mantine/core';
+import { Modal, Tooltip, ActionIcon, Text, MultiSelect, Stack, Group, Button, useMantineTheme, TextInput } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
 import { NewChatModalProps } from '@/accordTypes';
@@ -34,7 +33,10 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
   const { lastFetched, setLastFetched } = useCache();
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [selectedAdmins, setSelectedAdmins] = useState<string[]>([]);
   const [selectedFriendUsernames, setSelectedFriendUsernames] = useState<string[]>([]);
+  const [channelName, setChannelName] = useState('');
+  const [errorMessages, setErrorMessages] = useState({ channelName: '', members: '', admins: '' });
   const friends = useFriendList({lastFetched, setLastFetched});
 
   const theme = useMantineTheme();
@@ -56,13 +58,21 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   }, [selectedFriends, friends.list]);
 
   const handleCreateChatClick = () => {
-    console.log(selectedFriends);
-    onCreateChat(selectedFriends);
-    notifications.show({
-      title: 'Created a new text channel!',
-      message: `Added ${selectedFriendUsernames.join(', ')}`,
-    });
-    close(); // Close the modal
+    let errors = { channelName: '', members: '', admins: '' };
+    if (!channelName.trim()) errors.channelName = 'Channel name is required.';
+    if (selectedFriends.length === 0) errors.members = "At least one member is required.";
+    // Admins are optional, so no need to validate them
+
+    setErrorMessages(errors);
+
+    if (!errors.channelName && !errors.members) {
+      onCreateChat(selectedFriends, selectedAdmins);
+      notifications.show({
+        title: 'Created a new text channel!',
+        message: `Added ${selectedFriendUsernames.join(', ')}`,
+      });
+      close(); // Close the modal
+    }
   };
 
   return (
@@ -79,9 +89,9 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
               size="xl"
               component="span"
             >
-              Select Friends
+              New Text Channel
             </Text>
-            <Text c={theme.colors.dark[1]}>Create group chats or send DMs</Text>
+            <Text c={theme.colors.dark[1]}>Create channels for group chats or direct messages</Text>
           </Stack>
         }
         overlayProps={{
@@ -90,14 +100,32 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
         }}
       >
       <Stack>
+        <TextInput
+          placeholder="Enter your channel name"
+          withAsterisk
+          error={errorMessages.channelName}
+          value={channelName}
+          onChange={(e) => setChannelName(e.currentTarget.value)}
+        />
         <MultiSelect
           clearable
           searchable
           nothingFoundMessage="No matching user found"
-          placeholder="Choose up to 9 friends to chat with"
+          placeholder="Add channel members from your friend list"
+          error={errorMessages.members}
           value={selectedFriends}
           data={friendOptions}
           onChange={setSelectedFriends}
+        />
+        <MultiSelect
+          clearable
+          searchable
+          nothingFoundMessage="No matching admin found"
+          placeholder="Specify any admins from your channel members"
+          error={errorMessages.admins}
+          value={selectedAdmins}
+          data={friendOptions.filter(option => selectedFriends.includes(option.value))}
+          onChange={setSelectedAdmins}
         />
         <Button
           fullWidth
@@ -108,7 +136,7 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
         </Button>
       </Stack>
       </Modal>
-      <Tooltip label="Send DM" onClick={open}>
+      <Tooltip label="Create a channel" onClick={open}>
         <ActionIcon variant="gradient" aria-label="Plus">
           <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
         </ActionIcon>
