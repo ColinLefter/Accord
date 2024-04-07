@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
-import { generateHash } from '@/utility';
+import { generateHash, formatDate } from '@/utility';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -29,6 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const newChat = {
         channelKey: channelKey,
         channelName,
+        dateCreated: new Date(),
+        dateOfLastText: null, // No messages have been sent yet
         ownerID: ownerID,
         memberIDs: [ownerID, ...memberIDs],
         adminIDs,

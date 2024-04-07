@@ -61,3 +61,10 @@ export interface DotsProps extends React.ComponentPropsWithoutRef<'svg'> {
   size?: number;
   radius?: number;
 }
+
+export interface TextChannelItemProps {
+  id: string;
+  index: number;
+  channelName: string;
+  members: string[];
+}

@@ -1,20 +1,12 @@
 import cx from 'clsx';
-import { Text } from '@mantine/core';
+import { rem, Text, Stack } from '@mantine/core';
+import { IconGripVertical } from '@tabler/icons-react';
 import { useListState } from '@mantine/hooks';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { TextChannelItem } from "@/components/TextChannels/TextChannelItem"
-import classes from './TextChannelItem.module.css';
-
-// Function to format the current date in the following format "1st January 2024"
-const formatDate = (date: Date) => {
-  const suffixes = ["th", "st", "nd", "rd"];
-  const day = date.getDate();
-  const daySuffix = suffixes[(day % 10) - 1] || suffixes[0];
-  const month = date.toLocaleString('default', { month: 'long' });
-  const year = date.getFullYear();
-  
-  return `${day}${daySuffix} ${month} ${year}`;
-};
+import { useUser, UserProfile } from '@clerk/nextjs';
+import { formatDate } from "@/utility"
+import { useState, useEffect } from 'react';
 
 function reorder(list: any[] | Iterable<unknown> | ArrayLike<unknown>, startIndex: number, endIndex: number) {
   const result = Array.from(list);
@@ -27,7 +19,7 @@ function reorder(list: any[] | Iterable<unknown> | ArrayLike<unknown>, startInde
 // Function to initialize text channel data
 const initData = (textChannels: any[]) => textChannels.map((channel: any) => ({
   ...channel,
-  dateCreated: formatDate(new Date()), // Update dateCreated to the current date in the desired format
+  dateCreated: new Date(),
   symbol: channel.channelName.substring(0, 2).toUpperCase(), // Generate symbol from channelName
 }));
 
@@ -37,20 +29,36 @@ const initialData = initData([
     channelName: 'General Discussion',
   },
   { 
-    members: ["TobyNguyen710", "notbaopham", "Hocng7"],
-    channelName: 'Project Updates',
+    members: ["ColinLefter", "Hocng7"],
+    channelName: 'General Discussion',
   },
   { 
-    members: ["ThunderIW", "ColinLefter"],
-    channelName: 'Random Chat',
+    members: ["ColinLefter", "Hocng7"],
+    channelName: 'General Discussion',
   },
   { 
-    members: ["TobyNguyen710", "notbaopham"],
-    channelName: 'Development',
+    members: ["ColinLefter", "Hocng7"],
+    channelName: 'General Discussion',
   },
   { 
-    members: ["ThunderIW", "Hocng7"],
-    channelName: 'Design Ideas',
+    members: ["ColinLefter", "Hocng7"],
+    channelName: 'General Discussion',
+  },
+  { 
+    members: ["ColinLefter", "Hocng7"],
+    channelName: 'General Discussion',
+  },
+  { 
+    members: ["ColinLefter", "Hocng7"],
+    channelName: 'General Discussion',
+  },
+  { 
+    members: ["ColinLefter", "Hocng7"],
+    channelName: 'General Discussion',
+  },
+  { 
+    members: ["ColinLefter", "Hocng7"],
+    channelName: 'General Discussion',
   },
 ]).map((channel, index) => ({
   ...channel,
@@ -93,9 +101,42 @@ const initialData = initData([
  * @param {Array} textChannels An array of text channel objects to initialize.
  * @returns {Array} The initialized text channel data, each with a unique ID.
  */
-export function TextChannelDemo() {
+export function TextChannels() {
+  const { user } = useUser();
+  const [ userID, setUserID ] = useState<string>('');
   const [state, handlers] = useListState(initialData);
 
+  useEffect(() => {
+    if (user && user.id) {
+      setUserID(user.id);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
+
+  const fetchUserChats = async () => {
+    if (!userID) return; // Ensure userID is available
+  
+    try {
+      const response = await fetch('/api/get-user-chats', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userID: userID })
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        // Update your state or context with the fetched chat channels
+        console.log(data.chats); // For demonstration, replace with state update
+      } else {
+        console.error('Failed to fetch chat channels');
+      }
+    } catch (error) {
+      console.error('Error fetching chat channels:', error);
+    }
+  };  
+
+  // Mapping through the state to create TextChannelItem components
   const items = state.map((item, index) => (
     <TextChannelItem
       key={item.id} // Ensure you have a unique key for each item

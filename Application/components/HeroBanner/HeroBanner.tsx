@@ -62,9 +62,11 @@ export function HeroBanner() {
               </Container>
               <Center>
                 <Group>
-                  <Button className={classes.control} size="lg" variant="outline" color={dimmedColor}>
-                    Our repo on GitHub
-                  </Button>
+                  <a href="https://github.com/ColinLefter/Accord" target="_blank" rel="noopener noreferrer">
+                    <Button className={classes.control} size="lg" variant="outline" color={dimmedColor}>
+                      Our repo on GitHub
+                    </Button>
+                  </a>
                   <Link href="/accord">
                     <Button className={classes.control} variant="gradient" size="lg">
                       Launch Accord

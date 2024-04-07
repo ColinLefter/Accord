@@ -48,10 +48,10 @@ export default function RootLayout({ children }: any) { // The one time where 'a
         '#c9c9c9', // In-component text
         "#1F1F1F", // outlines
         "#040404",
-        "#191919", // Accent
+        "#161616", // Accent
         "#101010", // Main background
         "#262626", // Primary color
-        "#121212"
+        "#161616"
       ]
     },
     white: "#FAFAFA",

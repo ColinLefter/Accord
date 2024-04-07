@@ -5,3 +5,13 @@ export const generateHash = (memberIDs: string[]) => { // Member IDs must includ
   const rawChannelKey = `chat:${memberIDs.join(",")}`;
   return createHash('sha256').update(rawChannelKey).digest('hex');
 };
+
+export const formatDate = (date: Date) => {
+  const suffixes = ["th", "st", "nd", "rd"];
+  const day = date.getDate();
+  const daySuffix = suffixes[(day % 10) - 1] || suffixes[0];
+  const month = date.toLocaleString('default', { month: 'long' });
+  const year = date.getFullYear();
+  
+  return `${day}${daySuffix} ${month} ${year}`;
+};

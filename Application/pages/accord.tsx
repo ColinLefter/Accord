@@ -29,6 +29,7 @@ import { useUser, UserProfile } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 import { MemberList } from "@/components/Server/MemberList";
+import { TextChannels } from "@/components/TextChannels/TextChannels";
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -117,7 +118,7 @@ export default function Accord() {
             </Group>
           </AppShell.Header>
           <AppShell.Navbar p="md">
-            <AppShell.Section grow>
+            <AppShell.Section>
               <Stack gap="xs">
                 <Button
                   value="friends"
@@ -128,18 +129,14 @@ export default function Accord() {
                   Friends
                 </Button>
                 <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+                <Group justify="space-between">
+                  <Text py="md">Text Channels</Text>
+                  <NewTextChannelModal/>
+                </Group>
               </Stack>
             </AppShell.Section>
-            <AppShell.Section grow component={ScrollArea} mt="15">
-              <Group justify="space-between">
-                <Text py="md">Text Channels</Text>
-                <NewTextChannelModal/>
-              </Group>
-              {Array(60)
-                .fill(0)
-                .map((_, index) => (
-                  <Skeleton key={index} h={30} mt="sm" animate={false} />
-                ))}
+            <AppShell.Section grow component={ScrollArea} mt="0">
+              <TextChannels />
             </AppShell.Section>
             <AppShell.Section mt="15">
               <FooterProfile/>
