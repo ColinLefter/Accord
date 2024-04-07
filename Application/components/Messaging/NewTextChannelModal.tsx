@@ -4,7 +4,6 @@ import { IconPlus } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
-import { NewChatModalProps } from '@/accordTypes';
 import { notifications } from '@mantine/notifications';
 import { useUser } from '@clerk/nextjs';
 
@@ -70,8 +69,12 @@ export function NewTextChannelModal() {
 
   const handleCreateChatClick = async () => {
     let errors = { channelName: '', members: '', admins: '' };
-    if (!channelName.trim()) errors.channelName = 'Channel name is required.';
-    if (selectedFriends.length === 0) errors.members = "At least one member is required.";
+    if (!channelName.trim()) {
+      errors.channelName = 'Channel name is required.';
+    }
+    if (selectedFriends.length === 0) {
+      errors.members = "At least one member is required.";
+    }
     setErrorMessages(errors);
   
     if (!errors.channelName && !errors.members) {
@@ -83,7 +86,6 @@ export function NewTextChannelModal() {
           },
           body: JSON.stringify({
             channelName,
-            senderID: senderID,
             memberIDs: selectedFriends,
             adminIDs: selectedAdmins,
             ownerID: senderID,
@@ -95,13 +97,29 @@ export function NewTextChannelModal() {
             title: 'Created a new text channel!',
             message: `Added ${selectedFriendUsernames.join(', ')}`,
           });
+          setChannelName('');
+          setSelectedFriends([]);
+          setSelectedAdmins([]);
+          setErrorMessages({ channelName: '', members: '', admins: '' });
           close(); // Close the modal
+        } else if (response.status === 409) {
+          // Chat already exists, so we need to handle this by prompting the user to change the chat name/members
+          const data = await response.json(); // The backend sends a JSON response
+          setErrorMessages(prev => ({...prev, channelName: data.error}));
         } else {
-          // Handle server errors or invalid responses
           console.error('Failed to create new text channel');
+          const errorText = await response.text(); // Fallback to use the response text
+          notifications.show({
+            title: 'Error',
+            message: errorText || 'An unknown error occurred',
+          });
         }
       } catch (error) {
         console.error('Error creating new text channel:', error);
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to send request. Please try again.',
+        });
       }
     }
   };  
@@ -163,7 +181,7 @@ export function NewTextChannelModal() {
           variant="gradient"
           onClick={handleCreateChatClick} // Call handleCreateChatClick when the button is clicked
         >
-          Create chat
+          Create text channel
         </Button>
       </Stack>
       </Modal>

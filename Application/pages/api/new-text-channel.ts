@@ -1,4 +1,3 @@
-// pages/api/new-text-channel.js
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
@@ -6,7 +5,7 @@ import { generateHash } from '@/utility';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
-    const { channelName, senderID, memberIDs, adminIDs, ownerID } = req.body;
+    const { channelName, memberIDs, adminIDs, ownerID } = req.body;
     let client: MongoClient | null = null;
 
     try {
@@ -16,7 +15,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const chatsCollection = db.collection("Chats");
 
       // Generate the channelKey using the hash function
-      const channelKey = generateHash([channelName, senderID, ...memberIDs]);
+      const channelKey = generateHash([channelName, ownerID, ...memberIDs]);
 
       // Check if a channel with the same channelKey already exists
       const existingChannel = await chatsCollection.findOne({ channelKey: channelKey });
@@ -30,8 +29,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const newChat = {
         channelKey: channelKey,
         channelName,
-        ownerID: senderID,
-        memberIDs: [senderID, ...memberIDs],
+        ownerID: ownerID,
+        memberIDs: [ownerID, ...memberIDs],
         adminIDs,
         messageHistory: [] // Initialize with an empty message history
       };
