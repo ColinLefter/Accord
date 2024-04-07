@@ -28,6 +28,7 @@ import classes from "@/components/tabstyling.module.css";
 import { useUser, UserProfile } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
+import { MemberList } from "@/components/Server/MemberList";
 
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -182,10 +183,7 @@ export default function Accord() {
                 <Skeleton key={index} h={30} mt="sm" animate={false} />
               ))} */}
               {/* <ServerList/> */}
-<<<<<<< HEAD:Application/Frontend/pages/accord.tsx
               <MemberList isAdmin = {isAdmin} chatID = {chatID}/>
-=======
->>>>>>> main:Application/pages/accord.tsx
           </AppShell.Aside>
         </AppShell>
       </Tabs>

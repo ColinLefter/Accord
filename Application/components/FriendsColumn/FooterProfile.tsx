@@ -37,9 +37,7 @@ export function FooterProfile() {
           <UserButton/>
           <Text>{user?.username}</Text>
         </Group>
-        <Tooltip label="User Settings">
-          {user && user.id && <InboxDropdown userId={user.id} />}
-        </Tooltip>
+        {user && user.id && <InboxDropdown userId={user.id} />}
       </Group>
     </Card>
   );

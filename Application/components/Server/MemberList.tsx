@@ -217,10 +217,14 @@ export function MemberList({isAdmin, chatID}: any) {
             </Menu>
         </div>
       ))}
-      <Button onClick={open} color='green' variant="filled" style={{width: "200px"}} leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}>
-          <Group py="10">
-              <Text size="sm">Add member</Text>
-            </Group>
+      <Button
+        onClick={open}
+        variant="gradient"
+        leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
+      >
+        <Group py="10">
+          <Text size="sm">Add member</Text>
+        </Group>
       </Button>
       <Modal
         centered

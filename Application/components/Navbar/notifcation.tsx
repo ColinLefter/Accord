@@ -102,7 +102,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   return (
     <Menu width={300} position="bottom-end">
       <Menu.Target>
-        <Button><span>Inbox</span></Button>
+        <Button variant="gradient">Inbox</Button>
       </Menu.Target>
       <Menu.Dropdown>
         <Text size="lg" px={10} py={5} style={{ fontWeight: 500, textAlign: 'center' }}>Inbox</Text>
@@ -111,17 +111,17 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
         {loading ? <Notification title="Loading..." /> : sentRequests.map((item) => (
           <Notification key={item.id} title={`Friend request sent to ${item.username}`} icon={<span>✉️</span>} />
         ))}
-        {sentRequests.length === 0 && !loading && <Text>No sent friend requests</Text>}
+        {sentRequests.length === 0 && !loading && <Menu.Label>No sent friend requests</Menu.Label>}
         <Divider />
         <Menu.Label>Received Friend Requests</Menu.Label>
         {loading ? <Notification title="Loading..." /> : receivedRequests.map((item) => (
           <Notification key={item.id} title={`Friend request from ${item.username}`} icon={<span>📬</span>}>
-            <Button size="xs" onClick={() => acceptFriendRequest(item.id)}>
+            <Button variant="gradient" size="xs" onClick={() => acceptFriendRequest(item.id)}>
               Accept
             </Button>
           </Notification>
         ))}
-        {receivedRequests.length === 0 && !loading && <Text>No received friend requests</Text>}
+        {receivedRequests.length === 0 && !loading && <Menu.Label>No received friend requests</Menu.Label>}
       </Menu.Dropdown>
     </Menu>
   );
