@@ -1,12 +1,11 @@
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tooltip, ActionIcon, Text, MultiSelect, Stack, Group, Button, useMantineTheme } from '@mantine/core';
+import { Modal, Tooltip, ActionIcon, Text, MultiSelect, Stack, Group, Button, useMantineTheme, TextInput } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
-import { NewChatModalProps } from '@/accordTypes';
 import { notifications } from '@mantine/notifications';
+import { useUser } from '@clerk/nextjs';
 
 /**
  * NewChatModal facilitates the creation of new chat sessions, allowing users to select friends for group chats or direct messages (DMs).
@@ -30,14 +29,26 @@ import { notifications } from '@mantine/notifications';
  * @param {NewChatModalProps} props The properties received by the NewChatModal component, including the sender's ID and the onCreateChat callback function.
  * @returns {JSX.Element} The rendered NewChatModal component, providing an interactive interface for creating new chat sessions.
  */
-export function NewChatModal({ onCreateChat }: NewChatModalProps) {
+export function NewTextChannelModal() {
+  const { user } = useUser();
+  const theme = useMantineTheme();
+
   const [opened, { open, close }] = useDisclosure(false);
   const { lastFetched, setLastFetched } = useCache();
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
+  const [selectedAdmins, setSelectedAdmins] = useState<string[]>([]);
   const [selectedFriendUsernames, setSelectedFriendUsernames] = useState<string[]>([]);
+  const [channelName, setChannelName] = useState('');
+  const [errorMessages, setErrorMessages] = useState({ channelName: '', members: '', admins: '' });
+  const [senderID, setSenderID] = useState<string>('');
   const friends = useFriendList({lastFetched, setLastFetched});
-
-  const theme = useMantineTheme();
+  
+  useEffect(() => {
+    if (user && user.username && user.id) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setSenderID(user.id);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   const friendOptions = friends.list.map(friend => ({
     value: friend.id,
@@ -45,25 +56,73 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   }));
 
   useEffect(() => {
+    // Filter out any selected admins who are not in the updated selected friends list
+    setSelectedAdmins(currentAdmins => currentAdmins.filter(adminId => selectedFriends.includes(adminId)));
+  
+    // Update the selectedFriendUsernames to ensure they are synchronized with the selectedFriends list
     const selectedUsernames = selectedFriends.map(friendId => {
-      // Find the friend object by id
       const friend = friends.list.find(friend => friend.id === friendId);
-      // Return the username, or a placeholder if not found
-      return friend ? friend.username : 'Unknown User';
+      return friend ? friend.username : 'Unknown User'; // This ensures usernames are always used instead of IDs
     });
-    
     setSelectedFriendUsernames(selectedUsernames);
-  }, [selectedFriends, friends.list]);
+  }, [selectedFriends, friends.list]);  
 
-  const handleCreateChatClick = () => {
-    console.log(selectedFriends);
-    onCreateChat(selectedFriends);
-    notifications.show({
-      title: 'Created a new text channel!',
-      message: `Added ${selectedFriendUsernames.join(', ')}`,
-    });
-    close(); // Close the modal
-  };
+  const handleCreateChatClick = async () => {
+    let errors = { channelName: '', members: '', admins: '' };
+    if (!channelName.trim()) {
+      errors.channelName = 'Channel name is required.';
+    }
+    if (selectedFriends.length === 0) {
+      errors.members = "At least one member is required.";
+    }
+    setErrorMessages(errors);
+  
+    if (!errors.channelName && !errors.members) {
+      try {
+        const response = await fetch('/api/new-text-channel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            channelName,
+            memberIDs: selectedFriends,
+            adminIDs: selectedAdmins,
+            ownerID: senderID,
+          }),
+        });
+  
+        if (response.ok) {
+          notifications.show({
+            title: 'Created a new text channel!',
+            message: `Added ${selectedFriendUsernames.join(', ')}`,
+          });
+          setChannelName('');
+          setSelectedFriends([]);
+          setSelectedAdmins([]);
+          setErrorMessages({ channelName: '', members: '', admins: '' });
+          close(); // Close the modal
+        } else if (response.status === 409) {
+          // Chat already exists, so we need to handle this by prompting the user to change the chat name/members
+          const data = await response.json(); // The backend sends a JSON response
+          setErrorMessages(prev => ({...prev, channelName: data.error}));
+        } else {
+          console.error('Failed to create new text channel');
+          const errorText = await response.text(); // Fallback to use the response text
+          notifications.show({
+            title: 'Error',
+            message: errorText || 'An unknown error occurred',
+          });
+        }
+      } catch (error) {
+        console.error('Error creating new text channel:', error);
+        notifications.show({
+          title: 'Error',
+          message: 'Failed to send request. Please try again.',
+        });
+      }
+    }
+  };  
 
   return (
     <>
@@ -79,9 +138,9 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
               size="xl"
               component="span"
             >
-              Select Friends
+              New Text Channel
             </Text>
-            <Text c={theme.colors.dark[1]}>Create group chats or send DMs</Text>
+            <Text c={theme.colors.dark[1]}>Create channels for group chats or direct messages</Text>
           </Stack>
         }
         overlayProps={{
@@ -90,25 +149,43 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
         }}
       >
       <Stack>
+        <TextInput
+          placeholder="Enter your channel name"
+          withAsterisk
+          error={errorMessages.channelName}
+          value={channelName}
+          onChange={(e) => setChannelName(e.currentTarget.value)}
+        />
         <MultiSelect
           clearable
           searchable
           nothingFoundMessage="No matching user found"
-          placeholder="Choose up to 9 friends to chat with"
+          placeholder="Add channel members from your friend list"
+          error={errorMessages.members}
           value={selectedFriends}
           data={friendOptions}
           onChange={setSelectedFriends}
+        />
+        <MultiSelect
+          clearable
+          searchable
+          nothingFoundMessage="No matching admin found"
+          placeholder="Specify any admins from your channel members"
+          error={errorMessages.admins}
+          value={selectedAdmins}
+          data={friendOptions.filter(option => selectedFriends.includes(option.value))}
+          onChange={setSelectedAdmins}
         />
         <Button
           fullWidth
           variant="gradient"
           onClick={handleCreateChatClick} // Call handleCreateChatClick when the button is clicked
         >
-          Create chat
+          Create text channel
         </Button>
       </Stack>
       </Modal>
-      <Tooltip label="Send DM" onClick={open}>
+      <Tooltip label="Create a channel" onClick={open}>
         <ActionIcon variant="gradient" aria-label="Plus">
           <IconPlus style={{ width: '70%', height: '70%' }} stroke={1.5} />
         </ActionIcon>

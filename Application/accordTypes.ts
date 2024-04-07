@@ -40,7 +40,7 @@ export interface IconProps {
 }
 
 export interface NewChatModalProps extends NewFriendModalProps {
-  onCreateChat: (recipients: string[]) => void;
+  onCreateChat: (selectedFriendIDs: string[], selectedAdminIDs: string[]) => void;
 }
 
 export interface PrivacySettingsProps {
