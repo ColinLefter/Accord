@@ -6,12 +6,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
 import { ChatProps, MessageProps, DisplayedMessageProps } from "@/accordTypes";
-import { createHash } from 'crypto';
 import { useUser } from '@clerk/nextjs';
+import { generateHash } from "@/utility";
 
-const generateHash = (input: string) => {
-  return createHash('sha256').update(input).digest('hex');
-};
 
 /**
  * Provides a comprehensive chat interface for real-time messaging within the application.
@@ -54,12 +51,9 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   let messageEnd: HTMLDivElement | null = null;
   const inputBoxRef = useRef(null);
   const messageEndRef = React.useRef<HTMLDivElement>(null);; // Updated to use useRef
-  const [myAblyClientID, setMyAblyClientID] = useState('');
-
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
   const [receivedMessages, setReceivedMessages] = useState<DisplayedMessageProps[]>([]); // receivedMessages stores the on-screen chat history.
   const memberIDs = [senderID, ...receiverIDs] // / To allow for group chats, we are creating an array that contains the sender and the receivers.
-  memberIDs.sort(); // CRITICAL: Sorts in-place. We need to sort the key to counteract the swapping mechanism where sender and receiver becomes flipped.
   // Retrieving the chat history and update function from the context
   const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty.
@@ -67,8 +61,8 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   // useChannel is a react-hook API for subscribing to messages from an Ably channel.
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
-  const rawChannelKey = `chat:${memberIDs.join(",")}`;
-  const channelKey = generateHash(rawChannelKey); // Generating a SHA-256 hash of a channel to compress it and also enforce security, privacy and uniqueness :D
+  
+  const channelKey = generateHash(memberIDs);
   // Look at how we obtain Ably. It's by opening a stream. We can't just pass around the Ably object because it comes with opening a stream.
   // Therefore, we actually need to open it once and once only, which is why we need to pass the client associated with this stream to components that need it.
   // There isn't some Ably client ID associated with an account, but rather one that is associated with a stream.

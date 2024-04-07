@@ -6,6 +6,7 @@ import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
 import { NewChatModalProps } from '@/accordTypes';
 import { notifications } from '@mantine/notifications';
+import { useUser } from '@clerk/nextjs';
 
 /**
  * NewChatModal facilitates the creation of new chat sessions, allowing users to select friends for group chats or direct messages (DMs).
@@ -29,7 +30,10 @@ import { notifications } from '@mantine/notifications';
  * @param {NewChatModalProps} props The properties received by the NewChatModal component, including the sender's ID and the onCreateChat callback function.
  * @returns {JSX.Element} The rendered NewChatModal component, providing an interactive interface for creating new chat sessions.
  */
-export function NewChatModal({ onCreateChat }: NewChatModalProps) {
+export function NewTextChannelModal() {
+  const { user } = useUser();
+  const theme = useMantineTheme();
+
   const [opened, { open, close }] = useDisclosure(false);
   const { lastFetched, setLastFetched } = useCache();
   const [selectedFriends, setSelectedFriends] = useState<string[]>([]);
@@ -37,9 +41,15 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   const [selectedFriendUsernames, setSelectedFriendUsernames] = useState<string[]>([]);
   const [channelName, setChannelName] = useState('');
   const [errorMessages, setErrorMessages] = useState({ channelName: '', members: '', admins: '' });
+  const [senderID, setSenderID] = useState<string>('');
   const friends = useFriendList({lastFetched, setLastFetched});
-
-  const theme = useMantineTheme();
+  
+  useEffect(() => {
+    if (user && user.username && user.id) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setSenderID(user.id);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   const friendOptions = friends.list.map(friend => ({
     value: friend.id,
@@ -47,33 +57,54 @@ export function NewChatModal({ onCreateChat }: NewChatModalProps) {
   }));
 
   useEffect(() => {
+    // Filter out any selected admins who are not in the updated selected friends list
+    setSelectedAdmins(currentAdmins => currentAdmins.filter(adminId => selectedFriends.includes(adminId)));
+  
+    // Update the selectedFriendUsernames to ensure they are synchronized with the selectedFriends list
     const selectedUsernames = selectedFriends.map(friendId => {
-      // Find the friend object by id
       const friend = friends.list.find(friend => friend.id === friendId);
-      // Return the username, or a placeholder if not found
-      return friend ? friend.username : 'Unknown User';
+      return friend ? friend.username : 'Unknown User'; // This ensures usernames are always used instead of IDs
     });
-    
     setSelectedFriendUsernames(selectedUsernames);
-  }, [selectedFriends, friends.list]);
+  }, [selectedFriends, friends.list]);  
 
-  const handleCreateChatClick = () => {
+  const handleCreateChatClick = async () => {
     let errors = { channelName: '', members: '', admins: '' };
     if (!channelName.trim()) errors.channelName = 'Channel name is required.';
     if (selectedFriends.length === 0) errors.members = "At least one member is required.";
-    // Admins are optional, so no need to validate them
-
     setErrorMessages(errors);
-
+  
     if (!errors.channelName && !errors.members) {
-      onCreateChat(selectedFriends, selectedAdmins);
-      notifications.show({
-        title: 'Created a new text channel!',
-        message: `Added ${selectedFriendUsernames.join(', ')}`,
-      });
-      close(); // Close the modal
+      try {
+        const response = await fetch('/api/new-text-channel', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            channelName,
+            senderID: senderID,
+            memberIDs: selectedFriends,
+            adminIDs: selectedAdmins,
+            ownerID: senderID,
+          }),
+        });
+  
+        if (response.ok) {
+          notifications.show({
+            title: 'Created a new text channel!',
+            message: `Added ${selectedFriendUsernames.join(', ')}`,
+          });
+          close(); // Close the modal
+        } else {
+          // Handle server errors or invalid responses
+          console.error('Failed to create new text channel');
+        }
+      } catch (error) {
+        console.error('Error creating new text channel:', error);
+      }
     }
-  };
+  };  
 
   return (
     <>

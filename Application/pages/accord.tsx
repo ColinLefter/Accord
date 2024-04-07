@@ -23,7 +23,7 @@ import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
 import React, { useEffect, useState } from 'react';
 import { ChatProvider } from "@/contexts/chatContext";
-import { NewChatModal } from '@/components/Messaging/NewTextChannelModal';
+import { NewTextChannelModal } from '@/components/Messaging/NewTextChannelModal';
 import classes from "@/components/tabstyling.module.css";
 import { useUser, UserProfile } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
@@ -56,7 +56,7 @@ export default function Accord() {
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
   const [chatID, setChatID] = useState<string>("b0b407caf9a1caaec74ed3f089ccb0916418e64984c9045b27361c920bff83df")
 
-  const [privateMode, setPrivateMode] = useState(true);
+  const [privateMode, setPrivateMode] = useState(false);
   const [chatStarted, setChatStarted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
 
@@ -133,7 +133,7 @@ export default function Accord() {
             <AppShell.Section grow component={ScrollArea} mt="15">
               <Group justify="space-between">
                 <Text py="md">Text Channels</Text>
-                <NewChatModal senderID={senderID} onCreateChat={handleCreateChat} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+                <NewTextChannelModal/>
               </Group>
               {Array(60)
                 .fill(0)
