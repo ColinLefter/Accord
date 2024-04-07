@@ -14,7 +14,7 @@ import { getMongoDbUri } from '@/lib/dbConfig';
   // Reader starts from here
 export default async function handler(req: NextApiRequest, res: NextApiResponse) { 
   if (req.method === 'POST') { 
-    const { serverID } = req.body; // Intaking the data that has been sent from the client-side
+    const { channelKey } = req.body; // Intaking the data that has been sent from the client-side
     let client: MongoClient | null = null; // We need to assign something to the client so TypeScript is aware that it can be null if the connection fails 
 
     try { //creating and establishing connections to the DB
@@ -23,12 +23,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const db = client.db('Accord');
 
       // Reach into the db, and grab the Accounts table
-      const accountsCollection = db.collection("Servers");
+      const accountsCollection = db.collection("Chats");
       // Querying the database by the username we received
-      const server = await accountsCollection.findOne({ serverID: serverID }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
+      const channel = await accountsCollection.findOne({ channelKey: channelKey }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
       // now user variable contains these data from the table
-      if (server) { // Check if the user existed 
-        return res.status(200).json({ memberList: server.memberList}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
+      if (channel) { // Check if the user existed 
+        // console.log(channel.channelKey + " this is the key")
+        // console.log(channel.memberIDs + " this is the key")
+        return res.status(200).json({ memberIDs: channel.memberIDs}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {
         return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
       }

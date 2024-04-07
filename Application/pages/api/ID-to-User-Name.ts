@@ -14,32 +14,37 @@ import { getMongoDbUri } from '@/lib/dbConfig';
   // Reader starts from here
 export default async function handler(req: NextApiRequest, res: NextApiResponse) { 
   if (req.method === 'POST') { 
-    const { member, channelKey, newChannelKey } = req.body; // Intaking the data that has been sent from the client-side
+    const { memberIDs } = req.body; // Intaking the data that has been sent from the client-side
     let client: MongoClient | null = null; // We need to assign something to the client so TypeScript is aware that it can be null if the connection fails 
-
+    memberIDs.forEach((item: String) => {
+      //console.log(item); // Prints each element of the array
+  });
     try { //creating and establishing connections to the DB
       client = new MongoClient(getMongoDbUri());
       await client.connect();
       const db = client.db('Accord');
 
       // Reach into the db, and grab the Accounts table
-      const accountsCollection = db.collection("Chats");
-
-      const filter = { channelKey: channelKey };
-      const updateMemberList = { $pull: { memberIDs: member } };
-
-      const updateChannelKey = { $set: { channelKey: newChannelKey } };
-
+      const accountsCollection = db.collection("Accounts");
       // Querying the database by the username we received
-      const removedMember = await accountsCollection.updateOne( filter, updateMemberList ); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
-      const result = await accountsCollection.updateOne( filter, updateChannelKey );
-
-
-      if (removedMember) { // Check if the user existed 
-        return res.status(200).json({ matchedCount: removedMember.matchedCount}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
+      let user;
+      let userArray:String[] = [];
+      for(const id of memberIDs){
+        //console.log(item);
+        user = await accountsCollection.findOne({ id: id });// IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
+        // now user variable contains these data from the table
+        if (user){
+          userArray.push(user.userName)
+          //console.log(user.userName + " this is the key")
+        }
+      }
+      console.log(userArray)
+      if (user) { // Check if the user existed 
+        return res.status(200).json({ userArray: userArray}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {
         return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
       }
+      
     } catch (error) { // Copy paste from this point - just error catching, method detecting and closing the clients - back to UserSettings.tsx in components
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });
