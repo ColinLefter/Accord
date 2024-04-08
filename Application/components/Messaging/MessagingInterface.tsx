@@ -321,7 +321,8 @@ export function MessagingInterface({
   }, [chatHistory]);
 
   // const messageLabel = channelName ? `Message ${channelName}` : (receiverIDs.length > 1 ? "Message everyone in the group" : "Send a DM");
-  const messageLabel = channelKey;
+  // const messageLabel = channelKey;
+  const messageLabel = "Send a message"
 
   useEffect(() => {
     if (messageEndRef.current) {
