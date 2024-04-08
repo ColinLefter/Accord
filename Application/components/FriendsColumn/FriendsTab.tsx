@@ -52,11 +52,8 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [receiverUsername, setreceiverUsername] = useState<string>('');
     const [receiverID, setReceiverID] = useState<string>('');
-
-    const { setActiveView } = useActiveView();
-    const { activeView } = useActiveView();
-    const { setChatProps } = useChat();
-
+    const { updateContext, setActiveView } = useChat();
+    
     const { channel } = useChannel(getSystemsChannelID(), (message) => {
         if (message.name === "friend-request-accepted") {
           const [senderId, receiverId] = message.data.split("-");
@@ -75,31 +72,21 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     );
 
     const handleFriendClick = (friendUsername: string, friendID: string) => {
-        setActiveView('chat');
-        setChatProps({
-          senderUsername,
+        console.log("IN FRIENDS TAB:");
+        console.log("Friend ID: ", friendID);
+        console.log("Friend Username: ", friendUsername);
+
+        updateContext(null, { // Set selectedChannelId to null since this is a DM, not a channel message
           senderID,
-          receiverIDs: [friendID], // Assuming friendID is what you need here
+          senderUsername,
+          receiverIDs: [friendID],
           privateChat,
           lastFetched,
           setLastFetched,
           onMessageExchange,
         });
+        setActiveView('chat'); // Ensure we are setting the active view to 'chat'
       };
-
-    if (activeView === 'chat') { // Ensure both receiverUsername and user.id are defined
-      return (
-        <Chat // Since this is the FriendsTab component, we will only every have one friend ID in receiverIDs as clicking on a friend starts a DM with just that friend.
-          senderID={senderID}
-          senderUsername={senderUsername}
-          receiverIDs={[receiverID]} // The Chat component will always expect an array of IDs, even if it's just one. This is to allow for group chats.
-          privateChat={privateChat}
-          lastFetched={lastFetched}
-          setLastFetched={setLastFetched}
-          onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
-        />
-      );
-    }
     
     return (
         <Stack>

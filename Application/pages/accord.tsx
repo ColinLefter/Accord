@@ -51,27 +51,20 @@ export default function Accord() {
   const { lastFetched, setLastFetched } = useCache();
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
-  const { activeView, setActiveView } = useChat();
+  const { activeView, setActiveView, chatProps, selectedChannelId } = useChat();
   // Default is to just display no username. This will never be the case as you can't be here without an account.
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
   const [senderID, setSenderID] = useState<string>('');
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
-  const [chatID, setChatID] = useState<string>("b0b407caf9a1caaec74ed3f089ccb0916418e64984c9045b27361c920bff83df")
+  const [chatID, setChatID] = useState<string>('')
 
   const [privateMode, setPrivateMode] = useState(false);
   const [chatStarted, setChatStarted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
 
-  const { chatProps, selectedChannelId } = useChat();
-
   console.log("in app shell ", selectedChannelId);
-
-  // Function to handle chat creation from modal
-  const handleCreateChat = (recipients: string[]) => {
-    setSelectedRecipients(recipients); // Update the recipients state
-    setActiveView('chat'); // 'chat' is the view for showing the chat interface
-  };
+  console.log("Active view: ", activeView);
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -134,7 +127,7 @@ export default function Accord() {
               <Stack gap="xs">
                 <Button
                   value="friends"
-                  onClick={() => handleTabSelection('friends')}
+                  onClick={() => setActiveView('friends')} // Directly set active view to 'friends'
                   leftSection={<IconUsers />}
                   variant="gradient"
                 >
@@ -168,12 +161,9 @@ export default function Accord() {
           {activeView === 'chat' && chatProps && (
             <Chat {...chatProps} />
           )}
-          {!chatProps && selectedChannelId && (
-            <Text>Loading chat...</Text>
-          )}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
-            <MemberList isAdmin = {isAdmin} chatID = {chatID}/>
+            <MemberList isAdmin = {isAdmin} chatID = {selectedChannelId}/>
           </AppShell.Aside>
         </AppShell>
       </Tabs>
