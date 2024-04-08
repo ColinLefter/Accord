@@ -63,6 +63,9 @@ export default function Accord() {
   const [chatStarted, setChatStarted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
 
+  const [isView, setIsView] = useState(false);
+  const [asideWidth, setAsideWidth] = useState(0);
+
   console.log("in app shell ", selectedChannelId);
   console.log("Active view: ", activeView);
   
@@ -77,7 +80,14 @@ export default function Accord() {
   useEffect(() => {
     if (activeView === 'chat' && chatProps) {
       // Log to ensure chatProps are as expected
+      setAsideWidth(0)
       console.log(chatProps);
+    }
+    if(activeView === 'textChannel'){
+      setAsideWidth(250)
+    }
+    if(activeView === "friends"){
+      setAsideWidth(0)
     }
   }, [activeView, chatProps]);
 
@@ -101,7 +111,7 @@ export default function Accord() {
             collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
           }}
           padding="md"
-          aside={{ width: 250, breakpoint: 'sm' }}
+          aside={{ width: asideWidth, breakpoint: 'sm' }}
         >
           <AppShell.Header>
             <Group justify="space-between" className="center" px="md">
@@ -158,14 +168,13 @@ export default function Accord() {
               setLastFetched={setLastFetched}
             />
           )}
-          {activeView === 'chat' && chatProps && (
+          {(activeView === 'chat' || activeView === 'textChannel') && chatProps && (
             <Chat {...chatProps} />
           )}
           </AppShell.Main>
-          <AppShell.Aside p="md" component={ScrollArea}>
-            <Text>{selectedChannelId}</Text>
+          {activeView === 'textChannel' && <AppShell.Aside p="md" component={ScrollArea}>
             <MemberList isAdmin = {isAdmin} chatID = {selectedChannelId}/>
-          </AppShell.Aside>
+          </AppShell.Aside>}
         </AppShell>
       </Tabs>
     </ActiveViewProvider>

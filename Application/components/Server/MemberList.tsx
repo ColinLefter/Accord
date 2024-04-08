@@ -12,7 +12,7 @@ const generateHash = (input: string) => {
   return createHash('sha256').update(input).digest('hex');
 };
 
-export function MemberList({isAdmin, chatID}: any) {
+export function MemberList({isAdmin, chatID, isView}: any) {
   // Hardcoded member list
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
@@ -23,7 +23,6 @@ export function MemberList({isAdmin, chatID}: any) {
   const [friendUsername, setFriendUsername] = useState('');
   const [searchResult, setSearchResult] = useState<number | null>(null);
   const [isAdmin1, setIsADmin] = useState(isAdmin);
-  const [isView, setIsView] = useState(false);
   const { user } = useUser();
 
   const removeMember = async(member: String, index: any) =>{
@@ -175,9 +174,6 @@ export function MemberList({isAdmin, chatID}: any) {
           console.error('Error fetching member list:', error);
         }
       };
-      if(channelKeyToCheck !== ""){
-        setIsView(true);
-      }
       setChannelKeyToCheck(channelKey); 
       createErrorMessage();
       setChannelKey(chatID)
@@ -197,13 +193,12 @@ export function MemberList({isAdmin, chatID}: any) {
       <Text fw={500} className="text-xl" component="span" size="xl">
         All members
       </Text>
-      <Text>{chatID}</Text>
       {membersList.map((member, index) => (
         <div>
           {/* <Text>{member}</Text> */}
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
-                  <Button fullWidth variant="gradient">
+                  <Button style={{width: "215px"}} variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
                           <Text>{member}</Text>
@@ -225,16 +220,16 @@ export function MemberList({isAdmin, chatID}: any) {
             </Menu>
         </div>
       ))}
-      {isView &&<Button
+      <Button
         onClick={open}
         variant="gradient"
+        style={{width: "215px"}}
         leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
       >
         <Group py="10">
           <Text size="sm">Add member</Text>
         </Group>
       </Button>
-      }   
       <Modal
         centered
         opened={opened}
