@@ -17,7 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const chatsCollection = db.collection('Chats');
 
     const textChannels = await chatsCollection.find({
-      memberIDs: userID,
+      memberIDs: { $in: [userID] },
       channelName: { $exists: true } // Otherwise that is a DM and we don't want that
     }).sort({ dateCreated: -1 }).toArray(); // Sort chats by newest first
 
