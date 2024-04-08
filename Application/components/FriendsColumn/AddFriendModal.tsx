@@ -20,8 +20,12 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
    * the `lastFetched` state. If the request fails or if no username is entered, it sets an appropriate
    * error message.
    */
-  const handleAddFriendClick = async () => {
-    if (friendUsername.trim()) {
+    const handleAddFriendClick = async () => {
+      if (!friendUsername.trim()) {
+        setErrorMessage('Please enter a username to add a friend.');
+        return;
+      }
+    
       try {
         const response = await fetch('/api/add-friend', {
           method: 'POST',
@@ -30,45 +34,27 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
           },
           body: JSON.stringify({ senderID, friendUsername }),
         });
-
-        setSearchResult(response.status);
-
+    
         if (response.ok) {
           notifications.show({
             title: 'Friend request sent!',
             message: `@${friendUsername}`,
           });
-          setFriendUsername(''); // Clear the input field to allow for further friend requests
+          setFriendUsername(''); // Clear the input for further requests
+          setErrorMessage(''); // Clear any existing error messages
+          setLastFetched(Date.now()); // Update to trigger a refresh
+          close(); // Close the modal
         } else {
-          console.error('Failed to add friend');
-          // Update to handle error without showNotification
-          setErrorMessage('Failed to send friend request.');
+          // Handle non-OK responses, including custom error messages
+          const data = await response.json(); // Parse the error message
+          setErrorMessage(data.error || 'Failed to send friend request.');
         }
       } catch (error) {
         console.error('Error adding friend:', error);
-        // Update to handle error without showNotification
         setErrorMessage('An error occurred while sending the friend request.');
       }
-    } else {
-      setErrorMessage('Please enter a username to add a friend.');
-    }
-  };
-
-  useEffect(() => {
-    switch (searchResult) {
-      case 404:
-        setErrorMessage('This username does not exist.');
-        break;
-      default:
-        if (searchResult !== null) {
-          setErrorMessage('');
-          setLastFetched(Date.now());
-          close();
-        }
-        break;
-    }
-  }, [searchResult, setLastFetched, close]);
-
+    };
+        
   return (
     <>
       <Button

@@ -70,10 +70,10 @@ export function NewTextChannelModal() {
   const handleCreateChatClick = async () => {
     let errors = { channelName: '', members: '', admins: '' };
     if (!channelName.trim()) {
-      errors.channelName = 'Channel name is required.';
+      errors.channelName = 'A channel name is required.';
     }
-    if (selectedFriends.length === 0) {
-      errors.members = "At least one member is required.";
+    if (selectedFriends.length < 2) {
+      errors.members = "At least two members is required. Send a DM via your friend list.";
     }
     setErrorMessages(errors);
   
@@ -86,7 +86,7 @@ export function NewTextChannelModal() {
           },
           body: JSON.stringify({
             channelName,
-            memberIDs: selectedFriends,
+            memberIDs: [senderID, selectedFriends],
             adminIDs: selectedAdmins,
             ownerID: senderID,
           }),
