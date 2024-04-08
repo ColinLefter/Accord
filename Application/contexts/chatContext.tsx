@@ -1,13 +1,14 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { DisplayedMessageProps } from "@/accordTypes"; // Make sure this path is correct
-import { ChatProps } from "@/accordTypes"; // Make sure this path is correct
+import { DisplayedMessageProps, ChatProps } from "@/accordTypes"; // Consolidated import
 
 interface ChatContextType {
   chatHistory: DisplayedMessageProps[];
   updateChatHistory: (messages: DisplayedMessageProps[]) => void;
   chatProps: ChatProps | null;
   setChatProps: (props: ChatProps | null) => void;
-  updateChatProps: (newProps: ChatProps) => void; // Ensure this is added
+  selectedChannelId: string | null;
+  setSelectedChannelId: (id: string | null) => void;
+  updateContext: (channelId: string | null, props: ChatProps | null) => void; // New method
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -15,18 +16,20 @@ const ChatContext = createContext<ChatContextType | null>(null);
 export const ChatProvider = ({ children }: { children: ReactNode }) => {
   const [chatHistory, setChatHistory] = useState<DisplayedMessageProps[]>([]);
   const [chatProps, setChatProps] = useState<ChatProps | null>(null);
+  const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
 
   const updateChatHistory = (messages: DisplayedMessageProps[]) => {
     setChatHistory(messages);
   };
 
-  // Correctly implementing updateChatProps
-  const updateChatProps = (newProps: ChatProps) => {
-    setChatProps(newProps);
+  // New method to update both selectedChannelId and chatProps
+  const updateContext = (channelId: string | null, props: ChatProps | null) => {
+    setSelectedChannelId(channelId);
+    setChatProps(props);
   };
 
   return (
-    <ChatContext.Provider value={{ chatHistory, updateChatHistory, chatProps, setChatProps, updateChatProps }}>
+    <ChatContext.Provider value={{ chatHistory, updateChatHistory, chatProps, setChatProps, selectedChannelId, setSelectedChannelId, updateContext }}>
       {children}
     </ChatContext.Provider>
   );

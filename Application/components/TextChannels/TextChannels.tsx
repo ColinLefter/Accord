@@ -9,6 +9,8 @@ import { formatDate, truncateText } from "@/utility"
 import { useState, useEffect } from 'react';
 import { TextChannel } from "@/accordTypes";
 import { useChannelContext } from "@/contexts/channelContext";
+import { useChat } from '@/contexts/chatContext';
+import { useActiveView } from '@/contexts/activeViewContext';
 
 function reorder(list: TextChannel[], startIndex: number, endIndex: number): TextChannel[] {
   const result = Array.from(list);
@@ -56,11 +58,14 @@ function reorder(list: TextChannel[], startIndex: number, endIndex: number): Tex
 export function TextChannels() {
   const { user } = useUser();
   const [ userID, setUserID ] = useState<string>('');
+  const  [ senderUsername, updateSenderUsername ] = useState<string>('');
   const [textChannels, setTextChannels] = useState<TextChannel[]>([]);
+  const { updateContext } = useChat();
 
   useEffect(() => {
-    if (user && user.id) {
+    if (user && user.id && user.username) {
       setUserID(user.id);
+      updateSenderUsername(user.username);
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
@@ -87,10 +92,19 @@ export function TextChannels() {
     }
   };
 
-  const { setSelectedChannelId } = useChannelContext();
-
   const onChannelClick = (channelKey: string) => {
-    setSelectedChannelId(channelKey); // Use the context method to set the selected channel ID
+    // Directly updating both selectedChannelId and chatProps via the unified context
+    console.log("channel clicked with key: ", channelKey);
+    updateContext(channelKey, {
+      senderID: userID,
+      senderUsername: senderUsername,
+      receiverIDs: [],
+      privateChat: false,
+      lastFetched: Date.now(),
+      setLastFetched: () => {},
+      onMessageExchange: () => {},
+      channelKey,
+    });
   };
 
   // Mapping through the state to create TextChannelItem components
