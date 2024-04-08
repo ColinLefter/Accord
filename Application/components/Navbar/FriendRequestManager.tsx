@@ -1,19 +1,23 @@
 import React, { useState, useEffect, FC } from 'react';
 import { Menu, Divider, Text, Notification, Button } from '@mantine/core';
+import { useChannel } from "ably/react";
+import { getSystemsChannelID} from "@/utility";
 
 interface FriendRequest {
   id: string;
   username: string;
 }
 
-interface InboxDropdownProps {
+interface FriendRequestManagerProps {
   userId: string;
 }
 
-const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
+const FriendRequestManager: FC<FriendRequestManagerProps> = ({ userId }) => {
   const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const { channel, ably } = useChannel(getSystemsChannelID());
 
   const fetchFriendRequests = async () => {
     setLoading(true);
@@ -104,6 +108,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
       }
       // Once accepted, create a DM chat with the new friend
       await createDirectMessageChat(userId, friendId);
+      await channel.publish("friend-request-accepted", `${userId}-${friendId}`);
 
       fetchFriendRequests(); // Refresh data after accepting a request
     } catch (error) {
@@ -147,4 +152,4 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   );
 };
 
-export default InboxDropdown;
+export default FriendRequestManager;

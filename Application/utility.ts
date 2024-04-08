@@ -15,3 +15,7 @@ export const formatDate = (date: Date) => {
   
   return `${day}${daySuffix} ${month} ${year}`;
 };
+
+export const getSystemsChannelID = () => {
+  return "accord-systems";
+}

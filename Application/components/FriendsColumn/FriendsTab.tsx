@@ -20,6 +20,8 @@ import { Chat } from '@/components/Messaging/Chat';
 import { useFriendList } from '@/hooks/useFriendList';
 import { FriendsTabProps } from '@/accordTypes';
 import { FriendsLoading } from '@/components/FriendsColumn/FriendsLoading';
+import { useChannel } from "ably/react";
+import { getSystemsChannelID} from "@/utility";
 
 // Function to call to go back to the last previous URL
 function goBack() {
@@ -48,6 +50,17 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [receiverUsername, setreceiverUsername] = useState<string>('');
     const [receiverID, setReceiverID] = useState<string>('');
+
+    const { channel } = useChannel(getSystemsChannelID(), (message) => {
+        if (message.name === "friend-request-accepted") {
+          const [senderId, receiverId] = message.data.split("-");
+          if (senderId === senderID || receiverId === senderID) {
+            // If the current user is involved in the friend request, refresh the friend list
+            console.log("Friend request accepted, refreshing friend list.");
+            setLastFetched(Date.now());
+          }
+        }
+    });
 
     const theme = useMantineTheme();
     
