@@ -34,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           channelName,
           dateCreated: new Date(),
           ownerID: ownerID,
-          memberIDs: [ownerID, ...memberIDs],
+          memberIDs: memberIDs,
           adminIDs,
           messageHistory: [] // Initialize with an empty message history
         };

@@ -86,7 +86,7 @@ export function NewTextChannelModal() {
           },
           body: JSON.stringify({
             channelName,
-            memberIDs: [senderID, selectedFriends],
+            memberIDs: [senderID, ...selectedFriends],
             adminIDs: selectedAdmins,
             ownerID: senderID,
           }),
