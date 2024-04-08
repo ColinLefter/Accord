@@ -5,8 +5,9 @@ import { ChatProps } from "@/accordTypes"; // Make sure this path is correct
 interface ChatContextType {
   chatHistory: DisplayedMessageProps[];
   updateChatHistory: (messages: DisplayedMessageProps[]) => void;
-  chatProps: ChatProps | null; // Include chat props
-  setChatProps: (props: ChatProps | null) => void; // Function to update chat props
+  chatProps: ChatProps | null;
+  setChatProps: (props: ChatProps | null) => void;
+  updateChatProps: (newProps: ChatProps) => void; // Ensure this is added
 }
 
 const ChatContext = createContext<ChatContextType | null>(null);
@@ -19,8 +20,13 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setChatHistory(messages);
   };
 
+  // Correctly implementing updateChatProps
+  const updateChatProps = (newProps: ChatProps) => {
+    setChatProps(newProps);
+  };
+
   return (
-    <ChatContext.Provider value={{ chatHistory, updateChatHistory, chatProps, setChatProps }}>
+    <ChatContext.Provider value={{ chatHistory, updateChatHistory, chatProps, setChatProps, updateChatProps }}>
       {children}
     </ChatContext.Provider>
   );

@@ -54,6 +54,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     const [receiverID, setReceiverID] = useState<string>('');
 
     const { setActiveView } = useActiveView();
+    const { activeView } = useActiveView();
     const { setChatProps } = useChat();
 
     const { channel } = useChannel(getSystemsChannelID(), (message) => {
@@ -86,19 +87,19 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
         });
       };
 
-    // if (receiverUsername && user?.id) { // Ensure both receiverUsername and user.id are defined
-    //   return (
-    //     <Chat // Since this is the FriendsTab component, we will only every have one friend ID in receiverIDs as clicking on a friend starts a DM with just that friend.
-    //       senderID={senderID}
-    //       senderUsername={senderUsername}
-    //       receiverIDs={[receiverID]} // The Chat component will always expect an array of IDs, even if it's just one. This is to allow for group chats.
-    //       privateChat={privateChat}
-    //       lastFetched={lastFetched}
-    //       setLastFetched={setLastFetched}
-    //       onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
-    //     />
-    //   );
-    // }
+    if (activeView === 'chat') { // Ensure both receiverUsername and user.id are defined
+      return (
+        <Chat // Since this is the FriendsTab component, we will only every have one friend ID in receiverIDs as clicking on a friend starts a DM with just that friend.
+          senderID={senderID}
+          senderUsername={senderUsername}
+          receiverIDs={[receiverID]} // The Chat component will always expect an array of IDs, even if it's just one. This is to allow for group chats.
+          privateChat={privateChat}
+          lastFetched={lastFetched}
+          setLastFetched={setLastFetched}
+          onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+        />
+      );
+    }
     
     return (
         <Stack>

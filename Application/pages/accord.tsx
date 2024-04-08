@@ -81,6 +81,13 @@ export default function Accord() {
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
+  useEffect(() => {
+    if (activeView === 'chat' && chatProps) {
+      // Log to ensure chatProps are as expected
+      console.log(chatProps);
+    }
+  }, [activeView, chatProps]);
+
   // note: we are manually handling the currently selected tab via states
   const handleTabSelection = (value: string) => setActiveView(value);
 
@@ -90,7 +97,6 @@ export default function Accord() {
     if (!chatStarted) setChatStarted(true);
   };
 
-  // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
     <ActiveViewProvider>
       <ChannelContext.Provider value={providerValue}>
@@ -161,9 +167,7 @@ export default function Accord() {
               />
             }
             {activeView === 'chat' && chatProps && (
-              <Chat
-                {...chatProps}
-              />
+              <Chat {...chatProps} />
             )}
             {selectedChannelId && (
               <Text>{selectedChannelId}</Text>
