@@ -28,6 +28,7 @@ import classes from "@/components/tabstyling.module.css";
 import { useUser, UserProfile } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
+import { RelinquishAdminModal } from '@/components/Server/RelinquishAdminModal';
 import { MemberList } from "@/components/Server/MemberList";
 
 /**
@@ -128,6 +129,8 @@ export default function Accord() {
                   Friends
                 </Button>
                 <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+                {/* For testing out the Modal - whenever you can succesfully use it and the changes correctly reflects on Mongo, request a change*/}
+                {/* <RelinquishAdminModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} /> */}
               </Stack>
             </AppShell.Section>
             <AppShell.Section grow component={ScrollArea} mt="15">

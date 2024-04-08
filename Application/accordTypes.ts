@@ -31,6 +31,7 @@ export interface RelinquishAdminModalProps extends FetchStatusProps {
   senderID: string;
 }
 
+
 export interface FriendsTabProps extends FetchStatusProps, NewFriendModalProps, PrivacySettingsProps {
   senderUsername: string;
 }
