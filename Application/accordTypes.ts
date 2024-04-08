@@ -33,7 +33,8 @@ export interface FriendsTabProps extends NewFriendModalProps, PrivacySettingsPro
 
 export interface ChatProps extends FriendsTabProps {
   receiverIDs: string[];
-  channelKey?: string; // We are adding this as optional as backwards compatibilty with the old version of the Chat component that was only for DMs.
+  channelKey?: string;
+  channelName?: string; // Adding channelName as optional
 }
 
 export interface IconProps {

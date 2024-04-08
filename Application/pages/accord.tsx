@@ -51,7 +51,7 @@ export default function Accord() {
   const { lastFetched, setLastFetched } = useCache();
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
-  const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
+  const { activeView, setActiveView } = useChat();
   // Default is to just display no username. This will never be the case as you can't be here without an account.
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
@@ -64,6 +64,8 @@ export default function Accord() {
   const [isAdmin, setIsAdmin] = useState(true);
 
   const { chatProps, selectedChannelId } = useChat();
+
+  console.log("in app shell ", selectedChannelId);
 
   // Function to handle chat creation from modal
   const handleCreateChat = (recipients: string[]) => {

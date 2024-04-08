@@ -60,7 +60,7 @@ export function TextChannels() {
   const [ userID, setUserID ] = useState<string>('');
   const  [ senderUsername, updateSenderUsername ] = useState<string>('');
   const [textChannels, setTextChannels] = useState<TextChannel[]>([]);
-  const { updateContext } = useChat();
+  const { updateContext, setActiveView } = useChat();
 
   useEffect(() => {
     if (user && user.id && user.username) {
@@ -95,6 +95,8 @@ export function TextChannels() {
   const onChannelClick = (channelKey: string) => {
     // Directly updating both selectedChannelId and chatProps via the unified context
     console.log("channel clicked with key: ", channelKey);
+    console.log("userID: ", userID);
+    console.log("senderUsername: ", senderUsername);
     updateContext(channelKey, {
       senderID: userID,
       senderUsername: senderUsername,
@@ -105,6 +107,7 @@ export function TextChannels() {
       onMessageExchange: () => {},
       channelKey,
     });
+    setActiveView('chat'); // Switch to chat view
   };
 
   // Mapping through the state to create TextChannelItem components
