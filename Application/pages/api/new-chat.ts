@@ -17,6 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       await client.connect();
       const db = client.db('Accord');
       const chatsCollection = db.collection("Chats");
+      
+      memberIDs.sort(); // To prevent channel duplication
 
       // Handle both text channels and DMs
       let channelKey, newChat;
