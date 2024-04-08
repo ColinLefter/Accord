@@ -4,14 +4,24 @@ import { Modal, Tooltip, ActionIcon, Text, Stack, Button, TextInput, useMantineT
 import { IconPlus } from '@tabler/icons-react';
 import { NewFriendModalProps } from '@/accordTypes';
 import { notifications, showNotification } from '@mantine/notifications';
+import { useUser } from '@clerk/nextjs';
 
 export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps) {
+  const { user } = useUser();
+
   const [opened, { open, close }] = useDisclosure(false);
+  const [myUsername, setMyUsername] = useState<string>('');
   const [friendUsername, setFriendUsername] = useState('');
   const [searchResult, setSearchResult] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   const theme = useMantineTheme();
+
+  useEffect(() => {
+    if (user && user.username) {
+      setMyUsername(user.username);
+    }
+  }, [user]);
 
     /**
    * Handles the logic for sending a friend request based on the entered username. It performs a POST
@@ -23,6 +33,9 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
     const handleAddFriendClick = async () => {
       if (!friendUsername.trim()) {
         setErrorMessage('Please enter a username to add a friend.');
+        return;
+      } else if (friendUsername === myUsername) {
+        setErrorMessage('You cannot add yourself as a friend.');
         return;
       }
     

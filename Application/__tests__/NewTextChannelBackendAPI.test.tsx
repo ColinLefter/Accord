@@ -1,4 +1,4 @@
-import handler from '@/pages/api/new-text-channel';
+import handler from '@/pages/api/new-chat';
 import { createMocks } from 'node-mocks-http';
 import { NextApiRequest, NextApiResponse } from 'next';
 
