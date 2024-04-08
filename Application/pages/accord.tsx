@@ -29,7 +29,10 @@ import { useUser, UserProfile } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 import { MemberList } from "@/components/Server/MemberList";
-
+import { TextChannels } from "@/components/TextChannels/TextChannels";
+import { ChannelContext } from "@/contexts/channelContext";
+import { ActiveViewProvider } from '@/contexts/activeViewContext';
+import { useChat } from '@/contexts/chatContext';
 /**
  * Represents the central structure of the application interface, organizing the layout into
  * header, navbar, main content, and aside sections. This component serves as the main framework
@@ -48,23 +51,20 @@ export default function Accord() {
   const { lastFetched, setLastFetched } = useCache();
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
-  const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
+  const { activeView, setActiveView, chatProps, selectedChannelId } = useChat();
   // Default is to just display no username. This will never be the case as you can't be here without an account.
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
   const [senderID, setSenderID] = useState<string>('');
   const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
-  const [chatID, setChatID] = useState<string>("b0b407caf9a1caaec74ed3f089ccb0916418e64984c9045b27361c920bff83df")
+  const [chatID, setChatID] = useState<string>('')
 
   const [privateMode, setPrivateMode] = useState(false);
   const [chatStarted, setChatStarted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
 
-  // Function to handle chat creation from modal
-  const handleCreateChat = (recipients: string[]) => {
-    setSelectedRecipients(recipients); // Update the recipients state
-    setActiveView('chat'); // 'chat' is the view for showing the chat interface
-  };
+  console.log("in app shell ", selectedChannelId);
+  console.log("Active view: ", activeView);
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -73,6 +73,13 @@ export default function Accord() {
       setSenderID(user.id);
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
+
+  useEffect(() => {
+    if (activeView === 'chat' && chatProps) {
+      // Log to ensure chatProps are as expected
+      console.log(chatProps);
+    }
+  }, [activeView, chatProps]);
 
   // note: we are manually handling the currently selected tab via states
   const handleTabSelection = (value: string) => setActiveView(value);
@@ -83,9 +90,8 @@ export default function Accord() {
     if (!chatStarted) setChatStarted(true);
   };
 
-  // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
-    <ChatProvider>
+    <ActiveViewProvider>
       <Tabs value={activeView}>
         <AppShell
           header={{ height: 50 }}
@@ -117,36 +123,32 @@ export default function Accord() {
             </Group>
           </AppShell.Header>
           <AppShell.Navbar p="md">
-            <AppShell.Section grow>
+            <AppShell.Section>
               <Stack gap="xs">
                 <Button
                   value="friends"
-                  onClick={() => handleTabSelection('friends')}
+                  onClick={() => setActiveView('friends')} // Directly set active view to 'friends'
                   leftSection={<IconUsers />}
                   variant="gradient"
                 >
                   Friends
                 </Button>
                 <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+                <Group justify="space-between">
+                  <Text py="md">Text Channels</Text>
+                  <NewTextChannelModal/>
+                </Group>
               </Stack>
             </AppShell.Section>
-            <AppShell.Section grow component={ScrollArea} mt="15">
-              <Group justify="space-between">
-                <Text py="md">Text Channels</Text>
-                <NewTextChannelModal/>
-              </Group>
-              {Array(60)
-                .fill(0)
-                .map((_, index) => (
-                  <Skeleton key={index} h={30} mt="sm" animate={false} />
-                ))}
+            <AppShell.Section grow component={ScrollArea} mt="0">
+              <TextChannels />
             </AppShell.Section>
             <AppShell.Section mt="15">
               <FooterProfile/>
             </AppShell.Section>
           </AppShell.Navbar>
           <AppShell.Main>
-          {activeView === 'friends' && 
+          {activeView === 'friends' && (
             <FriendsTab
               senderUsername={sender}
               senderID={senderID}
@@ -155,38 +157,16 @@ export default function Accord() {
               lastFetched={lastFetched}
               setLastFetched={setLastFetched}
             />
-          }
-          {activeView === 'profile' &&
-            <Tabs.Panel value="profile">
-              <div className="general-container">
-                <UserProfile />
-              </div>
-            </Tabs.Panel>
-          }
-          {activeView === 'chat' && (
-            <Chat
-              senderID={senderID}
-              senderUsername={sender}
-              receiverIDs={selectedRecipients}
-              privateChat={privateMode}
-              lastFetched={lastFetched}
-              setLastFetched={setLastFetched}
-              onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
-            />
+          )}
+          {activeView === 'chat' && chatProps && (
+            <Chat {...chatProps} />
           )}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
-            {/* <Text>Servers</Text>*/}
-            {/* {Array(60)
-              .fill(0)
-              .map((_, index) => (
-                <Skeleton key={index} h={30} mt="sm" animate={false} />
-              ))} */}
-              {/* <ServerList/> */}
-              <MemberList isAdmin = {isAdmin} chatID = {chatID}/>
+            <MemberList isAdmin = {isAdmin} chatID = {selectedChannelId}/>
           </AppShell.Aside>
         </AppShell>
       </Tabs>
-    </ChatProvider>
+    </ActiveViewProvider>
   );
 }

@@ -33,7 +33,7 @@ export default function HomePage() {
     <>
       <Navbar />
         <HeroBanner/>
-        <Container pl="5%" pr="5%" mt="2%" fluid className={classes.container}>
+        <Container pl="5%" pr="5%" mt="1%" fluid className={classes.container}>
           <FeatureCards/>
           <FooterLinks/>
         </Container>

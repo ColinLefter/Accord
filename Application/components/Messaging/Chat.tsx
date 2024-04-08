@@ -22,19 +22,28 @@ import { ChatProps } from '@/accordTypes';
  * @param {ChatProps} props The properties passed to the Chat component.
  * @returns {JSX.Element} The rendered Chat component.
  */
-export function Chat({ senderID, senderUsername, receiverIDs, privateChat, lastFetched, setLastFetched, onMessageExchange }: ChatProps) {
-  // Although this component seems a bit redundant, it still exists because we will perform some additional functionality here in the future.
-  // Namely, the migration of the privacy toggle to this component as currently it is in the main application shell.
-  // The reason we need to migrate that here is becuase it is currently acting as a global setting, but we need to make it a per-chat setting.
+export function Chat({
+  senderID,
+  senderUsername,
+  receiverIDs,
+  privateChat,
+  lastFetched,
+  setLastFetched,
+  onMessageExchange,
+  channelKey, // Keep the channelKey as it is
+  channelName, // New channelName prop
+}: ChatProps) {
   return (
-      <MessagingInterface
-        senderID={senderID}
-        senderUsername={senderUsername}
-        receiverIDs={receiverIDs}
-        privateChat={privateChat}
-        lastFetched={lastFetched}
-        setLastFetched={setLastFetched}
-        onMessageExchange={onMessageExchange}
-      />
+    <MessagingInterface
+      senderID={senderID}
+      senderUsername={senderUsername}
+      receiverIDs={receiverIDs}
+      privateChat={privateChat}
+      lastFetched={lastFetched}
+      setLastFetched={setLastFetched}
+      onMessageExchange={onMessageExchange}
+      channelKey={channelKey}
+      channelName={channelName} // Pass the channelName to the MessagingInterface
+    />
   );
 }

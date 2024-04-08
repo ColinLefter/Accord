@@ -49,24 +49,30 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const db = client.db('Accord');
     const accountsCollection = db.collection('Accounts');
 
+    // Find the sender user by ID
+    const sender = await accountsCollection.findOne({ id: senderID });
+    if (!sender) {
+      return res.status(404).json({ error: 'Sender not found' });
+    }
+
     // Find the friend user by username
     const friend = await accountsCollection.findOne({ userName: friendUsername });
     if (!friend) {
-      return res.status(404).json({ error: 'Friend not found' });
+      return res.status(404).json({ error: 'Friend username does not exist' });
     }
 
-    if (!senderID || !friend.id) {
-      console.error('Invalid senderID or friendID');
-      return res.status(400).json({ error: 'Invalid senderID or friendID' });
-    }    
+    // Check if they are already friends
+    if (sender.friendList && sender.friendList.includes(friend.id)) {
+      return res.status(409).json({ error: `You are already friends with ${friendUsername}` });
+    }
 
-    // Add friend to the sender's SentPendingFriendList and vice versa
+    // Proceed with sending friend request
     await accountsCollection.updateOne({ id: senderID }, { $addToSet: { SentPendingFriendList: friend.id } });
     await accountsCollection.updateOne({ id: friend.id }, { $addToSet: { ReceivedPendingFriendList: senderID } });
 
     res.status(200).json({ message: 'Friend request sent successfully' });
   } catch (error) {
-    console.error(error);
+    console.error('Error sending friend request:', error);
     res.status(500).json({ error: 'Internal server error' });
   } finally {
     await client.close();

@@ -27,12 +27,14 @@ export interface NewFriendModalProps extends FetchStatusProps {
   senderID: string;
 }
 
-export interface FriendsTabProps extends FetchStatusProps, NewFriendModalProps, PrivacySettingsProps {
+export interface FriendsTabProps extends NewFriendModalProps, PrivacySettingsProps {
   senderUsername: string;
 }
 
 export interface ChatProps extends FriendsTabProps {
   receiverIDs: string[];
+  channelKey?: string;
+  channelName?: string; // Adding channelName as optional
 }
 
 export interface IconProps {
@@ -60,4 +62,18 @@ export interface LogoProps {
 export interface DotsProps extends React.ComponentPropsWithoutRef<'svg'> {
   size?: number;
   radius?: number;
+}
+
+export interface TextChannelItemProps {
+  id: string;
+  index: number;
+  channelName: string;
+  numberOfMembers: number;
+  onClick: (id: string) => void;
+}
+
+export interface TextChannel {
+  channelKey: string;
+  channelName: string;
+  memberIDs: string[];
 }

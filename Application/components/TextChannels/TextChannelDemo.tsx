@@ -2,7 +2,8 @@ import cx from 'clsx';
 import { Text } from '@mantine/core';
 import { useListState } from '@mantine/hooks';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import classes from './TextChannelDemo.module.css';
+import { TextChannelItem } from "@/components/TextChannels/TextChannelItem"
+import classes from './TextChannelItem.module.css';
 
 // Function to format the current date in the following format "1st January 2024"
 const formatDate = (date: Date) => {
@@ -96,24 +97,13 @@ export function TextChannelDemo() {
   const [state, handlers] = useListState(initialData);
 
   const items = state.map((item, index) => (
-    <Draggable key={item.id} index={index} draggableId={item.id}>
-      {(provided, snapshot) => (
-        <div
-          className={cx(classes.item, { [classes.itemDragging]: snapshot.isDragging })}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          ref={provided.innerRef}
-        >
-          <Text className={classes.symbol}>{item.symbol}</Text>
-          <div>
-            <Text>{item.channelName}</Text>
-            <Text color="dimmed" size="sm">
-              Members: {item.members.join(', ')} • Created: {item.dateCreated}
-            </Text>
-          </div>
-        </div>
-      )}
-    </Draggable>
+    <TextChannelItem
+      key={item.id} // Ensure you have a unique key for each item
+      id={item.id}
+      index={index}
+      channelName={item.channelName}
+      members={item.members}
+    />
   ));
 
   return (
