@@ -79,7 +79,7 @@ export function NewTextChannelModal() {
   
     if (!errors.channelName && !errors.members) {
       try {
-        const response = await fetch('/api/new-text-channel', {
+        const response = await fetch('/api/new-chat', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
