@@ -5,7 +5,7 @@ import { sendError } from 'next/dist/server/api-utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method === 'POST') {
-        const { senderID, channelKey } = req.body;
+        const { senderID, currentChannelKey } = req.body;
         const client = new MongoClient(getMongoDbUri());
 
         try {
@@ -14,8 +14,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             const chatsCollection = db.collection('Chats');
 
             // Mostly used as logic checking for errors diagnosis
-            const isIn = await chatsCollection.findOne({ channelKey: channelKey, memberIDs: senderID });
-            const isAdmin = await chatsCollection.findOne({ channelKey: channelKey, adminIDs: senderID });
+            const isIn = await chatsCollection.findOne({ channelKey: currentChannelKey, memberIDs: senderID });
+            const isAdmin = await chatsCollection.findOne({ channelKey: currentChannelKey, adminIDs: senderID });
 
             // Check to see if the user is in the sever or is an admin (the adminIDs array contains the senderID)
             if (!isIn) {
@@ -27,7 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
 
             // And if all of them are through - we can go ahead and pull the IDs of the sender from the array
-            await chatsCollection.updateOne({ channelKey: channelKey }, { $pull: { adminIDs: senderID }});
+            await chatsCollection.updateOne({ channelKey: currentChannelKey }, { $pull: { adminIDs: senderID }});
             res.status(200).json({ message: 'Admin privileges succesfully relinquished' });
         
         } catch (error) {
