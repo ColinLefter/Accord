@@ -163,6 +163,7 @@ export default function Accord() {
           )}
           </AppShell.Main>
           <AppShell.Aside p="md" component={ScrollArea}>
+            <Text>{selectedChannelId}</Text>
             <MemberList isAdmin = {isAdmin} chatID = {selectedChannelId}/>
           </AppShell.Aside>
         </AppShell>

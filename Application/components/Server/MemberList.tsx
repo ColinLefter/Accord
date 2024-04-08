@@ -17,10 +17,13 @@ export function MemberList({isAdmin, chatID}: any) {
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
   const [channelKey, setChannelKey] = useState<string>(chatID);
+  const [channelKeyToCheck, setChannelKeyToCheck] = useState<string>("");
   const [opened, { open, close }] = useDisclosure(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [friendUsername, setFriendUsername] = useState('');
   const [searchResult, setSearchResult] = useState<number | null>(null);
+  const [isAdmin1, setIsADmin] = useState(isAdmin);
+  const [isView, setIsView] = useState(false);
   const { user } = useUser();
 
   const removeMember = async(member: String, index: any) =>{
@@ -130,7 +133,7 @@ export function MemberList({isAdmin, chatID}: any) {
     }
   };
 
-  useEffect(() => {
+  const createErrorMessage = () => {
     switch (searchResult) {
       case 404:
         setErrorMessage('This username does not exist.');
@@ -141,12 +144,11 @@ export function MemberList({isAdmin, chatID}: any) {
           // setLastFetched(Date.now());
           close();
         }
-        break;
     }
-  }, [searchResult, close]);
+  }
 
   useEffect(() => {
-    if (user) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
+    if (user && chatID !== null) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
       console.log(user.id);
       const fetchData = async () => {
         try {
@@ -156,7 +158,7 @@ export function MemberList({isAdmin, chatID}: any) {
               'Content-Type': 'application/json',
             },
             //-----------------------------------------------------------------------------------------------------------------------------------------------
-            body: JSON.stringify({ channelKey: channelKey }),                              // Change this when we put in the Appshell (It is a String NOT int)
+            body: JSON.stringify({ channelKey: chatID }),                              // Change this when we put in the Appshell (It is a String NOT int)
             //------------------------------------------------------------------------------------------------------------------------------------------------
           });
 
@@ -173,14 +175,20 @@ export function MemberList({isAdmin, chatID}: any) {
           console.error('Error fetching member list:', error);
         }
       };
-
+      if(channelKeyToCheck !== ""){
+        setIsView(true);
+      }
+      setChannelKeyToCheck(channelKey); 
+      createErrorMessage();
+      setChannelKey(chatID)
+      console.log("I am the key "+ channelKey)
       fetchData().then(value => {
         // console.log("AAAAAAAAAAAAAAAAAAAAAAAAA");
         // console.log(value);
         fetchUserName(value);
       });
     }
-  }, [user]);
+  }, [user, chatID, isAdmin]);
 
 
   return (
@@ -189,19 +197,21 @@ export function MemberList({isAdmin, chatID}: any) {
       <Text fw={500} className="text-xl" component="span" size="xl">
         All members
       </Text>
+      <Text>{chatID}</Text>
       {membersList.map((member, index) => (
         <div>
+          {/* <Text>{member}</Text> */}
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
                   <Button fullWidth variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
-                          <Text size="sm">{member}</Text>
+                          <Text>{member}</Text>
                         </Group>
                   </Button>
               </Menu.Target>
             {/* {console.log(index)} */}
-            {isAdmin && <Menu.Dropdown>
+            {isAdmin1 && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
                   <Button color='green'  onClick={() => removeMember(member, index)}>Promote to Admin</Button>
@@ -215,7 +225,7 @@ export function MemberList({isAdmin, chatID}: any) {
             </Menu>
         </div>
       ))}
-      <Button
+      {isView &&<Button
         onClick={open}
         variant="gradient"
         leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
@@ -224,6 +234,7 @@ export function MemberList({isAdmin, chatID}: any) {
           <Text size="sm">Add member</Text>
         </Group>
       </Button>
+      }   
       <Modal
         centered
         opened={opened}
