@@ -130,7 +130,7 @@ export default function Accord() {
                 </Button>
                 <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
                 {/* For testing out the Modal - whenever you can succesfully use it and the changes correctly reflects on Mongo, request a change*/}
-                <RelinquishAdminModal senderID={senderID} currentChannelKey = {'0735906bd282dcca9f00d2872b9e57b4a7675245eab16bfa17555df4720147b3'} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+                {/* <RelinquishAdminModal senderID={senderID} currentChannelKey = {'0735906bd282dcca9f00d2872b9e57b4a7675245eab16bfa17555df4720147b3'} lastFetched={lastFetched} setLastFetched={setLastFetched} /> */}
               </Stack>
             </AppShell.Section>
             <AppShell.Section grow component={ScrollArea} mt="15">
