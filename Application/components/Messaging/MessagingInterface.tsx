@@ -199,7 +199,7 @@ export function MessagingInterface({
   
       // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
       // We are doing this to ensure that the chat history is always up to date.
-      if (!captureHistory) {
+      if (captureHistory) {
         try {
           fetch('/api/update-message-history', {
             method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.

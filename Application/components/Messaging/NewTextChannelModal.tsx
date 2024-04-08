@@ -118,6 +118,7 @@ export function NewTextChannelModal() {
           setSelectedFriends([]);
           setSelectedAdmins([]);
           setErrorMessages({ channelName: '', members: '', admins: '' });
+          setcaptureHistory(true); // Reset to default (on by default)
           close(); // Close the modal
         } else if (response.status === 409) {
           // Chat already exists, so we need to handle this by prompting the user to change the chat name/members

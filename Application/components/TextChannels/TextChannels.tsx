@@ -121,6 +121,7 @@ export function TextChannels() {
       index={index}
       channelName={truncateText(item.channelName, 15)}
       numberOfMembers={item.memberIDs.length}
+      captureHistory={item.captureHistory}
       onClick={onChannelClick} // Passing the click handler
     />
   ));

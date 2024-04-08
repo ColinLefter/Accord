@@ -70,6 +70,7 @@ export interface TextChannelItemProps {
   index: number;
   channelName: string;
   numberOfMembers: number;
+  captureHistory: boolean;
   onClick: (id: string) => void;
 }
 
