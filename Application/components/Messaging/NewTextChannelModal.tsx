@@ -1,5 +1,16 @@
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tooltip, ActionIcon, Text, MultiSelect, Stack, Group, Button, useMantineTheme, TextInput } from '@mantine/core';
+import {
+  Modal,
+  Tooltip,
+  ActionIcon,
+  Text,
+  MultiSelect,
+  Stack, Group,
+  Button,
+  useMantineTheme,
+  TextInput,
+  SegmentedControl 
+} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { useCache } from '@/contexts/queryCacheContext';
@@ -42,6 +53,7 @@ export function NewTextChannelModal() {
   const [errorMessages, setErrorMessages] = useState({ channelName: '', members: '', admins: '' });
   const [senderID, setSenderID] = useState<string>('');
   const friends = useFriendList({lastFetched, setLastFetched});
+  const [captureHistory, setcaptureHistory] = useState(true); // On by default
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -54,6 +66,10 @@ export function NewTextChannelModal() {
     value: friend.id,
     label: friend.username,
   }));
+
+  const handlePrivacyModeChange = (value: string) => {
+    setcaptureHistory(value === 'Capture Message History');
+  };
 
   useEffect(() => {
     // Filter out any selected admins who are not in the updated selected friends list
@@ -89,6 +105,7 @@ export function NewTextChannelModal() {
             memberIDs: [senderID, ...selectedFriends],
             adminIDs: selectedAdmins,
             ownerID: senderID,
+            captureHistory,
           }),
         });
   
@@ -175,6 +192,13 @@ export function NewTextChannelModal() {
           value={selectedAdmins}
           data={friendOptions.filter(option => selectedFriends.includes(option.value))}
           onChange={setSelectedAdmins}
+        />
+        <SegmentedControl
+          data={['Capture Message History', 'Private Mode']}
+          value={captureHistory ? 'Capture Message History' : 'Private Mode'}
+          onChange={handlePrivacyModeChange}
+          transitionDuration={500}
+          transitionTimingFunction="linear"
         />
         <Button
           fullWidth

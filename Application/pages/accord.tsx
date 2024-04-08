@@ -120,16 +120,7 @@ export default function Accord() {
                 <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
                 <Logo />
               </Group>
-              <Group>
-                <Switch
-                  defaultChecked
-                  color="gray" // May not be the best color choice, but it looks better than orange
-                  label="Private mode"
-                  onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
-                  disabled={chatStarted}  // Disable the switch if the chat has started
-                />
-                <ColorSchemeToggle/>
-              </Group>
+              <ColorSchemeToggle/>
             </Group>
           </AppShell.Header>
           <AppShell.Navbar p="md">
@@ -162,7 +153,7 @@ export default function Accord() {
             <FriendsTab
               senderUsername={sender}
               senderID={senderID}
-              privateChat={privateMode}
+              captureHistory={true} // DMs are never private. That feature is reserved for text channels.
               onMessageExchange={onMessageExchange}
               lastFetched={lastFetched}
               setLastFetched={setLastFetched}

@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // That means that we can just not pass in channelName, adminIDs and ownerID to indicate that we're creating a DM.
     // Since we may no longer pass an ownerID, we need to make sure that memberIDs includes the sender ID in the front end
     // as it won't make sense to pass an ownerID for DMs. After all, who owns a DM?
-    const { channelName, memberIDs, adminIDs, ownerID } = req.body;
+    const { channelName, memberIDs, adminIDs, ownerID, captureHistory } = req.body;
     let client: MongoClient | null = null;
 
     try {
@@ -38,6 +38,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ownerID: ownerID,
           memberIDs: memberIDs,
           adminIDs,
+          captureHistory, // This is a feature unique to text channels. We always capture history in DMs.
           messageHistory: [] // Initialize with an empty message history
         };
       } else { // Creating a DM

@@ -93,15 +93,18 @@ export function TextChannels() {
   };
 
   const onChannelClick = (channelKey: string) => {
-    // Directly updating both selectedChannelId and chatProps via the unified context
-    console.log("channel clicked with key: ", channelKey);
-    console.log("userID: ", userID);
-    console.log("senderUsername: ", senderUsername);
+    // Find the channel details from the state
+    const channel = textChannels.find(channel => channel.channelKey === channelKey);
+    if (!channel) {
+      console.error('Channel not found');
+      return;
+    }
+    
     updateContext(channelKey, {
       senderID: userID,
       senderUsername: senderUsername,
-      receiverIDs: [],
-      privateChat: false,
+      receiverIDs: [], // Assuming this needs to be dynamically fetched or set
+      captureHistory: channel.captureHistory, // Use the captureHistory from the channel details
       lastFetched: Date.now(),
       setLastFetched: () => {},
       onMessageExchange: () => {},
