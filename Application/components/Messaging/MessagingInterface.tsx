@@ -114,6 +114,16 @@ export function MessagingInterface({
   // In terms of the privacy toggle, if we refresh our page, we load from MongoDB. That means if the toggle was on, no data was sent.
   // Hence, data will effectively be "Wiped" if you refresh your page. This is a privacy feature.
   // It will, however, not be "Wiped" if you refresh your page and all the messages were sent while the toggle was off.
+  useEffect(() => {
+    // Clear current messages
+    setReceivedMessages([]);
+
+    // Fetch new messages for the current channel
+    fetchMongoDBHistory();
+
+    // This effect should run every time the channelKey changes
+}, [channelKey]); // Adding channelKey as a dependency
+
   const fetchMongoDBHistory = async () => {
     try {
       const response = await fetch('/api/get-message-history', {
@@ -130,7 +140,7 @@ export function MessagingInterface({
           setReceivedMessages(data.messageHistory);
         }
       } else if (response.status === 404) {
-        console.error("Chat history not found");
+        console.error("No existing history for this channel.");
       } else if (response.status === 500) {
         console.error("Error fetching message history");
       }
