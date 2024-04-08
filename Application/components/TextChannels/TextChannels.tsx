@@ -5,65 +5,17 @@ import { useListState } from '@mantine/hooks';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { TextChannelItem } from "@/components/TextChannels/TextChannelItem"
 import { useUser, UserProfile } from '@clerk/nextjs';
-import { formatDate } from "@/utility"
+import { formatDate, truncateText } from "@/utility"
 import { useState, useEffect } from 'react';
+import { TextChannel } from "@/accordTypes";
+import { useChannelContext } from "@/contexts/channelContext";
 
-function reorder(list: any[] | Iterable<unknown> | ArrayLike<unknown>, startIndex: number, endIndex: number) {
+function reorder(list: TextChannel[], startIndex: number, endIndex: number): TextChannel[] {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
   result.splice(endIndex, 0, removed);
-
   return result;
 }
-
-// Function to initialize text channel data
-const initData = (textChannels: any[]) => textChannels.map((channel: any) => ({
-  ...channel,
-  dateCreated: new Date(),
-  symbol: channel.channelName.substring(0, 2).toUpperCase(), // Generate symbol from channelName
-}));
-
-const initialData = initData([
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-  { 
-    members: ["ColinLefter", "Hocng7"],
-    channelName: 'General Discussion',
-  },
-]).map((channel, index) => ({
-  ...channel,
-  id: `${channel.symbol}-${index}`, // Ensuring that each item has a unique id
-}));
 
 /**
  * Demonstrates a draggable list of text channels, showcasing dynamic reordering capabilities.
@@ -104,7 +56,7 @@ const initialData = initData([
 export function TextChannels() {
   const { user } = useUser();
   const [ userID, setUserID ] = useState<string>('');
-  const [state, handlers] = useListState(initialData);
+  const [textChannels, setTextChannels] = useState<TextChannel[]>([]);
 
   useEffect(() => {
     if (user && user.id) {
@@ -116,7 +68,7 @@ export function TextChannels() {
     if (!userID) return; // Ensure userID is available
   
     try {
-      const response = await fetch('/api/get-user-chats', {
+      const response = await fetch('/api/get-user-text-channels', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -125,35 +77,45 @@ export function TextChannels() {
       });
   
       if (response.ok) {
-        const data = await response.json();
-        // Update your state or context with the fetched chat channels
-        console.log(data.chats); // For demonstration, replace with state update
+        const { textChannels } = await response.json();
+        setTextChannels(textChannels);
       } else {
         console.error('Failed to fetch chat channels');
       }
     } catch (error) {
       console.error('Error fetching chat channels:', error);
     }
-  };  
+  };
+
+  const { setSelectedChannelId } = useChannelContext();
+
+  const onChannelClick = (channelKey: string) => {
+    setSelectedChannelId(channelKey); // Use the context method to set the selected channel ID
+  };
 
   // Mapping through the state to create TextChannelItem components
-  const items = state.map((item, index) => (
+  const items = textChannels.map((item, index) => (
     <TextChannelItem
-      key={item.id} // Ensure you have a unique key for each item
-      id={item.id}
+      key={item.channelKey}
+      id={item.channelKey}
       index={index}
-      channelName={item.channelName}
-      members={item.members}
+      channelName={truncateText(item.channelName, 15)}
+      numberOfMembers={item.memberIDs.length}
+      onClick={onChannelClick} // Passing the click handler
     />
   ));
 
+  fetchUserChats();
+
   return (
     <DragDropContext
-      onDragEnd={({ destination, source }) => {
-        if (!destination) return; // Prevents errors if dropped outside droppable area
-        const reordered = reorder(state, source.index, destination.index);
-        handlers.setState(reordered);
-      }}
+    onDragEnd={({ destination, source }) => {
+      if (!destination) {
+        return; // Prevents errors if dropped outside the droppable areas
+      }
+      // Use setTextChannels to update the order of text channels
+      setTextChannels(currentChannels => reorder(currentChannels, source.index, destination.index));
+    }}
     >
       <Droppable droppableId="dnd-list" direction="vertical">
         {(provided) => (

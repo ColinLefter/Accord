@@ -41,7 +41,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else { // Creating a DM
         // DMs will be unique as we don't allow a duplicate DM channel.
         // The thing that controls that is the fact that we only create a DM channel upon adding a friend.
-        channelKey = generateHash([...memberIDs]);
+        channelKey = generateHash([memberIDs]);
         newChat = {
           channelKey: channelKey,
           dateCreated: new Date(),

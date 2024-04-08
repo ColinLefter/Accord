@@ -12,12 +12,12 @@ interface FriendRequestManagerProps {
   userId: string;
 }
 
-const FriendRequestManager: FC<FriendRequestManagerProps> = ({ userId }) => {
+export const Inbox: FC<FriendRequestManagerProps> = ({ userId }) => {
   const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const { channel, ably } = useChannel(getSystemsChannelID());
+  const { channel } = useChannel(getSystemsChannelID());
 
   const fetchFriendRequests = async () => {
     setLoading(true);
@@ -119,7 +119,7 @@ const FriendRequestManager: FC<FriendRequestManagerProps> = ({ userId }) => {
   useEffect(() => {
     if (userId) {
       fetchFriendRequests(); // Initial fetch
-      const intervalId = setInterval(fetchFriendRequests, 15000); // Poll every 15 seconds
+      const intervalId = setInterval(fetchFriendRequests, 5000); // Poll every 5 seconds
       return () => clearInterval(intervalId); // Cleanup on component unmount
     }
   }, [userId]);
@@ -151,5 +151,3 @@ const FriendRequestManager: FC<FriendRequestManagerProps> = ({ userId }) => {
     </Menu>
   );
 };
-
-export default FriendRequestManager;

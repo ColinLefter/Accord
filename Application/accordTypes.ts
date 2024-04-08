@@ -66,5 +66,12 @@ export interface TextChannelItemProps {
   id: string;
   index: number;
   channelName: string;
-  members: string[];
+  numberOfMembers: number;
+  onClick: (id: string) => void;
+}
+
+export interface TextChannel {
+  channelKey: string;
+  channelName: string;
+  memberIDs: string[];
 }

@@ -16,11 +16,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const db = client.db('Accord');
     const chatsCollection = db.collection('Chats');
 
-    const userChats = await chatsCollection.find({
-      memberIDs: userID
+    const textChannels = await chatsCollection.find({
+      memberIDs: userID,
+      channelName: { $exists: true } // Otherwise that is a DM and we don't want that
     }).sort({ dateCreated: -1 }).toArray(); // Sort chats by newest first
 
-    res.status(200).json({ chats: userChats });
+    res.status(200).json({ textChannels });
   } catch (error) {
     console.error('Database query failed:', error);
     res.status(500).json({ error: 'Internal server error' });

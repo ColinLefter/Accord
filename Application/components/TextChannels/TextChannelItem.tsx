@@ -6,13 +6,14 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { TextChannelItemProps } from '@/accordTypes';
 import classes from './TextChannelItem.module.css';
 
-export const TextChannelItem: React.FC<TextChannelItemProps> = ({ id, index, channelName, members }) => {
+export const TextChannelItem: React.FC<TextChannelItemProps> = ({ id, index, channelName, numberOfMembers, onClick }) => {
   const symbol = channelName.substring(0, 2).toUpperCase(); // Generate symbol from channelName
 
   return (
     <Draggable key={id} index={index} draggableId={id}>
       {(provided, snapshot) => (
         <div
+          onClick={() => onClick(id)}
           className={cx(classes.item, { [classes.itemDragging]: snapshot.isDragging })}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
@@ -21,8 +22,8 @@ export const TextChannelItem: React.FC<TextChannelItemProps> = ({ id, index, cha
           <Text className={classes.symbol}>{symbol}</Text>
           <div>
             <Text>{channelName}</Text>
-            <Text color="dimmed" size="sm">
-              {members.join(', ')}
+            <Text c="dimmed" size="sm">
+              {numberOfMembers} members
             </Text>
           </div>
         </div>

@@ -30,7 +30,7 @@ import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 import { MemberList } from "@/components/Server/MemberList";
 import { TextChannels } from "@/components/TextChannels/TextChannels";
-
+import { ChannelContext } from "@/contexts/channelContext";
 /**
  * Represents the central structure of the application interface, organizing the layout into
  * header, navbar, main content, and aside sections. This component serves as the main framework
@@ -50,6 +50,8 @@ export default function Accord() {
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
   const [activeView, setActiveView] = useState('friends'); // Initialize with 'friends'
+  const [selectedChannelId, setSelectedChannelId] = useState<string | null>(null);
+  const providerValue = { selectedChannelId, setSelectedChannelId };
   // Default is to just display no username. This will never be the case as you can't be here without an account.
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
@@ -87,103 +89,105 @@ export default function Accord() {
   // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
     <ChatProvider>
-      <Tabs value={activeView}>
-        <AppShell
-          header={{ height: 50 }}
-          navbar={{
-            width: 300,
-            breakpoint: 'sm',
-            collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
-          }}
-          padding="md"
-          aside={{ width: 250, breakpoint: 'sm' }}
-        >
-          <AppShell.Header>
-            <Group justify="space-between" className="center" px="md">
-              <Group>
-                <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
-                <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
-                <Logo />
-              </Group>
-              <Group>
-                <Switch
-                  defaultChecked
-                  color="gray" // May not be the best color choice, but it looks better than orange
-                  label="Private mode"
-                  onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
-                  disabled={chatStarted}  // Disable the switch if the chat has started
-                />
-                <ColorSchemeToggle/>
-              </Group>
-            </Group>
-          </AppShell.Header>
-          <AppShell.Navbar p="md">
-            <AppShell.Section>
-              <Stack gap="xs">
-                <Button
-                  value="friends"
-                  onClick={() => handleTabSelection('friends')}
-                  leftSection={<IconUsers />}
-                  variant="gradient"
-                >
-                  Friends
-                </Button>
-                <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
-                <Group justify="space-between">
-                  <Text py="md">Text Channels</Text>
-                  <NewTextChannelModal/>
+      <ChannelContext.Provider value={providerValue}>
+        <Tabs value={activeView}>
+          <AppShell
+            header={{ height: 50 }}
+            navbar={{
+              width: 300,
+              breakpoint: 'sm',
+              collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+            }}
+            padding="md"
+            aside={{ width: 250, breakpoint: 'sm' }}
+          >
+            <AppShell.Header>
+              <Group justify="space-between" className="center" px="md">
+                <Group>
+                  <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
+                  <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
+                  <Logo />
                 </Group>
-              </Stack>
-            </AppShell.Section>
-            <AppShell.Section grow component={ScrollArea} mt="0">
-              <TextChannels />
-            </AppShell.Section>
-            <AppShell.Section mt="15">
-              <FooterProfile/>
-            </AppShell.Section>
-          </AppShell.Navbar>
-          <AppShell.Main>
-          {activeView === 'friends' && 
-            <FriendsTab
-              senderUsername={sender}
-              senderID={senderID}
-              privateChat={privateMode}
-              onMessageExchange={onMessageExchange}
-              lastFetched={lastFetched}
-              setLastFetched={setLastFetched}
-            />
-          }
-          {activeView === 'profile' &&
-            <Tabs.Panel value="profile">
-              <div className="general-container">
-                <UserProfile />
-              </div>
-            </Tabs.Panel>
-          }
-          {activeView === 'chat' && (
-            <Chat
-              senderID={senderID}
-              senderUsername={sender}
-              receiverIDs={selectedRecipients}
-              privateChat={privateMode}
-              lastFetched={lastFetched}
-              setLastFetched={setLastFetched}
-              onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
-            />
-          )}
-          </AppShell.Main>
-          <AppShell.Aside p="md" component={ScrollArea}>
-            {/* <Text>Servers</Text>*/}
-            {/* {Array(60)
-              .fill(0)
-              .map((_, index) => (
-                <Skeleton key={index} h={30} mt="sm" animate={false} />
-              ))} */}
-              {/* <ServerList/> */}
-              <MemberList isAdmin = {isAdmin} chatID = {chatID}/>
-          </AppShell.Aside>
-        </AppShell>
-      </Tabs>
+                <Group>
+                  <Switch
+                    defaultChecked
+                    color="gray" // May not be the best color choice, but it looks better than orange
+                    label="Private mode"
+                    onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
+                    disabled={chatStarted}  // Disable the switch if the chat has started
+                  />
+                  <ColorSchemeToggle/>
+                </Group>
+              </Group>
+            </AppShell.Header>
+            <AppShell.Navbar p="md">
+              <AppShell.Section>
+                <Stack gap="xs">
+                  <Button
+                    value="friends"
+                    onClick={() => handleTabSelection('friends')}
+                    leftSection={<IconUsers />}
+                    variant="gradient"
+                  >
+                    Friends
+                  </Button>
+                  <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+                  <Group justify="space-between">
+                    <Text py="md">Text Channels</Text>
+                    <NewTextChannelModal/>
+                  </Group>
+                </Stack>
+              </AppShell.Section>
+              <AppShell.Section grow component={ScrollArea} mt="0">
+                <TextChannels />
+              </AppShell.Section>
+              <AppShell.Section mt="15">
+                <FooterProfile/>
+              </AppShell.Section>
+            </AppShell.Navbar>
+            <AppShell.Main>
+            {activeView === 'friends' && 
+              <FriendsTab
+                senderUsername={sender}
+                senderID={senderID}
+                privateChat={privateMode}
+                onMessageExchange={onMessageExchange}
+                lastFetched={lastFetched}
+                setLastFetched={setLastFetched}
+              />
+            }
+            {activeView === 'chat' && (
+              <Chat
+                senderID={senderID}
+                senderUsername={sender}
+                receiverIDs={selectedRecipients}
+                privateChat={privateMode}
+                lastFetched={lastFetched}
+                setLastFetched={setLastFetched}
+                onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+              />
+            )}
+            {selectedChannelId && (
+              <Text>{selectedChannelId}</Text>
+              // <Chat
+              //   // You'll need to figure out the senderID, receiverIDs based on selectedChannelId
+              //   // This might involve fetching additional data based on the selectedChannelId
+              // />
+            )}
+            </AppShell.Main>
+            <AppShell.Aside p="md" component={ScrollArea}>
+              {/* <Text>Servers</Text>*/}
+              {/* {Array(60)
+                .fill(0)
+                .map((_, index) => (
+                  <Skeleton key={index} h={30} mt="sm" animate={false} />
+                ))} */}
+                {/* <ServerList/> */}
+                <MemberList isAdmin = {isAdmin} chatID = {chatID}/>
+            </AppShell.Aside>
+          </AppShell>
+        </Tabs>
+      </ChannelContext.Provider>
     </ChatProvider>
   );
 }
