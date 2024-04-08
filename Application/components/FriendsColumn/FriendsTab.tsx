@@ -22,6 +22,8 @@ import { FriendsTabProps } from '@/accordTypes';
 import { FriendsLoading } from '@/components/FriendsColumn/FriendsLoading';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
+import { useActiveView } from '@/contexts/activeViewContext';
+import { useChat } from '@/contexts/chatContext'
 
 // Function to call to go back to the last previous URL
 function goBack() {
@@ -51,6 +53,9 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     const [receiverUsername, setreceiverUsername] = useState<string>('');
     const [receiverID, setReceiverID] = useState<string>('');
 
+    const { setActiveView } = useActiveView();
+    const { setChatProps } = useChat();
+
     const { channel } = useChannel(getSystemsChannelID(), (message) => {
         if (message.name === "friend-request-accepted") {
           const [senderId, receiverId] = message.data.split("-");
@@ -69,23 +74,31 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
     );
 
     const handleFriendClick = (friendUsername: string, friendID: string) => {
-      setreceiverUsername(friendUsername);
-      setReceiverID(friendID);
-    };
+        setActiveView('chat');
+        setChatProps({
+          senderUsername,
+          senderID,
+          receiverIDs: [friendID], // Assuming friendID is what you need here
+          privateChat,
+          lastFetched,
+          setLastFetched,
+          onMessageExchange,
+        });
+      };
 
-    if (receiverUsername && user?.id) { // Ensure both receiverUsername and user.id are defined
-      return (
-        <Chat // Since this is the FriendsTab component, we will only every have one friend ID in receiverIDs as clicking on a friend starts a DM with just that friend.
-          senderID={senderID}
-          senderUsername={senderUsername}
-          receiverIDs={[receiverID]} // The Chat component will always expect an array of IDs, even if it's just one. This is to allow for group chats.
-          privateChat={privateChat}
-          lastFetched={lastFetched}
-          setLastFetched={setLastFetched}
-          onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
-        />
-      );
-    }
+    // if (receiverUsername && user?.id) { // Ensure both receiverUsername and user.id are defined
+    //   return (
+    //     <Chat // Since this is the FriendsTab component, we will only every have one friend ID in receiverIDs as clicking on a friend starts a DM with just that friend.
+    //       senderID={senderID}
+    //       senderUsername={senderUsername}
+    //       receiverIDs={[receiverID]} // The Chat component will always expect an array of IDs, even if it's just one. This is to allow for group chats.
+    //       privateChat={privateChat}
+    //       lastFetched={lastFetched}
+    //       setLastFetched={setLastFetched}
+    //       onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+    //     />
+    //   );
+    // }
     
     return (
         <Stack>

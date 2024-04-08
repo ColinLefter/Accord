@@ -31,6 +31,8 @@ import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 import { MemberList } from "@/components/Server/MemberList";
 import { TextChannels } from "@/components/TextChannels/TextChannels";
 import { ChannelContext } from "@/contexts/channelContext";
+import { ActiveViewProvider } from '@/contexts/activeViewContext';
+import { useChat } from '@/contexts/chatContext';
 /**
  * Represents the central structure of the application interface, organizing the layout into
  * header, navbar, main content, and aside sections. This component serves as the main framework
@@ -63,6 +65,8 @@ export default function Accord() {
   const [chatStarted, setChatStarted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
 
+  const { chatProps } = useChat();
+
   // Function to handle chat creation from modal
   const handleCreateChat = (recipients: string[]) => {
     setSelectedRecipients(recipients); // Update the recipients state
@@ -88,7 +92,7 @@ export default function Accord() {
 
   // NOTE: we need to make the chat context available throughout the application, hence wrapping the shell with the ChatProvider
   return (
-    <ChatProvider>
+    <ActiveViewProvider>
       <ChannelContext.Provider value={providerValue}>
         <Tabs value={activeView}>
           <AppShell
@@ -156,15 +160,9 @@ export default function Accord() {
                 setLastFetched={setLastFetched}
               />
             }
-            {activeView === 'chat' && (
+            {activeView === 'chat' && chatProps && (
               <Chat
-                senderID={senderID}
-                senderUsername={sender}
-                receiverIDs={selectedRecipients}
-                privateChat={privateMode}
-                lastFetched={lastFetched}
-                setLastFetched={setLastFetched}
-                onMessageExchange={onMessageExchange}  // Pass the handler to detect message exchanges
+                {...chatProps}
               />
             )}
             {selectedChannelId && (
@@ -176,18 +174,11 @@ export default function Accord() {
             )}
             </AppShell.Main>
             <AppShell.Aside p="md" component={ScrollArea}>
-              {/* <Text>Servers</Text>*/}
-              {/* {Array(60)
-                .fill(0)
-                .map((_, index) => (
-                  <Skeleton key={index} h={30} mt="sm" animate={false} />
-                ))} */}
-                {/* <ServerList/> */}
-                <MemberList isAdmin = {isAdmin} chatID = {chatID}/>
+              <MemberList isAdmin = {isAdmin} chatID = {chatID}/>
             </AppShell.Aside>
           </AppShell>
         </Tabs>
       </ChannelContext.Provider>
-    </ChatProvider>
+    </ActiveViewProvider>
   );
 }

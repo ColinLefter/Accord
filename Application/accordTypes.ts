@@ -27,7 +27,7 @@ export interface NewFriendModalProps extends FetchStatusProps {
   senderID: string;
 }
 
-export interface FriendsTabProps extends FetchStatusProps, NewFriendModalProps, PrivacySettingsProps {
+export interface FriendsTabProps extends NewFriendModalProps, PrivacySettingsProps {
   senderUsername: string;
 }
 

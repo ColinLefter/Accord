@@ -10,6 +10,7 @@ import { dark } from '@clerk/themes';
 import { AblyProvider } from 'ably/react';
 import { useState, useEffect } from 'react';
 import { Notifications } from '@mantine/notifications';
+import { ChatProvider } from "@/contexts/chatContext";
 import '@mantine/notifications/styles.css';
 
 /**
@@ -82,7 +83,9 @@ export default function RootLayout({ children }: any) { // The one time where 'a
         }}>
           <CacheProvider>
             <AblyProvider client={ client }>
-              {children}
+              <ChatProvider> {/* This is our own chat provider that facilitates the creation of new chats */}
+                {children}
+              </ChatProvider>
             </AblyProvider>              
           </CacheProvider>
       </ClerkProvider>
