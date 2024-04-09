@@ -26,7 +26,7 @@ import { useUser } from '@clerk/nextjs';
  * @returns {JSX.Element} A dropdown menu with options to edit or delete a message, 
  *                        enhanced with conditional tooltips based on chat privacy settings.
  */
-export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDropdownProps) {
+export function MessageDropdown({ captureHistory, clientID, onDelete }: MessageDropdownProps) {
   const { user } = useUser();
   const [userID, setUserID] = useState<string | null>(null);
   const [readyToDelete, setReadyToDelete] = useState(false);
@@ -72,20 +72,11 @@ export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDrop
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Label>General</Menu.Label>
-        <Menu.Item
-          leftSection={<IconCursorText style={{ width: rem(14), height: rem(14) }} stroke={1} />}
-        >
-          Edit Message
-        </Menu.Item>
-
-        <Menu.Divider />
-
         <Menu.Label>Danger zone</Menu.Label>
-        <MenuItemWithOptionalTooltip privateChat={privateChat} onDelete={onDelete}>
+        <MenuItemWithOptionalTooltip privateChat={captureHistory} onDelete={onDelete}>
           <Menu.Item
             color="red"
-            disabled={privateChat || !myMessage} // If it is not my message, I can't delete it!
+            disabled={!captureHistory || !myMessage} // If it is not my message, I can't delete it!
             leftSection={<IconTrash style={{ width: 14, height: 14 }} />}
             onClick={onDelete}
           >
