@@ -76,7 +76,7 @@ export function MessageDropdown({ captureHistory, clientID, onDelete }: MessageD
         <MenuItemWithOptionalTooltip privateChat={captureHistory} onDelete={onDelete}>
           <Menu.Item
             color="red"
-            disabled={!captureHistory || !myMessage} // If it is not my message, I can't delete it!
+            disabled={!myMessage} // If it is not my message, I can't delete it!
             leftSection={<IconTrash style={{ width: 14, height: 14 }} />}
             onClick={onDelete}
           >
