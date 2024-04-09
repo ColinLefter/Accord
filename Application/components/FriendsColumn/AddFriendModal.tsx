@@ -5,6 +5,7 @@ import { IconPlus } from '@tabler/icons-react';
 import { NewFriendModalProps } from '@/accordTypes';
 import { notifications, showNotification } from '@mantine/notifications';
 import { useUser } from '@clerk/nextjs';
+import { IconUserPlus } from '@tabler/icons-react';
 
 export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps) {
   const { user } = useUser();
@@ -74,6 +75,7 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
         fullWidth
         onClick={open}
         variant="gradient"
+        leftSection={<IconUserPlus size={16} color="white" />}
       >
         Add friend
       </Button>

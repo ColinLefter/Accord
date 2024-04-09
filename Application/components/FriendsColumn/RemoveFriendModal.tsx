@@ -99,7 +99,7 @@ export function RemoveFriendModal(): JSX.Element {
         variant="gradient"
         leftSection={<IconUserMinus size={16} color="white" />}
       >
-        Remove a friend
+        Remove friends
       </Button>
 
       <Modal
