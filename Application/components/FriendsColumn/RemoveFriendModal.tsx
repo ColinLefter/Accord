@@ -96,18 +96,7 @@ export function RemoveFriendModal(): JSX.Element {
     <>
       <Button
         onClick={handleOpenModalClick}
-        variant="subtle"
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: '10px',
-          backgroundImage: 'linear-gradient(to right, #E14D7D, #FF9D0A)',
-          color: 'white',
-          border: 'none',
-          borderRadius: '5px',
-          padding: '8px 16px',
-        }}
+        variant="gradient"
       >
         <IconUserMinus size={16} style={{ color: 'white', marginRight: 5 }} />
         Remove a friend
@@ -122,11 +111,11 @@ export function RemoveFriendModal(): JSX.Element {
             <Text variant="gradient" fw={500} size="xl" component="span">
               Remove a Friend
             </Text>
-            <Text color={theme.colors.dark[1]}>Select a friend to remove</Text>
+            <Text c={theme.colors.dark[1]}>Select a friend to remove</Text>
           </Stack>
         }
       >
-        <Paper withBorder shadow="md">
+        <Paper>
           <Stack>
             <MultiSelect
               data={friendOptions}
