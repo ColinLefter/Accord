@@ -109,7 +109,7 @@ export function RemoveFriendModal(): JSX.Element {
         title={
           <Stack gap="0">
             <Text variant="gradient" fw={500} size="xl" component="span">
-              Remove a Friend
+              Update Friend List
             </Text>
             <Text c={theme.colors.dark[1]}>Select friends to remove</Text>
           </Stack>
