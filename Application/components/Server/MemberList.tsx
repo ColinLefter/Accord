@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Group, Text, Stack, Paper, Button, Menu, rem, TextInput, Modal } from '@mantine/core';
-import { IconSettings, IconMessageCircle, IconPhoto, IconSearch, IconArrowsLeftRight, IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
+import { Group, Text, Stack, Button, Menu, rem, TextInput, Modal } from '@mantine/core';
+import { IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
-import { channel } from 'diagnostics_channel';
-import { createHash } from 'crypto';
-import { IntegerType } from 'mongodb';
 import { useDisclosure } from '@mantine/hooks';
-import { notifications, showNotification } from '@mantine/notifications';
+import { showNotification } from '@mantine/notifications';
 import { useChat } from '@/contexts/chatContext';
+import { useChannel } from "ably/react";
+import { getSystemsChannelID} from "@/utility";
 
 export function MemberList({isAdmin, chatID, isView}: any) {
   // Hardcoded member list
@@ -23,6 +22,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
   const [myID, setMyID] = useState<string>('');
 
   const { selectedChannelId, setActiveView } = useChat(); // Critical: this is how we obtain the channel key of the channel we are looking at
+  const { channel } = useChannel(getSystemsChannelID());
 
   useEffect(() => {
     if (user && user.id) {
@@ -48,6 +48,10 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
       if (response.ok) {
         const data = await response.json();
+        await channel.publish({
+          name: "removed-from-text-channel",
+          data: { removedMemberID: memberToRemove } // `data` can be a string, object, or other types
+        });
         if (myID === memberToRemove) {
           setActiveView('friends'); // Redirecting the user if they remove themselves
         }

@@ -63,9 +63,9 @@ export function TextChannels() {
   const [textChannels, setTextChannels] = useState<TextChannel[]>([]);
   const { updateContext, setActiveView } = useChat();
 
-  const { channel } = useChannel(getSystemsChannelID(), (message) => {
+  useChannel(getSystemsChannelID(), (message) => {
     // Listen for a specific message event to trigger the refresh
-    if (message.name === "text-channel-created") {
+    if (message.name === "text-channel-created" || message.name === "removed-from-text-channel") {
       fetchUserChats(); // Call fetchUserChats to refresh the channels list
     }
   });
