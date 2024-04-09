@@ -6,11 +6,12 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { TextChannelItem } from "@/components/TextChannels/TextChannelItem"
 import { useUser, UserProfile } from '@clerk/nextjs';
 import { formatDate, truncateText } from "@/utility"
-import { useState, useEffect } from 'react';
 import { TextChannel } from "@/accordTypes";
 import { useChannelContext } from "@/contexts/channelContext";
 import { useChat } from '@/contexts/chatContext';
-import { useActiveView } from '@/contexts/activeViewContext';
+import { useChannel } from "ably/react";
+import { getSystemsChannelID} from "@/utility";
+import { useEffect, useState, useCallback } from 'react';
 
 function reorder(list: TextChannel[], startIndex: number, endIndex: number): TextChannel[] {
   const result = Array.from(list);
@@ -62,6 +63,13 @@ export function TextChannels() {
   const [textChannels, setTextChannels] = useState<TextChannel[]>([]);
   const { updateContext, setActiveView } = useChat();
 
+  useChannel(getSystemsChannelID(), (message) => {
+    // Listen for a specific message event to trigger the refresh
+    if (message.name === "text-channel-created" || message.name === "removed-from-text-channel") {
+      fetchUserChats(); // Call fetchUserChats to refresh the channels list
+    }
+  });
+
   useEffect(() => {
     if (user && user.id && user.username) {
       setUserID(user.id);
@@ -69,32 +77,33 @@ export function TextChannels() {
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
-  useEffect(() => {
-    const fetchUserChats = async () => {
-      if (!userID) return; // Ensure userID is available
-    
-      try {
-        const response = await fetch('/api/get-user-text-channels', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ userID: userID })
-        });
-    
-        if (response.ok) {
-          const { textChannels } = await response.json();
-          setTextChannels(textChannels);
-        } else {
-          console.error('Failed to fetch chat channels');
-        }
-      } catch (error) {
-        console.error('Error fetching chat channels:', error);
+  // Wrap fetchUserChats inside useCallback to avoid recreating the function on every render
+  const fetchUserChats = useCallback(async () => {
+    if (!userID) return; // Ensure userID is available
+  
+    try {
+      const response = await fetch('/api/get-user-text-channels', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ userID: userID })
+      });
+  
+      if (response.ok) {
+        const { textChannels } = await response.json();
+        setTextChannels(textChannels);
+      } else {
+        console.error('Failed to fetch chat channels');
       }
-    };
+    } catch (error) {
+      console.error('Error fetching chat channels:', error);
+    }
+  }, [userID]); // Add userID to the dependency array of useCallback
 
+  useEffect(() => {
     fetchUserChats();
-  }, [userID]); // This useEffect runs only when userID changes, which should only happen when the user logs in or their user object is fetched initially.
+  }, [userID, fetchUserChats]); // This useEffect depends on userID AND fetchUserChats
 
   const onChannelClick = (channelKey: string) => {
     // Find the channel details from the state
