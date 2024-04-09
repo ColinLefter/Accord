@@ -127,7 +127,7 @@ export function RemoveFriendModal(): JSX.Element {
               searchable
             />
             <Button fullWidth variant="gradient" onClick={handleRemoveFriendClick}>
-              Remove Friend
+              Remove friend
             </Button>
           </Stack>
         </Paper>
