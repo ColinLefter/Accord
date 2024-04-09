@@ -37,7 +37,15 @@ import { generateHash } from "@/utility";
  * privacy settings, and messaging callbacks.
  * @returns {JSX.Element} A fully interactive chat interface component, ready for integration into the application's messaging feature set.
  */
-export function MessagingInterface({ senderUsername, senderID, receiverIDs, privateChat, onMessageExchange }: ChatProps) {
+export function MessagingInterface({
+  senderUsername,
+  senderID,
+  receiverIDs,
+  privateChat,
+  onMessageExchange,
+  channelKey: providedChannelKey,
+  channelName, // Accept the channelName here
+}: ChatProps) {
   const { user } = useUser();
   const [userProfileURL, setUserProfileURL] = useState<string>(''); 
 
@@ -53,16 +61,16 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   const messageEndRef = React.useRef<HTMLDivElement>(null);; // Updated to use useRef
   const [messageText, setMessageText] = useState(""); // messageText is bound to a textarea element where messages can be typed.
   const [receivedMessages, setReceivedMessages] = useState<DisplayedMessageProps[]>([]); // receivedMessages stores the on-screen chat history.
-  const memberIDs = [senderID, ...receiverIDs] // / To allow for group chats, we are creating an array that contains the sender and the receivers.
-  // Retrieving the chat history and update function from the context
+  const memberIDs = [senderID, ...receiverIDs];
   const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty.
+  const channelKey = providedChannelKey || generateHash(memberIDs);
 
   // useChannel is a react-hook API for subscribing to messages from an Ably channel.
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
   // Both the channel instance and the Ably JavaScript SDK instance are returned from useChannel.
   
-  const channelKey = generateHash(memberIDs);
+
   // Look at how we obtain Ably. It's by opening a stream. We can't just pass around the Ably object because it comes with opening a stream.
   // Therefore, we actually need to open it once and once only, which is why we need to pass the client associated with this stream to components that need it.
   // There isn't some Ably client ID associated with an account, but rather one that is associated with a stream.
@@ -106,6 +114,16 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
   // In terms of the privacy toggle, if we refresh our page, we load from MongoDB. That means if the toggle was on, no data was sent.
   // Hence, data will effectively be "Wiped" if you refresh your page. This is a privacy feature.
   // It will, however, not be "Wiped" if you refresh your page and all the messages were sent while the toggle was off.
+  useEffect(() => {
+    // Clear current messages
+    setReceivedMessages([]);
+
+    // Fetch new messages for the current channel
+    fetchMongoDBHistory();
+
+    // This effect should run every time the channelKey changes
+}, [channelKey]); // Adding channelKey as a dependency
+
   const fetchMongoDBHistory = async () => {
     try {
       const response = await fetch('/api/get-message-history', {
@@ -122,7 +140,7 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
           setReceivedMessages(data.messageHistory);
         }
       } else if (response.status === 404) {
-        console.error("Chat history not found");
+        console.error("No existing history for this channel.");
       } else if (response.status === 500) {
         console.error("Error fetching message history");
       }
@@ -302,7 +320,9 @@ export function MessagingInterface({ senderUsername, senderID, receiverIDs, priv
     setReceivedMessages(chatHistory);
   }, [chatHistory]);
 
-  const messageLabel = receiverIDs.length > 1 ? `Message everyone in the group` : `Send a DM`;
+  // const messageLabel = channelName ? `Message ${channelName}` : (receiverIDs.length > 1 ? "Message everyone in the group" : "Send a DM");
+  // const messageLabel = channelKey;
+  const messageLabel = "Send a message"
 
   useEffect(() => {
     if (messageEndRef.current) {

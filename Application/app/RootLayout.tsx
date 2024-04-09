@@ -10,6 +10,7 @@ import { dark } from '@clerk/themes';
 import { AblyProvider } from 'ably/react';
 import { useState, useEffect } from 'react';
 import { Notifications } from '@mantine/notifications';
+import { ChatProvider } from "@/contexts/chatContext";
 import '@mantine/notifications/styles.css';
 
 /**
@@ -48,10 +49,10 @@ export default function RootLayout({ children }: any) { // The one time where 'a
         '#c9c9c9', // In-component text
         "#1F1F1F", // outlines
         "#040404",
-        "#191919", // Accent
+        "#161616", // Accent
         "#101010", // Main background
         "#262626", // Primary color
-        "#121212"
+        "#161616"
       ]
     },
     white: "#FAFAFA",
@@ -82,7 +83,9 @@ export default function RootLayout({ children }: any) { // The one time where 'a
         }}>
           <CacheProvider>
             <AblyProvider client={ client }>
-              {children}
+              <ChatProvider> {/* This is our own chat provider that facilitates the creation of new chats */}
+                {children}
+              </ChatProvider>
             </AblyProvider>              
           </CacheProvider>
       </ClerkProvider>

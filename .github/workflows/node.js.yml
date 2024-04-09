@@ -22,3 +22,7 @@ jobs:
     - run: npm install -g npm
     - run: npm install --save-dev jest
     - run: npm run test:jest
+      env:
+        MONGODB_USERNAME: baopham
+        MONGODB_PASSWORD: Yjs12l26LZegm0VH
+        MONGODO_URI: mongodb+srv://baopham:Yjs12l26LZegm0VH@accord-systems.umbugbv.mongodb.net/?retryWrites=true&w=majority&appName=Accord-Systems

@@ -1,19 +1,23 @@
 import React, { useState, useEffect, FC } from 'react';
 import { Menu, Divider, Text, Notification, Button } from '@mantine/core';
+import { useChannel } from "ably/react";
+import { getSystemsChannelID} from "@/utility";
 
 interface FriendRequest {
   id: string;
   username: string;
 }
 
-interface InboxDropdownProps {
+interface FriendRequestManagerProps {
   userId: string;
 }
 
-const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
+export const Inbox: FC<FriendRequestManagerProps> = ({ userId }) => {
   const [sentRequests, setSentRequests] = useState<FriendRequest[]>([]);
   const [receivedRequests, setReceivedRequests] = useState<FriendRequest[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+
+  const { channel } = useChannel(getSystemsChannelID());
 
   const fetchFriendRequests = async () => {
     setLoading(true);
@@ -75,6 +79,23 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
     }
   };
 
+  const createDirectMessageChat = async (userId: string, friendId: string) => {
+    try {
+      const dmResponse = await fetch('/api/new-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ memberIDs: [userId, friendId] }),
+      });
+  
+      if (!dmResponse.ok) {
+        const errorData = await dmResponse.json();
+        throw new Error(errorData.error || 'Failed to create DM chat');
+      }
+    } catch (error) {
+      console.error('Error creating DM chat:', error);
+    }
+  };
+
   const acceptFriendRequest = async (friendId: string) => {
     try {
       const response = await fetch('/api/accept-friend-request', {
@@ -85,6 +106,10 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
       if (!response.ok) {
         throw new Error('Failed to accept friend request');
       }
+      // Once accepted, create a DM chat with the new friend
+      await createDirectMessageChat(userId, friendId);
+      await channel.publish("friend-request-accepted", `${userId}-${friendId}`);
+
       fetchFriendRequests(); // Refresh data after accepting a request
     } catch (error) {
       console.error('Failed to accept friend request:', error);
@@ -94,7 +119,7 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
   useEffect(() => {
     if (userId) {
       fetchFriendRequests(); // Initial fetch
-      const intervalId = setInterval(fetchFriendRequests, 15000); // Poll every 15 seconds
+      const intervalId = setInterval(fetchFriendRequests, 5000); // Poll every 5 seconds
       return () => clearInterval(intervalId); // Cleanup on component unmount
     }
   }, [userId]);
@@ -126,5 +151,3 @@ const InboxDropdown: FC<InboxDropdownProps> = ({ userId }) => {
     </Menu>
   );
 };
-
-export default InboxDropdown;

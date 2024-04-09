@@ -4,7 +4,7 @@ import { AppLink } from  "@/components/AppLink";
 import { useRouter } from 'next/router';
 import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
-import InboxDropdown from '@/components/Navbar/notifcation';
+import InboxDropdown from '@/components/FriendsColumn/FriendRequestManager';
 /**
  * FooterProfile renders a user profile component typically used in the footer area of the application.
  * It displays an avatar that links to the user's profile and provides a quick navigation option to view
