@@ -112,7 +112,7 @@ export default function Accord() {
             <Button
               value="friends"
               onClick={() => setActiveView('friends')} // Directly set active view to 'friends'
-              leftSection={<IconUsers />}
+              leftSection={<IconUsers size={16} />}
               variant="gradient"
             >
               Friends
