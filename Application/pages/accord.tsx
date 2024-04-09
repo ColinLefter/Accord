@@ -4,17 +4,12 @@ import {
   AppShell,
   Burger,
   Group,
-  Skeleton,
   ScrollArea,
   Text,
-  Tooltip,
-  ActionIcon,
-  Tabs,
-  Switch,
   Stack,
   Button
 } from '@mantine/core';
-import { IconUsers, IconUserCircle } from "@tabler/icons-react";
+import { IconUsers } from "@tabler/icons-react";
 import { useDisclosure } from '@mantine/hooks';
 import { Logo } from "@/components/Logo";
 import { FriendsTab } from "@/components/FriendsColumn/FriendsTab";
@@ -22,17 +17,13 @@ import { ColorSchemeToggle } from "@/components/ColorSchemeToggle/ColorSchemeTog
 import { FooterProfile } from "@/components/FriendsColumn/FooterProfile";
 import { Chat } from "@/components/Messaging/Chat";
 import React, { useEffect, useState } from 'react';
-import { ChatProvider } from "@/contexts/chatContext";
 import { NewTextChannelModal } from '@/components/Messaging/NewTextChannelModal';
-import classes from "@/components/tabstyling.module.css";
-import { useUser, UserProfile } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 import { RelinquishAdminModal } from '@/components/Server/RelinquishAdminModal';
 import { MemberList } from "@/components/Server/MemberList";
 import { TextChannels } from "@/components/TextChannels/TextChannels";
-import { ChannelContext } from "@/contexts/channelContext";
-import { ActiveViewProvider } from '@/contexts/activeViewContext';
 import { useChat } from '@/contexts/chatContext';
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -57,17 +48,10 @@ export default function Accord() {
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
   const [senderID, setSenderID] = useState<string>('');
-  const [selectedRecipients, setSelectedRecipients] = useState<string[]>([]); // This taken from the NewChatModal. We need to pass this to the Chat component.
-  const [chatID, setChatID] = useState<string>('')
-
-  const [privateMode, setPrivateMode] = useState(false);
   const [chatStarted, setChatStarted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
 
   const [asideWidth, setAsideWidth] = useState(0);
-
-  console.log("in app shell ", selectedChannelId);
-  console.log("Active view: ", activeView);
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -101,84 +85,71 @@ export default function Accord() {
   };
 
   return (
-    <ActiveViewProvider>
-      <Tabs value={activeView}>
-        <AppShell
-          header={{ height: 50 }}
-          navbar={{
-            width: 300,
-            breakpoint: 'sm',
-            collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
-          }}
-          padding="md"
-          aside={{ width: asideWidth, breakpoint: 'sm' }}
-        >
-          <AppShell.Header>
-            <Group justify="space-between" className="center" px="md">
-              <Group>
-                <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
-                <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
-                <Logo />
-              </Group>
-              <Group>
-                <Switch
-                  defaultChecked
-                  color="gray" // May not be the best color choice, but it looks better than orange
-                  label="Private mode"
-                  onChange={(event) => !chatStarted && setPrivateMode(event.currentTarget.checked)}
-                  disabled={chatStarted}  // Disable the switch if the chat has started
-                />
-                <ColorSchemeToggle/>
-              </Group>
+    <AppShell
+      header={{ height: 50 }}
+      navbar={{
+        width: 300,
+        breakpoint: 'sm',
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+      }}
+      padding="md"
+      aside={{ width: asideWidth, breakpoint: 'sm' }}
+    >
+      <AppShell.Header>
+        <Group justify="space-between" className="center" px="md">
+          <Group>
+            <Burger opened={mobileOpened} onClick={toggleMobile} hiddenFrom="sm" size="sm" />
+            <Burger opened={desktopOpened} onClick={toggleDesktop} visibleFrom="sm" size="sm" />
+            <Logo />
+          </Group>
+          <ColorSchemeToggle/>
+        </Group>
+      </AppShell.Header>
+      <AppShell.Navbar p="md">
+        <AppShell.Section>
+          <Stack gap="xs">
+            <Button
+              value="friends"
+              onClick={() => setActiveView('friends')} // Directly set active view to 'friends'
+              leftSection={<IconUsers />}
+              variant="gradient"
+            >
+              Friends
+            </Button>
+            <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+            {/* For testing out the Modal - whenever you can succesfully use it and the changes correctly reflects on Mongo, request a change*/}
+            {/* <RelinquishAdminModal senderID={senderID} currentChannelKey = {'0735906bd282dcca9f00d2872b9e57b4a7675245eab16bfa17555df4720147b3'} lastFetched={lastFetched} setLastFetched={setLastFetched} /> */}
+            <Group justify="space-between">
+              <Text py="md">Text Channels</Text>
+              <NewTextChannelModal/>
             </Group>
-          </AppShell.Header>
-          <AppShell.Navbar p="md">
-            <AppShell.Section>
-              <Stack gap="xs">
-                <Button
-                  value="friends"
-                  onClick={() => setActiveView('friends')} // Directly set active view to 'friends'
-                  leftSection={<IconUsers />}
-                  variant="gradient"
-                >
-                  Friends
-                </Button>
-                <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
-                {/* For testing out the Modal - whenever you can succesfully use it and the changes correctly reflects on Mongo, request a change*/}
-                {/* <RelinquishAdminModal senderID={senderID} currentChannelKey = {'0735906bd282dcca9f00d2872b9e57b4a7675245eab16bfa17555df4720147b3'} lastFetched={lastFetched} setLastFetched={setLastFetched} /> */}
-                <Group justify="space-between">
-                  <Text py="md">Text Channels</Text>
-                  <NewTextChannelModal/>
-                </Group>
-              </Stack>
-            </AppShell.Section>
-            <AppShell.Section grow component={ScrollArea} mt="0">
-              <TextChannels />
-            </AppShell.Section>
-            <AppShell.Section mt="15">
-              <FooterProfile/>
-            </AppShell.Section>
-          </AppShell.Navbar>
-          <AppShell.Main>
-          {activeView === 'friends' && (
-            <FriendsTab
-              senderUsername={sender}
-              senderID={senderID}
-              privateChat={privateMode}
-              onMessageExchange={onMessageExchange}
-              lastFetched={lastFetched}
-              setLastFetched={setLastFetched}
-            />
-          )}
-          {(activeView === 'chat' || activeView === 'textChannel') && chatProps && (
-            <Chat {...chatProps} />
-          )}
-          </AppShell.Main>
-          {activeView === 'textChannel' && <AppShell.Aside p="md" component={ScrollArea}>
-            <MemberList isAdmin = {isAdmin} chatID = {selectedChannelId}/>
-          </AppShell.Aside>}
-        </AppShell>
-      </Tabs>
-    </ActiveViewProvider>
+          </Stack>
+        </AppShell.Section>
+        <AppShell.Section grow component={ScrollArea} mt="0">
+          <TextChannels />
+        </AppShell.Section>
+        <AppShell.Section mt="15">
+          <FooterProfile/>
+        </AppShell.Section>
+      </AppShell.Navbar>
+      <AppShell.Main>
+      {activeView === 'friends' && (
+        <FriendsTab
+          senderUsername={sender}
+          senderID={senderID}
+          captureHistory={true} // DMs are never private. That feature is reserved for text channels.
+          onMessageExchange={onMessageExchange}
+          lastFetched={lastFetched}
+          setLastFetched={setLastFetched}
+        />
+      )}
+      {(activeView === 'chat' || activeView === 'textChannel') && chatProps && (
+        <Chat {...chatProps} />
+      )}
+      </AppShell.Main>
+      {activeView === 'textChannel' && <AppShell.Aside p="md" component={ScrollArea}>
+        <MemberList isAdmin = {isAdmin} chatID = {selectedChannelId}/>
+      </AppShell.Aside>}
+    </AppShell>
   );
 }

@@ -26,24 +26,24 @@ export function Chat({
   senderID,
   senderUsername,
   receiverIDs,
-  privateChat,
+  captureHistory, // Renamed from privateChat
   lastFetched,
   setLastFetched,
   onMessageExchange,
-  channelKey, // Keep the channelKey as it is
-  channelName, // New channelName prop
+  channelKey,
+  channelName,
 }: ChatProps) {
   return (
     <MessagingInterface
       senderID={senderID}
       senderUsername={senderUsername}
       receiverIDs={receiverIDs}
-      privateChat={privateChat}
+      captureHistory={captureHistory}
       lastFetched={lastFetched}
       setLastFetched={setLastFetched}
       onMessageExchange={onMessageExchange}
       channelKey={channelKey}
-      channelName={channelName} // Pass the channelName to the MessagingInterface
+      channelName={channelName}
     />
   );
 }

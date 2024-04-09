@@ -40,6 +40,7 @@ export interface ChatProps extends FriendsTabProps {
   receiverIDs: string[];
   channelKey?: string;
   channelName?: string; // Adding channelName as optional
+  captureHistory: boolean; // Renamed and now required
 }
 
 export interface IconProps {
@@ -51,7 +52,7 @@ export interface NewChatModalProps extends NewFriendModalProps {
 }
 
 export interface PrivacySettingsProps {
-  privateChat: boolean;
+  captureHistory: boolean; // Renamed from privateChat
   onMessageExchange: () => void;
 }
 
@@ -74,6 +75,7 @@ export interface TextChannelItemProps {
   index: number;
   channelName: string;
   numberOfMembers: number;
+  captureHistory: boolean;
   onClick: (id: string) => void;
 }
 
@@ -81,4 +83,5 @@ export interface TextChannel {
   channelKey: string;
   channelName: string;
   memberIDs: string[];
+  captureHistory: boolean; // Ensure this field is included
 }

@@ -45,7 +45,7 @@ function goBack() {
  * 
  * @returns The JSX element representing the friends tab section, including a search bar and a list of friends.
  */
-export function FriendsTab({senderUsername, senderID, privateChat, onMessageExchange, lastFetched, setLastFetched }: FriendsTabProps) {
+export function FriendsTab({senderUsername, senderID, captureHistory, onMessageExchange, lastFetched, setLastFetched }: FriendsTabProps) {
     const { user } = useUser();
     const router = useRouter();
     const { list: friends, isLoading } = useFriendList({lastFetched, setLastFetched});
@@ -80,7 +80,7 @@ export function FriendsTab({senderUsername, senderID, privateChat, onMessageExch
           senderID,
           senderUsername,
           receiverIDs: [friendID],
-          privateChat,
+          captureHistory,
           lastFetched,
           setLastFetched,
           onMessageExchange,

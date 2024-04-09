@@ -6,11 +6,9 @@ import { channel } from 'diagnostics_channel';
 import { createHash } from 'crypto';
 import { IntegerType } from 'mongodb';
 import { useDisclosure } from '@mantine/hooks';
-import { showNotification } from '@mantine/notifications';
-
-const generateHash = (input: string) => {
-  return createHash('sha256').update(input).digest('hex');
-};
+import { notifications, showNotification } from '@mantine/notifications';
+import { generateHashFromString } from '@/utility';
+import { useChat } from '@/contexts/chatContext';
 
 export function MemberList({isAdmin, chatID, isView}: any) {
   // Hardcoded member list
@@ -23,15 +21,22 @@ export function MemberList({isAdmin, chatID, isView}: any) {
   const [searchResult, setSearchResult] = useState<number | null>(null);
   const [isAdmin1, setIsADmin] = useState(isAdmin);
   const { user } = useUser();
+  const { activeView, setActiveView } = useChat();
+  const [myID, setMyID] = useState<string>('');
+
+  useEffect(() => {
+    if (user && user.id) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setMyID(user.id);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   const removeMember = async(member: String, index: any) =>{
-      console.log(membersIDList[index] + " ahahahahahah")
       const memberToRemove = membersIDList[index];
       let membersIDListToSort = membersIDList.filter(item => item !== memberToRemove);
       membersIDListToSort.sort();
       const rawChannelKey = `chat:${membersIDListToSort.join(",")}`;
-      const newChannelKey = generateHash(rawChannelKey);
-      // alert("Something")
+      const newChannelKey = generateHashFromString(rawChannelKey);
       try {
         const response = await fetch('/api/removeMember', {
           method: 'POST',
@@ -45,13 +50,12 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
         if (response.ok) {
           const data = await response.json();
-          const memberListArray = data.matchCount;
-          console.log("My server:" + data.matchCount);
           const stringToRemove = member;
+          if (myID === memberToRemove) {
+            setActiveView('friends'); // We are getting kicked out of the chat (this is me removing myself from a chat)
+          }
 
           const filteredMemberList = membersList.filter(item => item !== stringToRemove);
-
-          console.log(filteredMemberList); 
           setMembersList(filteredMemberList);
         } else {
           console.error('Failed to fetch member list');
@@ -68,14 +72,11 @@ export function MemberList({isAdmin, chatID, isView}: any) {
         headers: {
           'Content-Type': 'application/json',
         },
-        //-----------------------------------------------------------------------------------------------------------------------------------------------
         body: JSON.stringify({ memberIDs: memberIDs}),                              // Change this when we put in the Appshell (It is a String NOT int)
-        //------------------------------------------------------------------------------------------------------------------------------------------------
       });
 
       if (response.ok) {
         const data = await response.json();
-        // console.log("My users:" + data.userArray);
         setMembersList(data.userArray);
       } else {
         console.error('Failed to fetch member list');
@@ -147,7 +148,6 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
   useEffect(() => {
     if (user && chatID !== null) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
-      console.log(user.id);
       const fetchData = async () => {
         try {
           const response = await fetch('/api/memberListInitializing', {
@@ -162,7 +162,6 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
           if (response.ok) {
             const data = await response.json();
-            console.log("My members: " + data.memberIDs);
             setMembersIDList(data.memberIDs);
             return data.memberIDs;
           } else {
@@ -174,10 +173,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
       };
       createErrorMessage();
       setChannelKey(chatID)
-      console.log("I am the key "+ channelKey)
       fetchData().then(value => {
-        // console.log("AAAAAAAAAAAAAAAAAAAAAAAAA");
-        // console.log(value);
         fetchUserName(value);
       });
     }
@@ -195,22 +191,21 @@ export function MemberList({isAdmin, chatID, isView}: any) {
           {/* <Text>{member}</Text> */}
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
-                  <Button style={{width: "215px"}} variant="gradient">
+                  <Button fullWidth variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
                           <Text>{member}</Text>
                         </Group>
                   </Button>
               </Menu.Target>
-            {/* {console.log(index)} */}
             {isAdmin1 && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
-                  <Button color='green'  onClick={() => removeMember(member, index)}>Promote to Admin</Button>
+                  <Button color='green' c="white" fullWidth onClick={() => removeMember(member, index)}>Promote to Admin</Button>
                 </Menu.Item>
 
                 <Menu.Item color="red" leftSection={<IconTrash style={{ width: rem(14)  , height: rem(14) }}/>}>
-                  <Button color='red'  onClick={() => removeMember(member, index)}>Remove From Server</Button>
+                  <Button color='red' fullWidth onClick={() => removeMember(member, index)}>Remove From Server</Button>
                 </Menu.Item>
               </Menu.Dropdown>}
               
@@ -220,7 +215,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
       <Button
         onClick={open}
         variant="gradient"
-        style={{width: "215px"}}
+        fullWidth
         leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
       >
         <Group py="10">
@@ -268,4 +263,3 @@ export function MemberList({isAdmin, chatID, isView}: any) {
     </Stack>
   );
 }
-
