@@ -112,6 +112,7 @@ export function TextChannels() {
       console.error('Channel not found');
       return;
     }
+    const isAdmin = channel?.adminIDs.includes(userID);
     
     updateContext(channelKey, {
       senderID: userID,

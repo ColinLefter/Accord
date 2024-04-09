@@ -53,7 +53,6 @@ export default function Accord() {
   const [isAdmin, setIsAdmin] = useState(true);
   const [asideWidth, setAsideWidth] = useState(0);
 
-  const [asideWidth, setAsideWidth] = useState(0);
   
   useEffect(() => {
     if (user && user.username && user.id) {
