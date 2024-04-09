@@ -278,4 +278,3 @@ export function MemberList({ chatID }: { chatID: string }) {
     </Stack>
   );
 }
-

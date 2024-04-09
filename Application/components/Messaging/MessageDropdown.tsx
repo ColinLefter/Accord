@@ -41,11 +41,11 @@ export function MessageDropdown({ privateChat, clientID, onDelete, isAdmin }: Me
       setReadyToDelete(true);
     }
     if(isAdmin){
-      setIsAdmin1(true)
-    }
-    if(isAdmin1){
       setDeleteable(false)
     }
+    // if(isAdmin1){
+    //   setDeleteable(false)
+    // }
   }, [user?.id, isAdmin]);
 
   // Check if it's the current user's message
