@@ -7,7 +7,7 @@ import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
 import { ChatProps, MessageProps, DisplayedMessageProps } from "@/accordTypes";
 import { useUser } from '@clerk/nextjs';
-import { generateHash } from "@/utility";
+import { generateChannelKey } from "@/utility";
 
 /**
  * Provides a comprehensive chat interface for real-time messaging within the application.
@@ -63,7 +63,7 @@ export function MessagingInterface({
   const memberIDs = [senderID, ...receiverIDs];
   const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty.
-  const channelKey = providedChannelKey || generateHash(memberIDs);
+  const channelKey = providedChannelKey || generateChannelKey(null, memberIDs); // Reason for the fallback is to support direct messaging
 
   // useChannel is a react-hook API for subscribing to messages from an Ably channel.
   // You provide it with a channel name and a callback to be invoked whenever a message is received.

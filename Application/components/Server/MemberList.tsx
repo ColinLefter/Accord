@@ -7,7 +7,6 @@ import { createHash } from 'crypto';
 import { IntegerType } from 'mongodb';
 import { useDisclosure } from '@mantine/hooks';
 import { notifications, showNotification } from '@mantine/notifications';
-import { generateHashFromString } from '@/utility';
 import { useChat } from '@/contexts/chatContext';
 
 export function MemberList({isAdmin, chatID, isView}: any) {
@@ -21,8 +20,9 @@ export function MemberList({isAdmin, chatID, isView}: any) {
   const [searchResult, setSearchResult] = useState<number | null>(null);
   const [isAdmin1, setIsADmin] = useState(isAdmin);
   const { user } = useUser();
-  const { activeView, setActiveView } = useChat();
   const [myID, setMyID] = useState<string>('');
+
+  const { selectedChannelId, setActiveView } = useChat(); // Critical: this is how we obtain the channel key of the channel we are looking at
 
   useEffect(() => {
     if (user && user.id) {
@@ -31,39 +31,38 @@ export function MemberList({isAdmin, chatID, isView}: any) {
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
-  const removeMember = async(member: String, index: any) =>{
-      const memberToRemove = membersIDList[index];
-      let membersIDListToSort = membersIDList.filter(item => item !== memberToRemove);
-      membersIDListToSort.sort();
-      const rawChannelKey = `chat:${membersIDListToSort.join(",")}`;
-      const newChannelKey = generateHashFromString(rawChannelKey);
-      try {
-        const response = await fetch('/api/removeMember', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          //-----------------------------------------------------------------------------------------------------------------------------------------------
-          body: JSON.stringify({ member: memberToRemove , channelKey: channelKey, newChannelKey: newChannelKey}),                              // Change this when we put in the Appshell (It is a String NOT int)
-          //------------------------------------------------------------------------------------------------------------------------------------------------
-        });
+  const removeMember = async(member: String, index: any) => {
+    const memberToRemove = membersIDList[index];
+    // No need to generate a newChannelKey here since the backend will handle this
+    try {
+      const response = await fetch('/api/removeMember', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          member: memberToRemove, 
+          channelKey: selectedChannelId, // Use selectedChannelId from context
+        }),
+      });
 
-        if (response.ok) {
-          const data = await response.json();
-          const stringToRemove = member;
-          if (myID === memberToRemove) {
-            setActiveView('friends'); // We are getting kicked out of the chat (this is me removing myself from a chat)
-          }
-
-          const filteredMemberList = membersList.filter(item => item !== stringToRemove);
-          setMembersList(filteredMemberList);
-        } else {
-          console.error('Failed to fetch member list');
+      if (response.ok) {
+        const data = await response.json();
+        if (myID === memberToRemove) {
+          setActiveView('friends'); // Redirecting the user if they remove themselves
         }
-      } catch (error) {
-        console.error('Error fetching member list:', error);
+        // Update the local members list to reflect the removal without waiting for a full refresh
+        const filteredMembersList = membersList.filter(item => item !== member);
+        const filteredMembersIDList = membersIDList.filter(id => id !== memberToRemove);
+        setMembersList(filteredMembersList);
+        setMembersIDList(filteredMembersIDList);
+      } else {
+        console.error('Failed to remove member from chat');
       }
-  }
+    } catch (error) {
+      console.error('Error removing member from chat:', error);
+    }
+  };
 
   const fetchUserName = async (memberIDs: String[]) => {
     try {
