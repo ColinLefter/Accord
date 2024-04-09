@@ -6,6 +6,10 @@ export const generateHash = (memberIDs: string[]) => { // Member IDs must includ
   return createHash('sha256').update(rawChannelKey).digest('hex');
 };
 
+export const generateHashFromString = (input: string) => {
+  return createHash('sha256').update(input).digest('hex');
+};
+
 export const formatDate = (date: Date) => {
   const suffixes = ["th", "st", "nd", "rd"];
   const day = date.getDate();

@@ -7,10 +7,7 @@ import { createHash } from 'crypto';
 import { IntegerType } from 'mongodb';
 import { useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-
-const generateHash = (input: string) => {
-  return createHash('sha256').update(input).digest('hex');
-};
+import { generateHashFromString } from '@/utility';
 
 export function MemberList({isAdmin, chatID, isView}: any) {
   // Hardcoded member list
@@ -26,13 +23,11 @@ export function MemberList({isAdmin, chatID, isView}: any) {
   const { user } = useUser();
 
   const removeMember = async(member: String, index: any) =>{
-      console.log(membersIDList[index] + " ahahahahahah")
       const memberToRemove = membersIDList[index];
       let membersIDListToSort = membersIDList.filter(item => item !== memberToRemove);
       membersIDListToSort.sort();
       const rawChannelKey = `chat:${membersIDListToSort.join(",")}`;
-      const newChannelKey = generateHash(rawChannelKey);
-      // alert("Something")
+      const newChannelKey = generateHashFromString(rawChannelKey);
       try {
         const response = await fetch('/api/removeMember', {
           method: 'POST',
@@ -46,13 +41,9 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
         if (response.ok) {
           const data = await response.json();
-          const memberListArray = data.matchCount;
-          console.log("My server:" + data.matchCount);
           const stringToRemove = member;
 
           const filteredMemberList = membersList.filter(item => item !== stringToRemove);
-
-          console.log(filteredMemberList); 
           setMembersList(filteredMemberList);
         } else {
           console.error('Failed to fetch member list');
@@ -76,7 +67,6 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
       if (response.ok) {
         const data = await response.json();
-        // console.log("My users:" + data.userArray);
         setMembersList(data.userArray);
       } else {
         console.error('Failed to fetch member list');
@@ -148,7 +138,6 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
   useEffect(() => {
     if (user && chatID !== null) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
-      console.log(user.id);
       const fetchData = async () => {
         try {
           const response = await fetch('/api/memberListInitializing', {
@@ -163,9 +152,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
           if (response.ok) {
             const data = await response.json();
-            console.log("My server:" + data.memberIDs);
             setMembersIDList(data.memberIDs);
-            // setMembersIDListToSort(data.memberIDs)
             return data.memberIDs;
           } else {
             console.error('Failed to fetch member list');
@@ -177,11 +164,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
       setChannelKeyToCheck(channelKey); 
       createErrorMessage();
       setChannelKey(chatID)
-      console.log("I am the key "+ channelKey)
       fetchData().then(value => {
-        // console.log("AAAAAAAAAAAAAAAAAAAAAAAAA");
-        // console.log(value);
-        fetchUserName(value);
       });
     }
   }, [user, chatID, isAdmin]);
@@ -198,14 +181,13 @@ export function MemberList({isAdmin, chatID, isView}: any) {
           {/* <Text>{member}</Text> */}
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
-                  <Button style={{width: "215px"}} variant="gradient">
+                  <Button fullWidth variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
                           <Text>{member}</Text>
                         </Group>
                   </Button>
               </Menu.Target>
-            {/* {console.log(index)} */}
             {isAdmin1 && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
@@ -223,7 +205,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
       <Button
         onClick={open}
         variant="gradient"
-        style={{width: "215px"}}
+        fullWidth
         leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
       >
         <Group py="10">
