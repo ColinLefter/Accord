@@ -107,7 +107,7 @@ export function TextChannels() {
       onMessageExchange: () => {},
       channelKey,
     });
-    setActiveView('chat'); // Switch to chat view
+    setActiveView('textChannel'); // Switch to chat view
   };
 
   // Mapping through the state to create TextChannelItem components
