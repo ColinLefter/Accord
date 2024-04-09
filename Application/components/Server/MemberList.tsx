@@ -14,7 +14,6 @@ export function MemberList({isAdmin, chatID, isView}: any) {
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
   const [channelKey, setChannelKey] = useState<string>(chatID);
-  const [channelKeyToCheck, setChannelKeyToCheck] = useState<string>("");
   const [opened, { open, close }] = useDisclosure(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [friendUsername, setFriendUsername] = useState('');
@@ -152,6 +151,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
           if (response.ok) {
             const data = await response.json();
+            console.log("My members: " + data.memberIDs);
             setMembersIDList(data.memberIDs);
             return data.memberIDs;
           } else {
@@ -161,7 +161,6 @@ export function MemberList({isAdmin, chatID, isView}: any) {
           console.error('Error fetching member list:', error);
         }
       };
-      setChannelKeyToCheck(channelKey); 
       createErrorMessage();
       setChannelKey(chatID)
       fetchData().then(value => {
