@@ -28,6 +28,11 @@ export interface NewFriendModalProps extends FetchStatusProps {
   senderID: string;
 }
 
+export interface RelinquishAdminModalProps extends FetchStatusProps {
+  senderID: string;
+  currentChannelKey: string;
+}
+
 export interface FriendsTabProps extends NewFriendModalProps, PrivacySettingsProps {
   senderUsername: string;
 }
@@ -35,8 +40,9 @@ export interface FriendsTabProps extends NewFriendModalProps, PrivacySettingsPro
 export interface ChatProps extends FriendsTabProps {
   receiverIDs: string[];
   channelKey?: string;
-  channelName?: string;
   isAdmin: boolean;
+  channelName?: string; // Adding channelName as optional
+  captureHistory: boolean; // Renamed and now required
 }
 
 export interface IconProps {
@@ -48,7 +54,7 @@ export interface NewChatModalProps extends NewFriendModalProps {
 }
 
 export interface PrivacySettingsProps {
-  privateChat: boolean;
+  captureHistory: boolean; // Renamed from privateChat
   onMessageExchange: () => void;
 }
 
@@ -71,6 +77,7 @@ export interface TextChannelItemProps {
   index: number;
   channelName: string;
   numberOfMembers: number;
+  captureHistory: boolean;
   onClick: (id: string) => void;
 }
 
@@ -79,4 +86,5 @@ export interface TextChannel {
   channelName: string;
   memberIDs: string[];
   adminIDs: string[];
+  captureHistory: boolean; // Ensure this field is included
 }

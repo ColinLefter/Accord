@@ -1,21 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import { Avatar, Group, Text, Stack, Paper, Button, Menu, rem, TextInput, Modal } from '@mantine/core';
-import { IconSettings, IconMessageCircle, IconPhoto, IconSearch, IconArrowsLeftRight, IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
+import { Group, Text, Stack, Button, Menu, rem, TextInput, Modal } from '@mantine/core';
+import { IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
-import { channel } from 'diagnostics_channel';
-import { createHash } from 'crypto';
-import { IntegerType } from 'mongodb';
 import { useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
 import { useChat } from '@/contexts/chatContext';
+import { useChannel } from "ably/react";
+import { getSystemsChannelID} from "@/utility";
 
-const generateHash = (input: string) => {
-  return createHash('sha256').update(input).digest('hex');
-};
 
 export function MemberList({ chatID }: { chatID: string }) {
   const { chatProps } = useChat();
   const isAdmin = chatProps?.isAdmin ?? false;
+
+
+
 
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
@@ -25,54 +24,55 @@ export function MemberList({ chatID }: { chatID: string }) {
   const [friendUsername, setFriendUsername] = useState('');
   const [searchResult, setSearchResult] = useState<number | null>(null);
   const [myID , setMyID] = useState<string>("");
+  const [isAdmin1, setIsADmin] = useState(isAdmin);
   const { user } = useUser();
 
+  const { selectedChannelId, setActiveView } = useChat(); // Critical: this is how we obtain the channel key of the channel we are looking at
+  const { channel } = useChannel(getSystemsChannelID());
+
   useEffect(() => {
-    if (user && user.username && user.id) {
+    if (user && user.id) {
       // Set sender to user's username if user exists and username is not null/undefined
       setMyID(user.id);
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
-  console.log("My ID: " + myID);
-  console.log("Am I admin: " + isAdmin);
+  const removeMember = async(member: String, index: any) => {
+    const memberToRemove = membersIDList[index];
+    // No need to generate a newChannelKey here since the backend will handle this
+    try {
+      const response = await fetch('/api/removeMember', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ 
+          member: memberToRemove, 
+          channelKey: selectedChannelId, // Use selectedChannelId from context
+        }),
+      });
 
-  const removeMember = async(member: String, index: any) =>{
-      console.log(membersIDList[index] + " ahahahahahah")
-      const memberToRemove = membersIDList[index];
-      let membersIDListToSort = membersIDList.filter(item => item !== memberToRemove);
-      membersIDListToSort.sort();
-      const rawChannelKey = `chat:${membersIDListToSort.join(",")}`;
-      const newChannelKey = generateHash(rawChannelKey);
-      // alert("Something")
-      try {
-        const response = await fetch('/api/removeMember', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          //-----------------------------------------------------------------------------------------------------------------------------------------------
-          body: JSON.stringify({ member: memberToRemove , channelKey: channelKey, newChannelKey: newChannelKey}),                              // Change this when we put in the Appshell (It is a String NOT int)
-          //------------------------------------------------------------------------------------------------------------------------------------------------
+      if (response.ok) {
+        const data = await response.json();
+        await channel.publish({
+          name: "removed-from-text-channel",
+          data: { removedMemberID: memberToRemove } // `data` can be a string, object, or other types
         });
-
-        if (response.ok) {
-          const data = await response.json();
-          const memberListArray = data.matchCount;
-          console.log("My server:" + data.matchCount);
-          const stringToRemove = member;
-
-          const filteredMemberList = membersList.filter(item => item !== stringToRemove);
-
-          console.log(filteredMemberList); 
-          setMembersList(filteredMemberList);
-        } else {
-          console.error('Failed to fetch member list');
+        if (myID === memberToRemove) {
+          setActiveView('friends'); // Redirecting the user if they remove themselves
         }
-      } catch (error) {
-        console.error('Error fetching member list:', error);
+        // Update the local members list to reflect the removal without waiting for a full refresh
+        const filteredMembersList = membersList.filter(item => item !== member);
+        const filteredMembersIDList = membersIDList.filter(id => id !== memberToRemove);
+        setMembersList(filteredMembersList);
+        setMembersIDList(filteredMembersIDList);
+      } else {
+        console.error('Failed to remove member from chat');
       }
-  }
+    } catch (error) {
+      console.error('Error removing member from chat:', error);
+    }
+  };
 
   const fetchUserName = async (memberIDs: String[]) => {
     try {
@@ -81,14 +81,11 @@ export function MemberList({ chatID }: { chatID: string }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        //-----------------------------------------------------------------------------------------------------------------------------------------------
         body: JSON.stringify({ memberIDs: memberIDs}),                              // Change this when we put in the Appshell (It is a String NOT int)
-        //------------------------------------------------------------------------------------------------------------------------------------------------
       });
 
       if (response.ok) {
         const data = await response.json();
-        // console.log("My users:" + data.userArray);
         setMembersList(data.userArray);
       } else {
         console.error('Failed to fetch member list');
@@ -144,7 +141,7 @@ export function MemberList({ chatID }: { chatID: string }) {
     }
   };
 
-  useEffect(() => {
+  const createErrorMessage = () => {
     switch (searchResult) {
       case 404:
         setErrorMessage('This username does not exist.');
@@ -155,12 +152,11 @@ export function MemberList({ chatID }: { chatID: string }) {
           // setLastFetched(Date.now());
           close();
         }
-        break;
     }
-  }, [searchResult, close]);
+  }
 
   useEffect(() => {
-    if (user) { 
+    if (user && chatID !== null) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
       const fetchData = async () => {
         try {
           const response = await fetch('/api/memberListInitializing', {
@@ -178,7 +174,6 @@ export function MemberList({ chatID }: { chatID: string }) {
             
             // Assuming `data` also contains `adminIDs` array
             const isAdmin = data.adminIDs.includes(user.id);
-
             return data.memberIDs;
           } else {
             console.error('Failed to fetch member list');
@@ -187,12 +182,13 @@ export function MemberList({ chatID }: { chatID: string }) {
           console.error('Error fetching member list:', error);
         }
       };
-
-      fetchData().then(memberIDs => {
-        fetchUserName(memberIDs);
+      createErrorMessage();
+      setChannelKey(chatID)
+      fetchData().then(value => {
+        fetchUserName(value);
       });
     }
-  }, [user, channelKey, chatID]); // Include channelKey in the dependency array to refetch when it changes
+  }, [user, chatID, isAdmin]);
 
 
   return (
@@ -203,24 +199,24 @@ export function MemberList({ chatID }: { chatID: string }) {
       </Text>
       {membersList.map((member, index) => (
         <div>
+          {/* <Text>{member}</Text> */}
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
                   <Button style={{width: "215px"}} variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
-                          <Text size="sm">{member}</Text>
+                          <Text>{member}</Text>
                         </Group>
                   </Button>
               </Menu.Target>
-            {/* {console.log(index)} */}
-            {isAdmin && <Menu.Dropdown>
+            {isAdmin1 && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
-                  <Button color='green'  onClick={() => removeMember(member, index)}>Promote to Admin</Button>
+                  <Button color='green' c="white" fullWidth onClick={() => removeMember(member, index)}>Promote to Admin</Button>
                 </Menu.Item>
 
                 <Menu.Item color="red" leftSection={<IconTrash style={{ width: rem(14)  , height: rem(14) }}/>}>
-                  <Button color='red'  onClick={() => removeMember(member, index)}>Remove From Server</Button>
+                  <Button color='red' fullWidth onClick={() => removeMember(member, index)}>Remove From Server</Button>
                 </Menu.Item>
               </Menu.Dropdown>}
               
@@ -278,3 +274,4 @@ export function MemberList({ chatID }: { chatID: string }) {
     </Stack>
   );
 }
+

@@ -7,8 +7,7 @@ import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
 import { ChatProps, MessageProps, DisplayedMessageProps } from "@/accordTypes";
 import { useUser } from '@clerk/nextjs';
-import { generateHash } from "@/utility";
-
+import { generateChannelKey } from "@/utility";
 
 /**
  * Provides a comprehensive chat interface for real-time messaging within the application.
@@ -26,7 +25,7 @@ import { generateHash } from "@/utility";
  * - senderUsername: Username of the message sender.
  * - senderID: Unique identifier of the message sender.
  * - receiverIDs: Array of identifiers for the message recipients, supporting group chat functionality.
- * - privateChat: Boolean flag to indicate whether the chat is private, affecting chat history management.
+ * - captureHistory: Boolean flag to indicate whether the chat is private, affecting chat history management.
  * - onMessageExchange: Callback function triggered on message send or receive, facilitating additional privacy controls.
  *
  * The component's design ensures a seamless chat experience, with features like message grouping by sender,
@@ -41,7 +40,7 @@ export function MessagingInterface({
   senderUsername,
   senderID,
   receiverIDs,
-  privateChat,
+  captureHistory,
   onMessageExchange,
   channelKey: providedChannelKey,
   channelName, // Accept the channelName here
@@ -64,7 +63,7 @@ export function MessagingInterface({
   const memberIDs = [senderID, ...receiverIDs];
   const { chatHistory, updateChatHistory } = useChat();
   const messageTextIsEmpty = messageText.trim().length === 0; // messageTextIsEmpty is used to disable the send button when the textarea is empty.
-  const channelKey = providedChannelKey || generateHash(memberIDs);
+  const channelKey = providedChannelKey || generateChannelKey(null, memberIDs); // Reason for the fallback is to support direct messaging
 
   // useChannel is a react-hook API for subscribing to messages from an Ably channel.
   // You provide it with a channel name and a callback to be invoked whenever a message is received.
@@ -80,7 +79,6 @@ export function MessagingInterface({
     // it's already added to the state when the user sends the message.
 
     if (messageData.name === 'messageDeleted') {
-      // console.log("Received message deletion event", messageData.data);
       // Message deletion event
       const { messageId } = messageData.data;
       setReceivedMessages(currentMessages => currentMessages.filter(message => message.id !== messageId)); // exclude the one we just got
@@ -91,7 +89,7 @@ export function MessagingInterface({
         const incomingMessage: DisplayedMessageProps = {
           id: id,
           clientID: clientID, // Get the clientID of the user who sent the message. This is used to ensure that users can only delete their messages.
-          privateChat: privateChat,
+          captureHistory: captureHistory,
           onMessageExchange: onMessageExchange,
           username: messageData.name,
           message: text,
@@ -152,7 +150,7 @@ export function MessagingInterface({
   // Always fetch history from MongoDB.
     useEffect(() => {
       const fetchHistory = async () => {
-        // Always try to fetch from MongoDB upon component mounting or updates related to channel and privateChat state
+        // Always try to fetch from MongoDB upon component mounting or updates related to channel and captureHistory state
         await fetchMongoDBHistory();
       };
     
@@ -176,7 +174,7 @@ export function MessagingInterface({
     const outgoingMessage = {
       id: tempId, // this needs to be replaced with the real one once it is known. This is done to satisfy TypeScript
       clientID: senderID, // This is OUR client id with respect to our presence in the text channel.
-      privateChat: privateChat, // Bringing these two privacy features down to the message level unlocks immense possibilities for end-to-end privacy.
+      captureHistory: captureHistory, // Bringing these two privacy features down to the message level unlocks immense possibilities for end-to-end privacy.
       onMessageExchange: onMessageExchange,
       username: senderUsername,
       message: messageText,
@@ -200,7 +198,7 @@ export function MessagingInterface({
   
       // IMPORTANT: Every time a new message is sent, we are also overwriting the chat history in the database.
       // We are doing this to ensure that the chat history is always up to date.
-      if (!privateChat) {
+      if (captureHistory) {
         try {
           fetch('/api/update-message-history', {
             method: 'POST', // We are sending messages to the server, so we need to use the POST method. Sensitive data.
@@ -272,7 +270,7 @@ export function MessagingInterface({
           <Message
             clientID={message.clientID} // Get the clientID of the user who sent the message. This is used to ensure that users can only delete their messages.
             id={message.id}
-            privateChat={privateChat}
+            captureHistory={captureHistory}
             onMessageExchange={onMessageExchange}
             username={message.username}
             message={message.message}
@@ -292,7 +290,7 @@ export function MessagingInterface({
           <Message
             clientID={message.clientID}
             id={message.id}
-            privateChat={privateChat}
+            captureHistory={captureHistory}
             onMessageExchange={onMessageExchange}
             username={message.username}
             message={message.message}

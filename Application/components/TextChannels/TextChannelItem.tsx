@@ -6,9 +6,9 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { TextChannelItemProps } from '@/accordTypes';
 import classes from './TextChannelItem.module.css';
 
-export const TextChannelItem: React.FC<TextChannelItemProps> = ({ id, index, channelName, numberOfMembers, onClick }) => {
+export const TextChannelItem: React.FC<TextChannelItemProps> = ({ id, index, channelName, numberOfMembers, captureHistory, onClick }) => {
   const symbol = channelName.substring(0, 2).toUpperCase(); // Generate symbol from channelName
-
+  
   return (
     <Draggable key={id} index={index} draggableId={id}>
       {(provided, snapshot) => (
@@ -23,7 +23,7 @@ export const TextChannelItem: React.FC<TextChannelItemProps> = ({ id, index, cha
           <div>
             <Text>{channelName}</Text>
             <Text c="dimmed" size="sm">
-              {numberOfMembers} members
+              {numberOfMembers} members {captureHistory ? '' : '• Private'}
             </Text>
           </div>
         </div>

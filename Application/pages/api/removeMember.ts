@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
-
+import { generateChannelKey } from '@/utility';
 /**
  * Handles the POST request for user registration, receiving the user's username, and find ONE entry that contains its username
  * Responds with a success message and status code 200 if the credentials are valid, or an error
@@ -11,46 +11,52 @@ import { getMongoDbUri } from '@/lib/dbConfig';
  * @param res - The outgoing Next.js API response object used to send back the result.
  */
 
-  // Reader starts from here
-export default async function handler(req: NextApiRequest, res: NextApiResponse) { 
-  if (req.method === 'POST') { 
-    const { member, channelKey, newChannelKey } = req.body; // Intaking the data that has been sent from the client-side
-    let client: MongoClient | null = null; // We need to assign something to the client so TypeScript is aware that it can be null if the connection fails 
-
-    try { //creating and establishing connections to the DB
-      client = new MongoClient(getMongoDbUri());
-      await client.connect();
-      const db = client.db('Accord');
-
-      // Reach into the db, and grab the Accounts table
-      const accountsCollection = db.collection("Chats");
-
-      const filter = { channelKey: channelKey };
-      const updateMemberList = { $pull: { memberIDs: member } };
-
-      const updateChannelKey = { $set: { channelKey: newChannelKey } };
-
-      // Querying the database by the username we received
-      const removedMember = await accountsCollection.updateOne( filter, updateMemberList ); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
-      const result = await accountsCollection.updateOne( filter, updateChannelKey );
-
-
-      if (removedMember) { // Check if the user existed 
-        return res.status(200).json({ matchedCount: removedMember.matchedCount}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
-      } else {
-        return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
+  export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+    if (req.method === 'POST') {
+      const { member, channelKey } = req.body;
+      let client: MongoClient | null = null;
+  
+      try {
+        client = new MongoClient(getMongoDbUri());
+        await client.connect();
+        const db = client.db('Accord');
+        const chatsCollection = db.collection("Chats");
+  
+        // Remove the member from the memberIDs list
+        await chatsCollection.updateOne(
+          { channelKey: channelKey },
+          { $pull: { memberIDs: member } }
+        );
+  
+        // Fetch the updated chat to get the current list of members
+        const updatedChat = await chatsCollection.findOne({ channelKey: channelKey });
+        if (!updatedChat) {
+          return res.status(404).json({ error: 'Chat not found' });
+        }
+  
+        // Regenerate the channelKey based on the updated list of memberIDs if necessary
+        const newMemberIDs = updatedChat.memberIDs.sort();
+        const newChannelKey = generateChannelKey(updatedChat.channelName, newMemberIDs);
+  
+        // Update the channelKey in the database if it has changed
+        if (newChannelKey !== channelKey) {
+          await chatsCollection.updateOne(
+            { channelKey: channelKey },
+            { $set: { channelKey: newChannelKey } }
+          );
+        }
+  
+        return res.status(200).json({ message: 'Member removed successfully', newChannelKey: newChannelKey });
+      } catch (error) {
+        console.error('Error removing member from chat:', error);
+        return res.status(500).json({ error: 'Internal server error' });
+      } finally {
+        if (client) {
+          await client.close();
+        }
       }
-    } catch (error) { // Copy paste from this point - just error catching, method detecting and closing the clients - back to UserSettings.tsx in components
-      console.error(error);
-      return res.status(500).json({ error: 'Internal server error' });
-    } finally {
-      if (client) {
-        await client.close();
-      }
+    } else {
+      res.setHeader('Allow', ['POST']);
+      res.status(405).end(`Method ${req.method} Not Allowed`);
     }
-  } else {
-    // Handle any requests other than POST
-    res.setHeader('Allow', ['POST']);
-    res.status(405).end(`Method ${req.method} Not Allowed`);
   }
-}

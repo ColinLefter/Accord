@@ -1,11 +1,24 @@
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tooltip, ActionIcon, Text, MultiSelect, Stack, Group, Button, useMantineTheme, TextInput } from '@mantine/core';
+import {
+  Modal,
+  Tooltip,
+  ActionIcon,
+  Text,
+  MultiSelect,
+  Stack, Group,
+  Button,
+  useMantineTheme,
+  TextInput,
+  SegmentedControl 
+} from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
 import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
 import { notifications } from '@mantine/notifications';
 import { useUser } from '@clerk/nextjs';
+import { useChannel } from "ably/react";
+import { getSystemsChannelID} from "@/utility";
 
 /**
  * NewChatModal facilitates the creation of new chat sessions, allowing users to select friends for group chats or direct messages (DMs).
@@ -42,6 +55,9 @@ export function NewTextChannelModal() {
   const [errorMessages, setErrorMessages] = useState({ channelName: '', members: '', admins: '' });
   const [senderID, setSenderID] = useState<string>('');
   const friends = useFriendList({lastFetched, setLastFetched});
+  const [captureHistory, setcaptureHistory] = useState(true); // On by default
+
+  const { channel } = useChannel(getSystemsChannelID());
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -54,6 +70,10 @@ export function NewTextChannelModal() {
     value: friend.id,
     label: friend.username,
   }));
+
+  const handlePrivacyModeChange = (value: string) => {
+    setcaptureHistory(value === 'Capture Message History');
+  };
 
   useEffect(() => {
     // Filter out any selected admins who are not in the updated selected friends list
@@ -89,10 +109,15 @@ export function NewTextChannelModal() {
             memberIDs: [senderID, ...selectedFriends],
             adminIDs: selectedAdmins,
             ownerID: senderID,
+            captureHistory,
           }),
         });
   
         if (response.ok) {
+          await channel.publish({
+            name: "text-channel-created",
+            data: { message: "A new text channel was created" } // `data` can be a string, object, or other types
+          });
           notifications.show({
             title: 'Created a new text channel!',
             message: `Added ${selectedFriendUsernames.join(', ')}`,
@@ -101,6 +126,7 @@ export function NewTextChannelModal() {
           setSelectedFriends([]);
           setSelectedAdmins([]);
           setErrorMessages({ channelName: '', members: '', admins: '' });
+          setcaptureHistory(true); // Reset to default (on by default)
           close(); // Close the modal
         } else if (response.status === 409) {
           // Chat already exists, so we need to handle this by prompting the user to change the chat name/members
@@ -175,6 +201,13 @@ export function NewTextChannelModal() {
           value={selectedAdmins}
           data={friendOptions.filter(option => selectedFriends.includes(option.value))}
           onChange={setSelectedAdmins}
+        />
+        <SegmentedControl
+          data={['Capture Message History', 'Private Mode']}
+          value={captureHistory ? 'Capture Message History' : 'Private Mode'}
+          onChange={handlePrivacyModeChange}
+          transitionDuration={500}
+          transitionTimingFunction="linear"
         />
         <Button
           fullWidth

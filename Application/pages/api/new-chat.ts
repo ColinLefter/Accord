@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
-import { generateHash } from '@/utility';
+import { generateChannelKey } from '@/utility';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
@@ -9,7 +9,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // That means that we can just not pass in channelName, adminIDs and ownerID to indicate that we're creating a DM.
     // Since we may no longer pass an ownerID, we need to make sure that memberIDs includes the sender ID in the front end
     // as it won't make sense to pass an ownerID for DMs. After all, who owns a DM?
-    const { channelName, memberIDs, adminIDs, ownerID } = req.body;
+    const { channelName, memberIDs, adminIDs, ownerID, captureHistory } = req.body;
     let client: MongoClient | null = null;
 
     try {
@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       // Handle both text channels and DMs
       let channelKey, newChat;
       if (channelName && ownerID && adminIDs) { // Creating a text channel
-        channelKey = generateHash([channelName, memberIDs]); // memberIDs includes the sender ID
+        channelKey = generateChannelKey(channelName, memberIDs)
 
         // Check if a channel with the same channelKey already exists
         const existingTextChannel = await chatsCollection.findOne({ channelKey: channelKey });
@@ -38,12 +38,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           ownerID: ownerID,
           memberIDs: memberIDs,
           adminIDs,
+          captureHistory, // This is a feature unique to text channels. We always capture history in DMs.
           messageHistory: [] // Initialize with an empty message history
         };
       } else { // Creating a DM
         // DMs will be unique as we don't allow a duplicate DM channel.
         // The thing that controls that is the fact that we only create a DM channel upon adding a friend.
-        channelKey = generateHash([memberIDs]);
+        channelKey = generateChannelKey(null, memberIDs);
         newChat = {
           channelKey: channelKey,
           dateCreated: new Date(),

@@ -1,8 +1,11 @@
 import { createHash } from 'crypto';
 
-export const generateHash = (memberIDs: string[]) => { // Member IDs must include the sender ID as well
-  memberIDs.sort(); // CRITICAL: Sorts in-place. We need to sort the key to counteract the swapping mechanism where sender and receiver becomes flipped.
-  const rawChannelKey = `chat:${memberIDs.join(",")}`;
+export const generateChannelKey = (channelName: string | null, memberIDs: string[]) => {
+  // Ensure memberIDs are sorted to maintain consistency
+  memberIDs.sort(); 
+  // Create the rawChannelKey string, including the channel name if provided
+  const rawChannelKey = channelName ? `text-channel:${channelName}:${memberIDs.join(",")}` : `direct-message:${memberIDs.join(",")}`;
+  // Generate and return the SHA-256 hash of the rawChannelKey
   return createHash('sha256').update(rawChannelKey).digest('hex');
 };
 
