@@ -69,28 +69,32 @@ export function TextChannels() {
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
-  const fetchUserChats = async () => {
-    if (!userID) return; // Ensure userID is available
-  
-    try {
-      const response = await fetch('/api/get-user-text-channels', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userID: userID })
-      });
-  
-      if (response.ok) {
-        const { textChannels } = await response.json();
-        setTextChannels(textChannels);
-      } else {
-        console.error('Failed to fetch chat channels');
+  useEffect(() => {
+    const fetchUserChats = async () => {
+      if (!userID) return; // Ensure userID is available
+    
+      try {
+        const response = await fetch('/api/get-user-text-channels', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userID: userID })
+        });
+    
+        if (response.ok) {
+          const { textChannels } = await response.json();
+          setTextChannels(textChannels);
+        } else {
+          console.error('Failed to fetch chat channels');
+        }
+      } catch (error) {
+        console.error('Error fetching chat channels:', error);
       }
-    } catch (error) {
-      console.error('Error fetching chat channels:', error);
-    }
-  };
+    };
+
+    fetchUserChats();
+  }, [userID]); // This useEffect runs only when userID changes, which should only happen when the user logs in or their user object is fetched initially.
 
   const onChannelClick = (channelKey: string) => {
     // Find the channel details from the state
@@ -125,8 +129,6 @@ export function TextChannels() {
       onClick={onChannelClick} // Passing the click handler
     />
   ));
-
-  fetchUserChats();
 
   return (
     <DragDropContext
