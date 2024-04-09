@@ -97,8 +97,8 @@ export function RemoveFriendModal(): JSX.Element {
       <Button
         onClick={handleOpenModalClick}
         variant="gradient"
+        leftSection={<IconUserMinus size={16} color="white" />}
       >
-        <IconUserMinus size={16} style={{ color: 'white', marginRight: 5 }} />
         Remove a friend
       </Button>
 
