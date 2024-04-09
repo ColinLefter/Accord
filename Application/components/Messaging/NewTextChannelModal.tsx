@@ -17,6 +17,8 @@ import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
 import { notifications } from '@mantine/notifications';
 import { useUser } from '@clerk/nextjs';
+import { useChannel } from "ably/react";
+import { getSystemsChannelID} from "@/utility";
 
 /**
  * NewChatModal facilitates the creation of new chat sessions, allowing users to select friends for group chats or direct messages (DMs).
@@ -54,6 +56,8 @@ export function NewTextChannelModal() {
   const [senderID, setSenderID] = useState<string>('');
   const friends = useFriendList({lastFetched, setLastFetched});
   const [captureHistory, setcaptureHistory] = useState(true); // On by default
+
+  const { channel } = useChannel(getSystemsChannelID());
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -110,6 +114,10 @@ export function NewTextChannelModal() {
         });
   
         if (response.ok) {
+          await channel.publish({
+            name: "text-channel-created",
+            data: { message: "A new text channel was created" } // `data` can be a string, object, or other types
+          });
           notifications.show({
             title: 'Created a new text channel!',
             message: `Added ${selectedFriendUsernames.join(', ')}`,
