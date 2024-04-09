@@ -8,7 +8,7 @@ import { useChat } from '@/contexts/chatContext';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 
-export function MemberList({isAdmin, chatID, isView}: any) {
+export function MemberList({ isAdmin, chatID }: any) {
   // Hardcoded member list
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
