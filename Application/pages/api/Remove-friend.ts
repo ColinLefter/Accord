@@ -18,10 +18,6 @@ import { getMongoDbUri } from '@/lib/dbConfig';
  * - On successfully removing the friends, responds with a 200 status code and a message indicating
  *   the friends were removed successfully from both the user's and the friends' friend lists.
  *
- * Usage:
- * Deploy this function as part of your Next.js API routes. Ensure client-side
- * requests provide `userID` and an array of `friendIDs` in the POST request body.
- *
  * @param {NextApiRequest} req The Next.js API request object.
  * @param {NextApiResponse} res The Next.js API response object.
  */
