@@ -6,8 +6,9 @@ import { channel } from 'diagnostics_channel';
 import { createHash } from 'crypto';
 import { IntegerType } from 'mongodb';
 import { useDisclosure } from '@mantine/hooks';
-import { showNotification } from '@mantine/notifications';
+import { notifications, showNotification } from '@mantine/notifications';
 import { generateHashFromString } from '@/utility';
+import { useChat } from '@/contexts/chatContext';
 
 export function MemberList({isAdmin, chatID, isView}: any) {
   // Hardcoded member list
@@ -20,6 +21,15 @@ export function MemberList({isAdmin, chatID, isView}: any) {
   const [searchResult, setSearchResult] = useState<number | null>(null);
   const [isAdmin1, setIsADmin] = useState(isAdmin);
   const { user } = useUser();
+  const { activeView, setActiveView } = useChat();
+  const [myID, setMyID] = useState<string>('');
+
+  useEffect(() => {
+    if (user && user.id) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setMyID(user.id);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   const removeMember = async(member: String, index: any) =>{
       const memberToRemove = membersIDList[index];
@@ -41,6 +51,9 @@ export function MemberList({isAdmin, chatID, isView}: any) {
         if (response.ok) {
           const data = await response.json();
           const stringToRemove = member;
+          if (myID === memberToRemove) {
+            setActiveView('friends'); // We are getting kicked out of the chat (this is me removing myself from a chat)
+          }
 
           const filteredMemberList = membersList.filter(item => item !== stringToRemove);
           setMembersList(filteredMemberList);
@@ -59,9 +72,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
         headers: {
           'Content-Type': 'application/json',
         },
-        //-----------------------------------------------------------------------------------------------------------------------------------------------
         body: JSON.stringify({ memberIDs: memberIDs}),                              // Change this when we put in the Appshell (It is a String NOT int)
-        //------------------------------------------------------------------------------------------------------------------------------------------------
       });
 
       if (response.ok) {
@@ -151,7 +162,6 @@ export function MemberList({isAdmin, chatID, isView}: any) {
 
           if (response.ok) {
             const data = await response.json();
-            console.log("My members: " + data.memberIDs);
             setMembersIDList(data.memberIDs);
             return data.memberIDs;
           } else {
@@ -164,6 +174,7 @@ export function MemberList({isAdmin, chatID, isView}: any) {
       createErrorMessage();
       setChannelKey(chatID)
       fetchData().then(value => {
+        fetchUserName(value);
       });
     }
   }, [user, chatID, isAdmin]);
@@ -190,11 +201,11 @@ export function MemberList({isAdmin, chatID, isView}: any) {
             {isAdmin1 && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
-                  <Button color='green'  onClick={() => removeMember(member, index)}>Promote to Admin</Button>
+                  <Button color='green' c="white" fullWidth onClick={() => removeMember(member, index)}>Promote to Admin</Button>
                 </Menu.Item>
 
                 <Menu.Item color="red" leftSection={<IconTrash style={{ width: rem(14)  , height: rem(14) }}/>}>
-                  <Button color='red'  onClick={() => removeMember(member, index)}>Remove From Server</Button>
+                  <Button color='red' fullWidth onClick={() => removeMember(member, index)}>Remove From Server</Button>
                 </Menu.Item>
               </Menu.Dropdown>}
               
@@ -252,4 +263,3 @@ export function MemberList({isAdmin, chatID, isView}: any) {
     </Stack>
   );
 }
-

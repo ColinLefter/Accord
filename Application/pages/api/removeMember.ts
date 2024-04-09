@@ -34,9 +34,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const removedMember = await accountsCollection.updateOne( filter, updateMemberList ); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
       const result = await accountsCollection.updateOne( filter, updateChannelKey );
 
-
       if (removedMember) { // Check if the user existed 
-        return res.status(200).json({ matchedCount: removedMember.matchedCount}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
+        return res.status(200).json({ matchedCount: removedMember.matchedCount }); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {
         return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
       }
