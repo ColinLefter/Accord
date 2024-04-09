@@ -60,12 +60,16 @@ export function RemoveFriendModal(): JSX.Element {
       });
 
       if (response.ok) {
-        const result: RemoveFriendResponse = await response.json();
-        showNotification({
-          title: 'Friend Removed',
-          message: result.message,
-          color: 'green',
+        // Iterate over selectedFriend array and show a notification for each
+        selectedFriend.forEach(friendId => {
+          const friendName = friendOptions.find(option => option.value === friendId)?.label || 'Unknown friend';
+          showNotification({
+            title: 'Friend Removed',
+            message: `${friendName} was removed successfully.`,
+            color: 'green',
+          });
         });
+
         setSelectedFriend([]);
         setErrorMessages({ friends: '' });
         setLastFetched(Date.now());
