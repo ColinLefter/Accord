@@ -26,11 +26,13 @@ import { useUser } from '@clerk/nextjs';
  * @returns {JSX.Element} A dropdown menu with options to edit or delete a message, 
  *                        enhanced with conditional tooltips based on chat privacy settings.
  */
-export function MessageDropdown({ captureHistory, clientID, onDelete }: MessageDropdownProps) {
+export function MessageDropdown({ captureHistory, clientID, onDelete, isAdmin  }: MessageDropdownProps) {
   const { user } = useUser();
   const [userID, setUserID] = useState<string | null>(null);
   const [readyToDelete, setReadyToDelete] = useState(false);
   const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
+  const [isAdmin1, setIsAdmin1] = useState(true)
+  const [deleteable, setDeleteable] = useState(true)
 
   // Effect to check for user id availability
   useEffect(() => {
@@ -38,7 +40,13 @@ export function MessageDropdown({ captureHistory, clientID, onDelete }: MessageD
       setUserID(user.id);
       setReadyToDelete(true);
     }
-  }, [user?.id]);
+    if(isAdmin){
+      setDeleteable(false)
+    }
+    // if(isAdmin1){
+    //   setDeleteable(false)
+    // }
+  }, [user?.id, isAdmin]);
 
   // Check if it's the current user's message
   const myMessage = clientID === userID;

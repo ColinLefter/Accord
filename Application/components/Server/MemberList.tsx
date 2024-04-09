@@ -8,8 +8,14 @@ import { useChat } from '@/contexts/chatContext';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 
-export function MemberList({ isAdmin, chatID }: any) {
-  // Hardcoded member list
+
+export function MemberList({ chatID }: { chatID: string }) {
+  const { chatProps } = useChat();
+  const isAdmin = chatProps?.isAdmin ?? false;
+
+
+
+
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
   const [channelKey, setChannelKey] = useState<string>(chatID);
@@ -158,14 +164,17 @@ export function MemberList({ isAdmin, chatID }: any) {
             headers: {
               'Content-Type': 'application/json',
             },
-            //-----------------------------------------------------------------------------------------------------------------------------------------------
-            body: JSON.stringify({ channelKey: chatID }),                              // Change this when we put in the Appshell (It is a String NOT int)
-            //------------------------------------------------------------------------------------------------------------------------------------------------
+            body: JSON.stringify({ channelKey: chatID }),
           });
 
           if (response.ok) {
             const data = await response.json();
+            console.log("Server response:" + data.memberIDs);
             setMembersIDList(data.memberIDs);
+            
+            // Assuming `data` also contains `adminIDs` array
+            const isAdmin = data.adminIDs.includes(user.id);
+            
             return data.memberIDs;
           } else {
             console.error('Failed to fetch member list');
@@ -194,7 +203,7 @@ export function MemberList({ isAdmin, chatID }: any) {
           {/* <Text>{member}</Text> */}
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
-                  <Button fullWidth variant="gradient">
+                  <Button style={{width: "215px"}} variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
                           <Text>{member}</Text>
@@ -218,7 +227,7 @@ export function MemberList({ isAdmin, chatID }: any) {
       <Button
         onClick={open}
         variant="gradient"
-        fullWidth
+        style={{width: "215px"}}
         leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
       >
         <Group py="10">

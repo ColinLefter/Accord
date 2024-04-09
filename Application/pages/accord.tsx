@@ -51,8 +51,8 @@ export default function Accord() {
   const [senderID, setSenderID] = useState<string>('');
   const [chatStarted, setChatStarted] = useState(false);
   const [isAdmin, setIsAdmin] = useState(true);
-
   const [asideWidth, setAsideWidth] = useState(0);
+
   
   useEffect(() => {
     if (user && user.username && user.id) {
@@ -150,7 +150,7 @@ export default function Accord() {
       )}
       </AppShell.Main>
       {activeView === 'textChannel' && <AppShell.Aside p="md" component={ScrollArea}>
-        <MemberList isAdmin = {isAdmin} chatID = {selectedChannelId}/>
+        <MemberList chatID={selectedChannelId as string} />
       </AppShell.Aside>}
     </AppShell>
   );

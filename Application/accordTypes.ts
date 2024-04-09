@@ -21,6 +21,7 @@ export interface DisplayedMessageProps extends MessageProps, PrivacySettingsProp
 export interface MessageDropdownProps extends PrivacySettingsProps {
   clientID: string;
   onDelete: () => void;
+  isAdmin: boolean;
 }
 
 export interface NewFriendModalProps extends FetchStatusProps {
@@ -39,6 +40,7 @@ export interface FriendsTabProps extends NewFriendModalProps, PrivacySettingsPro
 export interface ChatProps extends FriendsTabProps {
   receiverIDs: string[];
   channelKey?: string;
+  isAdmin: boolean;
   channelName?: string; // Adding channelName as optional
   captureHistory: boolean; // Renamed and now required
 }
@@ -83,5 +85,6 @@ export interface TextChannel {
   channelKey: string;
   channelName: string;
   memberIDs: string[];
+  adminIDs: string[];
   captureHistory: boolean; // Ensure this field is included
 }

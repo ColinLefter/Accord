@@ -112,6 +112,7 @@ export function TextChannels() {
       console.error('Channel not found');
       return;
     }
+    const isAdmin = channel?.adminIDs.includes(userID);
     
     updateContext(channelKey, {
       senderID: userID,
@@ -122,6 +123,7 @@ export function TextChannels() {
       setLastFetched: () => {},
       onMessageExchange: () => {},
       channelKey,
+      isAdmin: !!isAdmin // Pass isAdmin flag; !! converts undefined to false if clickedChannel or adminIDs is not found
     });
     setActiveView('textChannel'); // Switch to chat view
   };

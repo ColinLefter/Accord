@@ -30,7 +30,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       if (channel) { // Check if the user existed 
         // console.log(channel.channelKey + " this is the key")
         // console.log(channel.memberIDs + " this is the key")
-        return res.status(200).json({ memberIDs: channel.memberIDs}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
+        return res.status(200).json({ memberIDs: channel.memberIDs, adminIDs: channel.adminIDs}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {
         return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
       }
