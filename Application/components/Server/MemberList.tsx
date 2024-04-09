@@ -23,9 +23,9 @@ export function MemberList({ chatID }: { chatID: string }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [friendUsername, setFriendUsername] = useState('');
   const [searchResult, setSearchResult] = useState<number | null>(null);
-  const [myID , setMyID] = useState<string>("");
   const [isAdmin1, setIsADmin] = useState(isAdmin);
   const { user } = useUser();
+  const [myID, setMyID] = useState<string>('');
 
   const { selectedChannelId, setActiveView } = useChat(); // Critical: this is how we obtain the channel key of the channel we are looking at
   const { channel } = useChannel(getSystemsChannelID());
@@ -174,6 +174,7 @@ export function MemberList({ chatID }: { chatID: string }) {
             
             // Assuming `data` also contains `adminIDs` array
             const isAdmin = data.adminIDs.includes(user.id);
+            
             return data.memberIDs;
           } else {
             console.error('Failed to fetch member list');
@@ -274,4 +275,3 @@ export function MemberList({ chatID }: { chatID: string }) {
     </Stack>
   );
 }
-
