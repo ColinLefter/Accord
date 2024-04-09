@@ -35,7 +35,7 @@ export function RemoveFriendModal(): JSX.Element {
     } else {
       showNotification({
         title: 'No Friends to Remove',
-        message: 'You currently have no friends to remove.',
+        message: 'You currently have no friends to remove.😢',
         color: 'red',
       });
     }
@@ -65,7 +65,7 @@ export function RemoveFriendModal(): JSX.Element {
           const friendName = friendOptions.find(option => option.value === friendId)?.label || 'Unknown friend';
           showNotification({
             title: 'Friend Removed',
-            message: `${friendName} was removed successfully.`,
+            message: `✅ ${friendName} was removed successfully.`,
             color: 'green',
           });
         });
