@@ -114,7 +114,7 @@ export function TextChannels() {
       isAdmin: !!isAdmin // Pass isAdmin flag; !! converts undefined to false if clickedChannel or adminIDs is not found
     });
 
-    setActiveView('chat'); // Switch to chat view
+    setActiveView('textChannel'); // Switch to chat view
   };
 
   // Mapping through the state to create TextChannelItem components

@@ -168,7 +168,7 @@ export function MemberList({ chatID }: { chatID: string }) {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ channelKey: channelKey }),
+            body: JSON.stringify({ channelKey: chatID }),
           });
 
           if (response.ok) {
@@ -192,7 +192,7 @@ export function MemberList({ chatID }: { chatID: string }) {
         fetchUserName(memberIDs);
       });
     }
-  }, [user, channelKey]); // Include channelKey in the dependency array to refetch when it changes
+  }, [user, channelKey, chatID]); // Include channelKey in the dependency array to refetch when it changes
 
 
   return (
@@ -205,7 +205,7 @@ export function MemberList({ chatID }: { chatID: string }) {
         <div>
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
-                  <Button fullWidth variant="gradient">
+                  <Button style={{width: "215px"}} variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
                           <Text size="sm">{member}</Text>
@@ -230,6 +230,7 @@ export function MemberList({ chatID }: { chatID: string }) {
       <Button
         onClick={open}
         variant="gradient"
+        style={{width: "215px"}}
         leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
       >
         <Group py="10">
