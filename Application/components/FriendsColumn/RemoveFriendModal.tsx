@@ -111,7 +111,7 @@ export function RemoveFriendModal(): JSX.Element {
             <Text variant="gradient" fw={500} size="xl" component="span">
               Remove a Friend
             </Text>
-            <Text c={theme.colors.dark[1]}>Select a friend to remove</Text>
+            <Text c={theme.colors.dark[1]}>Select friends to remove</Text>
           </Stack>
         }
       >
@@ -127,7 +127,7 @@ export function RemoveFriendModal(): JSX.Element {
               searchable
             />
             <Button fullWidth variant="gradient" onClick={handleRemoveFriendClick}>
-              Remove friend
+              Update friend list
             </Button>
           </Stack>
         </Paper>
