@@ -26,11 +26,13 @@ import { useUser } from '@clerk/nextjs';
  * @returns {JSX.Element} A dropdown menu with options to edit or delete a message, 
  *                        enhanced with conditional tooltips based on chat privacy settings.
  */
-export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDropdownProps) {
+export function MessageDropdown({ privateChat, clientID, onDelete, isAdmin }: MessageDropdownProps) {
   const { user } = useUser();
   const [userID, setUserID] = useState<string | null>(null);
   const [readyToDelete, setReadyToDelete] = useState(false);
   const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
+  const [isAdmin1, setIsAdmin1] = useState(true)
+  const [deleteable, setDeleteable] = useState(true)
 
   // Effect to check for user id availability
   useEffect(() => {
@@ -38,7 +40,13 @@ export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDrop
       setUserID(user.id);
       setReadyToDelete(true);
     }
-  }, [user?.id]);
+    if(isAdmin){
+      setIsAdmin1(true)
+    }
+    if(isAdmin1){
+      setDeleteable(false)
+    }
+  }, [user?.id, isAdmin]);
 
   // Check if it's the current user's message
   const myMessage = clientID === userID;
@@ -62,7 +70,6 @@ export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDrop
   
     return content;
   });
-
   return (
     <Menu shadow="md" position="bottom">
       <Menu.Target>
@@ -83,14 +90,22 @@ export function MessageDropdown({ privateChat, clientID, onDelete }: MessageDrop
 
         <Menu.Label>Danger zone</Menu.Label>
         <MenuItemWithOptionalTooltip privateChat={privateChat} onDelete={onDelete}>
-          <Menu.Item
+          {!deleteable && <Menu.Item
+            color="red"
+            disabled={false} // If it is not my message, I can't delete it!
+            leftSection={<IconTrash style={{ width: 14, height: 14 }} />}
+            onClick={onDelete}
+          >
+            Delete message
+          </Menu.Item>}
+          {deleteable && <Menu.Item
             color="red"
             disabled={privateChat || !myMessage} // If it is not my message, I can't delete it!
             leftSection={<IconTrash style={{ width: 14, height: 14 }} />}
             onClick={onDelete}
           >
             Delete message
-          </Menu.Item>
+          </Menu.Item>}
         </MenuItemWithOptionalTooltip>
       </Menu.Dropdown>
     </Menu>

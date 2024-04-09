@@ -21,6 +21,7 @@ export interface DisplayedMessageProps extends MessageProps, PrivacySettingsProp
 export interface MessageDropdownProps extends PrivacySettingsProps {
   clientID: string;
   onDelete: () => void;
+  isAdmin: boolean;
 }
 
 export interface NewFriendModalProps extends FetchStatusProps {
