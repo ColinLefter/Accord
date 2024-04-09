@@ -21,6 +21,7 @@ import { NewTextChannelModal } from '@/components/Messaging/NewTextChannelModal'
 import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
+import { RelinquishAdminModal } from '@/components/Server/RelinquishAdminModal';
 import { MemberList } from "@/components/Server/MemberList";
 import { TextChannels } from "@/components/TextChannels/TextChannels";
 import { useChat } from '@/contexts/chatContext';
@@ -116,6 +117,8 @@ export default function Accord() {
               Friends
             </Button>
             <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
+            {/* For testing out the Modal - whenever you can succesfully use it and the changes correctly reflects on Mongo, request a change*/}
+            {/* <RelinquishAdminModal senderID={senderID} currentChannelKey = {'0735906bd282dcca9f00d2872b9e57b4a7675245eab16bfa17555df4720147b3'} lastFetched={lastFetched} setLastFetched={setLastFetched} /> */}
             <Group justify="space-between">
               <Text py="md">Text Channels</Text>
               <NewTextChannelModal/>
