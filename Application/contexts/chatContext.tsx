@@ -28,7 +28,7 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
   // New method to update both selectedChannelId and chatProps
   const updateContext = (channelId: string | null, props: ChatProps | null) => {
     setSelectedChannelId(channelId);
-    setChatProps(props);
+    setChatProps(props); // This updates chatProps, including isAdmin
   };
 
   return (

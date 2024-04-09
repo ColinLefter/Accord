@@ -7,13 +7,16 @@ import { createHash } from 'crypto';
 import { IntegerType } from 'mongodb';
 import { useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
+import { useChat } from '@/contexts/chatContext';
 
 const generateHash = (input: string) => {
   return createHash('sha256').update(input).digest('hex');
 };
 
-export function MemberList({isAdmin, chatID}: any) {
-  // Hardcoded member list
+export function MemberList({ chatID }: { chatID: string }) {
+  const { chatProps } = useChat();
+  const isAdmin = chatProps?.isAdmin ?? false;
+
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
   const [channelKey, setChannelKey] = useState<string>(chatID);
@@ -21,7 +24,18 @@ export function MemberList({isAdmin, chatID}: any) {
   const [errorMessage, setErrorMessage] = useState('');
   const [friendUsername, setFriendUsername] = useState('');
   const [searchResult, setSearchResult] = useState<number | null>(null);
+  const [myID , setMyID] = useState<string>("");
   const { user } = useUser();
+
+  useEffect(() => {
+    if (user && user.username && user.id) {
+      // Set sender to user's username if user exists and username is not null/undefined
+      setMyID(user.id);
+    }
+  }, [user]); // Dependency array ensures this runs whenever `user` changes
+
+  console.log("My ID: " + myID);
+  console.log("Am I admin: " + isAdmin);
 
   const removeMember = async(member: String, index: any) =>{
       console.log(membersIDList[index] + " ahahahahahah")
@@ -146,8 +160,7 @@ export function MemberList({isAdmin, chatID}: any) {
   }, [searchResult, close]);
 
   useEffect(() => {
-    if (user) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
-      console.log(user.id);
+    if (user) { 
       const fetchData = async () => {
         try {
           const response = await fetch('/api/memberListInitializing', {
@@ -155,16 +168,17 @@ export function MemberList({isAdmin, chatID}: any) {
             headers: {
               'Content-Type': 'application/json',
             },
-            //-----------------------------------------------------------------------------------------------------------------------------------------------
-            body: JSON.stringify({ channelKey: channelKey }),                              // Change this when we put in the Appshell (It is a String NOT int)
-            //------------------------------------------------------------------------------------------------------------------------------------------------
+            body: JSON.stringify({ channelKey: channelKey }),
           });
 
           if (response.ok) {
             const data = await response.json();
-            console.log("My server:" + data.memberIDs);
+            console.log("Server response:" + data.memberIDs);
             setMembersIDList(data.memberIDs);
-            // setMembersIDListToSort(data.memberIDs)
+            
+            // Assuming `data` also contains `adminIDs` array
+            const isAdmin = data.adminIDs.includes(user.id);
+
             return data.memberIDs;
           } else {
             console.error('Failed to fetch member list');
@@ -174,13 +188,11 @@ export function MemberList({isAdmin, chatID}: any) {
         }
       };
 
-      fetchData().then(value => {
-        // console.log("AAAAAAAAAAAAAAAAAAAAAAAAA");
-        // console.log(value);
-        fetchUserName(value);
+      fetchData().then(memberIDs => {
+        fetchUserName(memberIDs);
       });
     }
-  }, [user]);
+  }, [user, channelKey]); // Include channelKey in the dependency array to refetch when it changes
 
 
   return (

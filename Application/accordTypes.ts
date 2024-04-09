@@ -35,7 +35,8 @@ export interface FriendsTabProps extends NewFriendModalProps, PrivacySettingsPro
 export interface ChatProps extends FriendsTabProps {
   receiverIDs: string[];
   channelKey?: string;
-  channelName?: string; // Adding channelName as optional
+  channelName?: string;
+  isAdmin: boolean;
 }
 
 export interface IconProps {
@@ -77,4 +78,5 @@ export interface TextChannel {
   channelKey: string;
   channelName: string;
   memberIDs: string[];
+  adminIDs: string[];
 }

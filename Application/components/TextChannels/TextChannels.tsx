@@ -69,44 +69,51 @@ export function TextChannels() {
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
-  const fetchUserChats = async () => {
-    if (!userID) return; // Ensure userID is available
-  
-    try {
-      const response = await fetch('/api/get-user-text-channels', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ userID: userID })
-      });
-  
-      if (response.ok) {
-        const { textChannels } = await response.json();
-        setTextChannels(textChannels);
-      } else {
-        console.error('Failed to fetch chat channels');
+  useEffect(() => {
+    const fetchUserChats = async () => {
+      if (!userID) return;
+    
+      try {
+        const response = await fetch('/api/get-user-text-channels', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ userID: userID })
+        });
+    
+        if (response.ok) {
+          const { textChannels } = await response.json();
+          setTextChannels(textChannels);
+        } else {
+          console.error('Failed to fetch chat channels');
+        }
+      } catch (error) {
+        console.error('Error fetching chat channels:', error);
       }
-    } catch (error) {
-      console.error('Error fetching chat channels:', error);
-    }
-  };
+    };
+
+    fetchUserChats();
+  }, [userID]);
 
   const onChannelClick = (channelKey: string) => {
-    // Directly updating both selectedChannelId and chatProps via the unified context
-    console.log("channel clicked with key: ", channelKey);
-    console.log("userID: ", userID);
-    console.log("senderUsername: ", senderUsername);
+    // Find the channel that was clicked
+    const clickedChannel = textChannels.find(channel => channel.channelKey === channelKey);
+    // Determine if the user is an admin of this channel
+    const isAdmin = clickedChannel?.adminIDs.includes(userID);
+
     updateContext(channelKey, {
       senderID: userID,
       senderUsername: senderUsername,
-      receiverIDs: [],
+      receiverIDs: clickedChannel?.memberIDs || [],
       privateChat: false,
       lastFetched: Date.now(),
       setLastFetched: () => {},
       onMessageExchange: () => {},
       channelKey,
+      isAdmin: !!isAdmin // Pass isAdmin flag; !! converts undefined to false if clickedChannel or adminIDs is not found
     });
+
     setActiveView('chat'); // Switch to chat view
   };
 
@@ -118,11 +125,9 @@ export function TextChannels() {
       index={index}
       channelName={truncateText(item.channelName, 15)}
       numberOfMembers={item.memberIDs.length}
-      onClick={onChannelClick} // Passing the click handler
+      onClick={() => onChannelClick(item.channelKey)} // Use arrow function to pass the channelKey
     />
   ));
-
-  fetchUserChats();
 
   return (
     <DragDropContext
