@@ -65,9 +65,6 @@ export default function Accord() {
 
   const [isView, setIsView] = useState(false);
   const [asideWidth, setAsideWidth] = useState(0);
-
-  console.log("in app shell ", selectedChannelId);
-  console.log("Active view: ", activeView);
   
   useEffect(() => {
     if (user && user.username && user.id) {

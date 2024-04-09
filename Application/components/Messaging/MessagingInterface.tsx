@@ -79,7 +79,6 @@ export function MessagingInterface({
     // it's already added to the state when the user sends the message.
 
     if (messageData.name === 'messageDeleted') {
-      // console.log("Received message deletion event", messageData.data);
       // Message deletion event
       const { messageId } = messageData.data;
       setReceivedMessages(currentMessages => currentMessages.filter(message => message.id !== messageId)); // exclude the one we just got
