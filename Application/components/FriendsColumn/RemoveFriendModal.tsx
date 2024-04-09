@@ -4,7 +4,7 @@ import { IconUserMinus } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { useFriendList } from '@/hooks/useFriendList';
-import { notifications } from '@mantine/notifications';
+import { showNotification } from '@mantine/notifications';
 
 interface Friend {
   id: string;
@@ -29,6 +29,18 @@ export function RemoveFriendModal(): JSX.Element {
     label: friend.username,
   }));
 
+  const handleOpenModalClick = () => {
+    if (friendsList.length > 0) {
+      setOpened(true);
+    } else {
+      showNotification({
+        title: 'No Friends to Remove',
+        message: 'You currently have no friends to remove.',
+        color: 'red',
+      });
+    }
+  };
+
   const handleRemoveFriendClick = async (): Promise<void> => {
     if (selectedFriend.length === 0) {
       setErrorMessages({ friends: "Please select a friend to remove." });
@@ -43,15 +55,16 @@ export function RemoveFriendModal(): JSX.Element {
         },
         body: JSON.stringify({
           userID: user?.id,
-          friendID: selectedFriend,
+          friendIDs: selectedFriend,
         }),
       });
 
       if (response.ok) {
         const result: RemoveFriendResponse = await response.json();
-        notifications.show({
+        showNotification({
           title: 'Friend Removed',
           message: result.message,
+          color: 'green',
         });
         setSelectedFriend([]);
         setErrorMessages({ friends: '' });
@@ -59,42 +72,42 @@ export function RemoveFriendModal(): JSX.Element {
         setOpened(false);
       } else {
         const errorText: string = await response.text();
-        notifications.show({
+        showNotification({
           title: 'Error',
           message: errorText || 'Failed to remove friend.',
+          color: 'red',
         });
       }
     } catch (error: any) {
       console.error('Error removing friend:', error);
-      notifications.show({
+      showNotification({
         title: 'Error',
         message: error.toString() || 'An error occurred while removing the friend.',
+        color: 'red',
       });
     }
   };
 
   return (
     <>
-      
-        <Button
-          onClick={() => setOpened(true)}
-          variant="subtle"
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: '10px',
-            backgroundImage: 'linear-gradient(to right, #E14D7D, #FF9D0A)',
-            color: 'white',
-            border: 'none',
-            borderRadius: '5px',
-            padding: '8px 16px',
-          }}
-        >
-          <IconUserMinus size={16} style={{ color: 'white', marginRight: 5 }} />
-          Remove a friend
-        </Button>
-      
+      <Button
+        onClick={handleOpenModalClick}
+        variant="subtle"
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: '10px',
+          backgroundImage: 'linear-gradient(to right, #E14D7D, #FF9D0A)',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          padding: '8px 16px',
+        }}
+      >
+        <IconUserMinus size={16} style={{ color: 'white', marginRight: 5 }} />
+        Remove a friend
+      </Button>
 
       <Modal
         centered
