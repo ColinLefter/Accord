@@ -36,14 +36,14 @@ export function RemoveFriendModal(): JSX.Element {
     }
 
     try {
-      const response = await fetch('/api/remove-friend', {
+      const response = await fetch('/api/Remove-friend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          userId: user?.id,
-          friendId: selectedFriend[0],
+          userID: user?.id,
+          friendID: selectedFriend,
         }),
       });
 
