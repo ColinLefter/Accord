@@ -8,14 +8,8 @@ import { useChat } from '@/contexts/chatContext';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 
-
-export function MemberList({ chatID }: { chatID: string }) {
-  const { chatProps } = useChat();
-  const isAdmin = chatProps?.isAdmin ?? false;
-
-
-
-
+export function MemberList({ chatID }: any) {
+  // Hardcoded member list
   const [membersList, setMembersList] = useState<string[]>([]);
   const [membersIDList, setMembersIDList] = useState<string[]>([]);
   const [channelKey, setChannelKey] = useState<string>(chatID);
@@ -23,11 +17,11 @@ export function MemberList({ chatID }: { chatID: string }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [friendUsername, setFriendUsername] = useState('');
   const [searchResult, setSearchResult] = useState<number | null>(null);
-  const [isAdmin1, setIsADmin] = useState(isAdmin);
   const { user } = useUser();
   const [myID, setMyID] = useState<string>('');
-
-  const { selectedChannelId, setActiveView } = useChat(); // Critical: this is how we obtain the channel key of the channel we are looking at
+  
+  const { selectedChannelId, chatProps, setActiveView } = useChat(); // Critical: this is how we obtain the channel key of the channel we are looking at
+  let isAdmin = chatProps?.isAdmin; // Consume isAdmin from the chatProps object
   const { channel } = useChannel(getSystemsChannelID());
 
   useEffect(() => {
@@ -164,17 +158,14 @@ export function MemberList({ chatID }: { chatID: string }) {
             headers: {
               'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ channelKey: chatID }),
+            //-----------------------------------------------------------------------------------------------------------------------------------------------
+            body: JSON.stringify({ channelKey: chatID }),                              // Change this when we put in the Appshell (It is a String NOT int)
+            //------------------------------------------------------------------------------------------------------------------------------------------------
           });
 
           if (response.ok) {
             const data = await response.json();
-            console.log("Server response:" + data.memberIDs);
             setMembersIDList(data.memberIDs);
-            
-            // Assuming `data` also contains `adminIDs` array
-            const isAdmin = data.adminIDs.includes(user.id);
-            
             return data.memberIDs;
           } else {
             console.error('Failed to fetch member list');
@@ -203,14 +194,15 @@ export function MemberList({ chatID }: { chatID: string }) {
           {/* <Text>{member}</Text> */}
           <Menu shadow="md" position="left" width={225} withArrow >
               <Menu.Target>
-                  <Button style={{width: "215px"}} variant="gradient">
+                  <Button fullWidth variant="gradient">
                       <Group py="10">
                           {/* <Avatar alt={`Member ${index + 1}`} radius="xl" /> */}
                           <Text>{member}</Text>
                         </Group>
                   </Button>
               </Menu.Target>
-            {isAdmin1 && <Menu.Dropdown>
+            {
+              isAdmin && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
                   <Button color='green' c="white" fullWidth onClick={() => removeMember(member, index)}>Promote to Admin</Button>
@@ -219,59 +211,64 @@ export function MemberList({ chatID }: { chatID: string }) {
                 <Menu.Item color="red" leftSection={<IconTrash style={{ width: rem(14)  , height: rem(14) }}/>}>
                   <Button color='red' fullWidth onClick={() => removeMember(member, index)}>Remove From Server</Button>
                 </Menu.Item>
-              </Menu.Dropdown>}
-              
+              </Menu.Dropdown>
+            }
             </Menu>
         </div>
       ))}
-      <Button
-        onClick={open}
-        variant="gradient"
-        style={{width: "215px"}}
-        leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
-      >
+      {isAdmin && (
+      <Stack>
+        <Button
+          onClick={open}
+          variant="gradient"
+          fullWidth
+          leftSection={<IconPlus style={{ width: rem(18)  , height: rem(18) }}/>}
+        >
         <Group py="10">
           <Text size="sm">Add member</Text>
         </Group>
-      </Button>
-      <Modal
-        centered
-        opened={opened}
-        onClose={() => {
-          close();
-          setFriendUsername('');
-        }}
-        title={
-          <Stack gap="0">
-            <Text variant="gradient" fw={500} size="xl" component="span" gradient={{ from: "pink", to: "yellow" }}>
-              Add a Member
-            </Text>
-            <Text c="dimmed">Add a member by username</Text>
+        </Button>
+        <Modal
+          centered
+          opened={opened}
+          onClose={() => {
+            close();
+            setFriendUsername('');
+          }}
+          title={
+            <Stack gap="0">
+              <Text variant="gradient" fw={500} size="xl" component="span" gradient={{ from: "pink", to: "yellow" }}>
+                Add a Member
+              </Text>
+              <Text c="dimmed">Add a member by username</Text>
+            </Stack>
+          }
+          overlayProps={{
+            backgroundOpacity: 0.55,
+            blur: 3,
+          }}
+        >
+          <Stack>
+            <TextInput
+              error={errorMessage}
+              label="Search a user by username"
+              placeholder="accordUser1"
+              value={friendUsername}
+              onChange={(event) => setFriendUsername(event.currentTarget.value)}
+            />
+            <Button
+              fullWidth
+              variant="gradient"
+              gradient={{ from: "pink", to: "yellow" }}
+              onClick={addMember}
+            >
+              Add Member
+            </Button>
           </Stack>
-        }
-        overlayProps={{
-          backgroundOpacity: 0.55,
-          blur: 3,
-        }}
-      >
-        <Stack>
-          <TextInput
-            error={errorMessage}
-            label="Search a user by username"
-            placeholder="accordUser1"
-            value={friendUsername}
-            onChange={(event) => setFriendUsername(event.currentTarget.value)}
-          />
-          <Button
-            fullWidth
-            variant="gradient"
-            gradient={{ from: "pink", to: "yellow" }}
-            onClick={addMember}
-          >
-            Add Member
-          </Button>
-        </Stack>
-      </Modal>
+        </Modal>
+      </Stack>
+      )}
+
     </Stack>
   );
 }

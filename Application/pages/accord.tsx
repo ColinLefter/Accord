@@ -44,7 +44,7 @@ export default function Accord() {
   const { lastFetched, setLastFetched } = useCache();
   const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
   const [desktopOpened, { toggle: toggleDesktop }] = useDisclosure(true);
-  const { activeView, setActiveView, chatProps, selectedChannelId } = useChat();
+  const { activeView, setActiveView, chatProps, selectedChannelId, setSelectedChannelId } = useChat();
   // Default is to just display no username. This will never be the case as you can't be here without an account.
   // It just makes more sense to not show something like guestUser to indicate that the user must have an account if they have reached the shell.
   const [sender, setSender] = useState<string>(''); 
@@ -53,7 +53,6 @@ export default function Accord() {
   const [isAdmin, setIsAdmin] = useState(true);
   const [asideWidth, setAsideWidth] = useState(0);
 
-  
   useEffect(() => {
     if (user && user.username && user.id) {
       // Set sender to user's username if user exists and username is not null/undefined
@@ -61,6 +60,13 @@ export default function Accord() {
       setSenderID(user.id);
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
+
+  useEffect(() => {
+    // Deselect the current channel when switching to the friends view
+    if (activeView === "friends") {
+      setSelectedChannelId('');
+    }
+  }, [activeView, setSelectedChannelId]);
 
   useEffect(() => {
     if (activeView === 'chat' && chatProps) {

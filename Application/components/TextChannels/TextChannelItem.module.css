@@ -7,6 +7,14 @@
   margin-bottom: var(--mantine-spacing-sm);
 }
 
+.item:hover {
+  background-color: light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+}
+
+.itemSelected {
+  background-color: light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+}
+
 .itemDragging {
   box-shadow: var(--mantine-shadow-sm);
 }

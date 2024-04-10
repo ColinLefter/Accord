@@ -7,6 +7,7 @@ import {
 import { MessageDropdownProps } from '@/accordTypes';
 import { useState, useEffect, forwardRef, ReactNode } from 'react';
 import { useUser } from '@clerk/nextjs';
+import { useChat } from '@/contexts/chatContext';
 
 /**
  * Renders a dropdown menu associated with a message, providing options to edit or delete the message. 
@@ -31,8 +32,8 @@ export function MessageDropdown({ captureHistory, clientID, onDelete, isAdmin  }
   const [userID, setUserID] = useState<string | null>(null);
   const [readyToDelete, setReadyToDelete] = useState(false);
   const textColor = useComputedColorScheme() === 'dark' ? "white" : "black";
-  const [isAdmin1, setIsAdmin1] = useState(true)
   const [deleteable, setDeleteable] = useState(true)
+  const { chatProps } = useChat();
 
   // Effect to check for user id availability
   useEffect(() => {
@@ -84,7 +85,7 @@ export function MessageDropdown({ captureHistory, clientID, onDelete, isAdmin  }
         <MenuItemWithOptionalTooltip privateChat={captureHistory} onDelete={onDelete}>
           <Menu.Item
             color="red"
-            disabled={!myMessage} // If it is not my message, I can't delete it!
+            disabled={!(myMessage || chatProps?.isAdmin)} // If it is not my message, I can't delete it! But if I am admin, I can even if it's not mine
             leftSection={<IconTrash style={{ width: 14, height: 14 }} />}
             onClick={onDelete}
           >

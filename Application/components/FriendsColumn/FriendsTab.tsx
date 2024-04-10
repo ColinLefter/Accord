@@ -4,7 +4,6 @@ import {
     Group,
     Text,
     TextInput,
-    TextInputProps,
     ActionIcon,
     useMantineTheme,
     Stack,
@@ -12,18 +11,15 @@ import {
     Center
 } from '@mantine/core';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
-import { FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from 'next/router';
-import { useUser } from '@clerk/nextjs';
-import { Chat } from '@/components/Messaging/Chat';
+import { useState } from "react";
 import { useFriendList } from '@/hooks/useFriendList';
 import { FriendsTabProps } from '@/accordTypes';
 import { FriendsLoading } from '@/components/FriendsColumn/FriendsLoading';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
-import { useActiveView } from '@/contexts/activeViewContext';
-import { useChat } from '@/contexts/chatContext'
+import { useChat } from '@/contexts/chatContext';
+import classes from './FriendsColumn.module.css';
+import cx from 'clsx';
 
 // Function to call to go back to the last previous URL
 function goBack() {
@@ -46,15 +42,11 @@ function goBack() {
  * @returns The JSX element representing the friends tab section, including a search bar and a list of friends.
  */
 export function FriendsTab({senderUsername, senderID, captureHistory, onMessageExchange, lastFetched, setLastFetched }: FriendsTabProps) {
-    const { user } = useUser();
-    const router = useRouter();
     const { list: friends, isLoading } = useFriendList({lastFetched, setLastFetched});
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [receiverUsername, setreceiverUsername] = useState<string>('');
-    const [receiverID, setReceiverID] = useState<string>('');
     const { updateContext, setActiveView } = useChat();
     
-    const { channel } = useChannel(getSystemsChannelID(), (message) => {
+    useChannel(getSystemsChannelID(), (message) => {
         if (message.name === "friend-request-accepted") {
           const [senderId, receiverId] = message.data.split("-");
           if (senderId === senderID || receiverId === senderID) {
@@ -84,6 +76,7 @@ export function FriendsTab({senderUsername, senderID, captureHistory, onMessageE
           lastFetched,
           setLastFetched,
           onMessageExchange,
+          isAdmin: false // This is not a property for DMs so just pass false as we won't render the right tab anyway
         });
         setActiveView('chat'); // Ensure we are setting the active view to 'chat'
       };
@@ -139,12 +132,19 @@ export function FriendsTab({senderUsername, senderID, captureHistory, onMessageE
                     </Paper>
                 ) : (
                     filteredFriendList.map((friend, index) => (
-                        <Paper shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friend.username, friend.id)}>
-                            <Group py="10">
-                                <Avatar alt={`Friend ${friend.username}`} radius="xl"/>
-                                <Text size="sm">{friend.username}</Text>
-                            </Group>
-                        </Paper>
+                        <Paper
+                            shadow="xs"
+                            p="xs"
+                            radius="md"
+                            key={`friend-${index}`}
+                            onClick={() => handleFriendClick(friend.username, friend.id)}
+                            className={cx(classes.friendItem)} // Apply the hover style
+                        >
+                        <Group py="10">
+                            <Avatar alt={`Friend ${friend.username}`} radius="xl" />
+                            <Text size="sm">{friend.username}</Text>
+                        </Group>
+                    </Paper>
                     ))
                 )
             )}
