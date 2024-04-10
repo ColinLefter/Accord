@@ -4,7 +4,6 @@ import {
     Group,
     Text,
     TextInput,
-    TextInputProps,
     ActionIcon,
     useMantineTheme,
     Stack,
@@ -12,17 +11,12 @@ import {
     Center
 } from '@mantine/core';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
-import { FormEvent, useEffect, useState } from "react";
-import Link from "next/link";
-import { useRouter } from 'next/router';
-import { useUser } from '@clerk/nextjs';
-import { Chat } from '@/components/Messaging/Chat';
+import { useState } from "react";
 import { useFriendList } from '@/hooks/useFriendList';
 import { FriendsTabProps } from '@/accordTypes';
 import { FriendsLoading } from '@/components/FriendsColumn/FriendsLoading';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
-import { useActiveView } from '@/contexts/activeViewContext';
 import { useChat } from '@/contexts/chatContext';
 import classes from './FriendsColumn.module.css';
 import cx from 'clsx';
@@ -48,15 +42,11 @@ function goBack() {
  * @returns The JSX element representing the friends tab section, including a search bar and a list of friends.
  */
 export function FriendsTab({senderUsername, senderID, captureHistory, onMessageExchange, lastFetched, setLastFetched }: FriendsTabProps) {
-    const { user } = useUser();
-    const router = useRouter();
     const { list: friends, isLoading } = useFriendList({lastFetched, setLastFetched});
     const [searchQuery, setSearchQuery] = useState<string>('');
-    const [receiverUsername, setreceiverUsername] = useState<string>('');
-    const [receiverID, setReceiverID] = useState<string>('');
     const { updateContext, setActiveView } = useChat();
     
-    const { channel } = useChannel(getSystemsChannelID(), (message) => {
+    useChannel(getSystemsChannelID(), (message) => {
         if (message.name === "friend-request-accepted") {
           const [senderId, receiverId] = message.data.split("-");
           if (senderId === senderID || receiverId === senderID) {
