@@ -1,6 +1,22 @@
 import { MongoClient } from "mongodb";
 import { getMongoDbUri } from "@/lib/dbConfig";
 
+/**
+ * Tests the retrieval of a channel document by channelKey from the "Chats" collection with mocked MongoDB operations.
+ *
+ * This test suite aims to ensure that the application can accurately query and return channel information
+ * from the database based on the channelKey, simulating database operations to isolate testing from real
+ * database connections. Through mocking MongoDB's MongoClient and the database configuration, the test
+ * verifies the logic for fetching channel details, including channelName, ownerID, and adminIDs, without
+ * requiring an active database connection.
+ *
+ * Key Points:
+ * - Mock setup for MongoClient and dbConfig to simulate database operations, focusing on the retrieval
+ *   process from the "Chats" collection.
+ * - Validation of successful retrieval of a channel document using the channelKey, and verification of
+ *   key details within the document, such as ownerID and adminIDs, to confirm the accuracy of the fetch
+ *   operation and data integrity.
+ */
 // Mocking MongoDB MongoClient and dbConfig with jest
 jest.mock('mongodb', () => ({
   MongoClient: jest.fn().mockImplementation(() => ({

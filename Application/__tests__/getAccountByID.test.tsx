@@ -1,6 +1,21 @@
 import { MongoClient } from "mongodb";
 import { getMongoDbUri } from "@/lib/dbConfig";
 
+/**
+ * Tests the retrieval of account documents by ID from the "Accounts" collection using mocked MongoDB operations.
+ *
+ * This test suite ensures that the application can correctly query and return specific user account
+ * information based on the provided account ID. It leverages Jest to mock MongoDB's MongoClient
+ * and the database configuration, isolating the test environment from real database interactions.
+ * This allows for verifying the logic of fetching account details without the need for a live database connection.
+ *
+ * Key Components:
+ * - MongoClient and dbConfig are mocked to simulate the retrieval process from the "Accounts" collection.
+ * - The test checks that the correct account information (e.g., firstName, lastName, userName, email) is
+ *   returned when querying by a specific account ID.
+ * - It validates the presence of critical account details in the response, including email address
+ *   verification status and friend list contents, to ensure the account document contains expected data.
+ */
 // Mocking MongoDB MongoClient and dbConfig with jest
 jest.mock('mongodb', () => ({
   MongoClient: jest.fn().mockImplementation(() => ({

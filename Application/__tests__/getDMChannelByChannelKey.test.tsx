@@ -1,6 +1,20 @@
 import { MongoClient } from "mongodb";
 import { getMongoDbUri } from "@/lib/dbConfig";
 
+/**
+ * Tests the retrieval process of a direct message channel document by its channelKey from the "Chats" collection.
+ *
+ * Utilizes mocked MongoDB operations to ensure the logic for fetching direct message channel details functions correctly,
+ * focusing on isolating the test environment from real database interactions. This mock setup allows verifying the application's
+ * ability to query and return specific channel information based on the channelKey, without an actual database connection.
+ *
+ * Key Aspects Tested:
+ * - Successful mock setup of the MongoClient and the dbConfig, ensuring the MongoDB connection is simulated accurately.
+ * - Retrieval of a direct message channel document based on a provided channelKey, validating the extraction of relevant
+ *   channel information such as memberIDs and messageHistory from the database.
+ * - The test checks for the presence and correctness of the returned document's data, emphasizing the direct message
+ *   channel's details to confirm the application's data fetching logic aligns with expected outcomes.
+ */
 // Mocking MongoDB MongoClient and dbConfig with jest
 jest.mock('mongodb', () => ({
   MongoClient: jest.fn().mockImplementation(() => ({

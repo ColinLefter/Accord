@@ -2,6 +2,19 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Login } from '@/components/Accounts/Login';
 import { MantineProvider } from '@mantine/core';
 
+/**
+ * Tests the navigation link from the Login Page to the Registration Page through user interaction.
+ *
+ * Focuses on ensuring that users can navigate from the login page to the registration page by clicking
+ * on the "Create one today" link. The Login component is rendered with `@testing-library/react` to closely
+ * mimic user interaction within the MantineProvider context. This test verifies that the hyperlink for
+ * creating a new account leads to the correct application route.
+ *
+ * Key Points:
+ * - Checks the presence and functionality of the "Create one today" link within the Login component.
+ * - Confirms that the hyperlink points to the '/create-account' route, facilitating user navigation
+ *   to the registration page.
+ */
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
 }));
