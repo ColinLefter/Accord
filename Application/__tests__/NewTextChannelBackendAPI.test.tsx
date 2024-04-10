@@ -48,11 +48,11 @@ jest.mock('mongodb', () => {
 });
 
 jest.mock('@/lib/dbConfig', () => ({
-  getMongoDbUri: jest.fn().mockReturnValue('your-mongo-uri')
+  getMongoDbUri: jest.fn().mockReturnValue('accord-systems')
 }));
 
 jest.mock('@/utility', () => ({
-  generateHash: jest.fn().mockReturnValue('mock-channel-key')
+  generateChannelKey: jest.fn().mockReturnValue('mock-channel-key')
 }));
 
 describe('NewTextChannelModal API Handler', () => {
@@ -82,6 +82,6 @@ describe('NewTextChannelModal API Handler', () => {
 
     expect(res.statusCode).toBe(201);
     expect((res as any)._getData()).toEqual(expect.any(String));
-    expect(JSON.parse((res as any)._getData())).toEqual({ message: 'New text channel created successfully.' });
+    expect(JSON.parse((res as any)._getData())).toEqual({ message: 'Chat created successfully.' });
   });
 });
