@@ -33,7 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(203).json({ message: 'You cant grant yourself more admin-ness' })
       }
 
-      await chatsCollection.updateOne({ channelKey: channelKey}, { $addToSet: { adminsID: promotingID }})
+      await chatsCollection.updateOne({ channelKey: channelKey}, { $addToSet: { adminID: promotingID }})
       return res.status(200).json({ message: 'Promoted user to admin successfully' });
 
     } catch (error) {
