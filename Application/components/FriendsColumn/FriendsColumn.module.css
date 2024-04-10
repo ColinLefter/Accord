@@ -1,0 +1,8 @@
+.friendItem {
+  transition: background-color 0.05s ease-in-out;
+  cursor: pointer;
+}
+
+.friendItem:hover {
+  background-color: light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+}

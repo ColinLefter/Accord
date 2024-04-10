@@ -5,16 +5,21 @@ import { useListState } from '@mantine/hooks';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { TextChannelItemProps } from '@/accordTypes';
 import classes from './TextChannelItem.module.css';
+import { useChat } from '@/contexts/chatContext';
 
-export const TextChannelItem: React.FC<TextChannelItemProps> = ({ id, index, channelName, numberOfMembers, captureHistory, onClick }) => {
+export const TextChannelItem: React.FC<TextChannelItemProps> = ({ id, index, channelName, numberOfMembers, captureHistory, isSelected, onClick }) => {
   const symbol = channelName.substring(0, 2).toUpperCase(); // Generate symbol from channelName
+  const { selectedChannelId } = useChat();
   
   return (
     <Draggable key={id} index={index} draggableId={id}>
       {(provided, snapshot) => (
         <div
           onClick={() => onClick(id)}
-          className={cx(classes.item, { [classes.itemDragging]: snapshot.isDragging })}
+          className={cx(classes.item, {
+            [classes.itemDragging]: snapshot.isDragging,
+            [classes.itemSelected]: isSelected && selectedChannelId !== ''
+          })}
           {...provided.draggableProps}
           {...provided.dragHandleProps}
           ref={provided.innerRef}

@@ -23,7 +23,9 @@ import { FriendsLoading } from '@/components/FriendsColumn/FriendsLoading';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 import { useActiveView } from '@/contexts/activeViewContext';
-import { useChat } from '@/contexts/chatContext'
+import { useChat } from '@/contexts/chatContext';
+import classes from './FriendsColumn.module.css';
+import cx from 'clsx';
 
 // Function to call to go back to the last previous URL
 function goBack() {
@@ -84,6 +86,7 @@ export function FriendsTab({senderUsername, senderID, captureHistory, onMessageE
           lastFetched,
           setLastFetched,
           onMessageExchange,
+          isAdmin: false // This is not a property for DMs so just pass false as we won't render the right tab anyway
         });
         setActiveView('chat'); // Ensure we are setting the active view to 'chat'
       };
@@ -139,12 +142,19 @@ export function FriendsTab({senderUsername, senderID, captureHistory, onMessageE
                     </Paper>
                 ) : (
                     filteredFriendList.map((friend, index) => (
-                        <Paper shadow="xs" p="xs" radius="md" key={`friend-${index}`} onClick={() => handleFriendClick(friend.username, friend.id)}>
-                            <Group py="10">
-                                <Avatar alt={`Friend ${friend.username}`} radius="xl"/>
-                                <Text size="sm">{friend.username}</Text>
-                            </Group>
-                        </Paper>
+                        <Paper
+                            shadow="xs"
+                            p="xs"
+                            radius="md"
+                            key={`friend-${index}`}
+                            onClick={() => handleFriendClick(friend.username, friend.id)}
+                            className={cx(classes.friendItem)} // Apply the hover style
+                        >
+                        <Group py="10">
+                            <Avatar alt={`Friend ${friend.username}`} radius="xl" />
+                            <Text size="sm">{friend.username}</Text>
+                        </Group>
+                    </Paper>
                     ))
                 )
             )}

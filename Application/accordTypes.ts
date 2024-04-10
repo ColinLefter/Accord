@@ -79,6 +79,7 @@ export interface TextChannelItemProps {
   numberOfMembers: number;
   captureHistory: boolean;
   onClick: (id: string) => void;
+  isSelected: boolean;
 }
 
 export interface TextChannel {
@@ -86,5 +87,10 @@ export interface TextChannel {
   channelName: string;
   memberIDs: string[];
   adminIDs: string[];
+  ownerID: string;
   captureHistory: boolean; // Ensure this field is included
+}
+
+export interface ChannelLoadingProps {
+  numChannels: number;
 }
