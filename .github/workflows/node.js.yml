@@ -19,10 +19,13 @@ jobs:
     - uses: actions/setup-node@v3
       with:
         node-version: "20.x"
-    - run: npm install -g npm
-    - run: npm install --save-dev jest
-    - run: npm run test:jest
-      env:
+    - name: Installing node_modules for the workflow
+      run: npm install -g npm
+    - name: Force installing Jest for the workflow
+      run: npm install --save-dev jest
+    - name: Run tests suite with Jest and manually added env
+      env:  # Adding environment variable here
         MONGODB_USERNAME: baopham
         MONGODB_PASSWORD: Yjs12l26LZegm0VH
         MONGODO_URI: mongodb+srv://baopham:Yjs12l26LZegm0VH@accord-systems.umbugbv.mongodb.net/?retryWrites=true&w=majority&appName=Accord-Systems
+      run: npm run test:jest
