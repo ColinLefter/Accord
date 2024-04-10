@@ -2,6 +2,18 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/dbConfig';
 
+/**
+ * This API communicates with the MongoDB, intakes in promotingID, promoterID, and a channelKey
+ * Searches a channel using the channelKey, searches for the existance of ownership or adminship of the promotingID
+ * Returns message (NOT ERRORS) accordingly:
+ * - 200: the promotingID is not in the adminIDs array - append into the list of admin
+ * - 201: the promotingID is in the adminIDs array - aka is already an admin, and the entry stays the same
+ * - 202: the promotingID is the ownerID - shouldn't be appended to the adminIDs array
+ * - 203: the promotingID is the same as the promoterID - shouldn't be appended to the adminIDs array
+ * @param {NextApiRequest} req The Next.js API request object.
+ * @param {NextApiResponse} res The Next.js API response object.
+ */
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
     if (req.method !== 'POST') {
       return res.status(405).end(`Method ${req.method} Not Allowed`);
@@ -11,7 +23,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const client = new MongoClient(getMongoDbUri());
 
     try {
-
       // Communicate with the server
       await client.connect();
       const db = client.db('Accord');

@@ -32,6 +32,7 @@ export function MemberList({ chatID }: any) {
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
   // onClick function responsible for adminPromotion within the onClick of the button
+  // Replies with a notification regarding to the result of the promotion
   const adminPromotion = async ( index: any, myID: any, channelKey: String, ) => {
     try {
       const promotionID = membersIDList[index]
@@ -45,6 +46,7 @@ export function MemberList({ chatID }: any) {
       });
 
       if (response.ok) {
+        // Switch case to properly send notifications of the result
         switch (response.status) {
           case 200:
             showNotification({
