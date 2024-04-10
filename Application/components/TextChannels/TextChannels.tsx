@@ -71,7 +71,7 @@ export function TextChannels() {
           break;
         case "removed-from-text-channel":
           fetchUserChats();
-          message.data.userID === userID && setActiveView('friends');
+          message.data.removedMemberID === userID && setActiveView('friends');
           break;
         default:
           break;
