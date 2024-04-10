@@ -31,6 +31,73 @@ export function MemberList({ chatID }: any) {
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
 
+  // onClick function responsible for adminPromotion within the onClick of the button
+  const adminPromotion = async ( index: any, myID: any, channelKey: String, ) => {
+    try {
+      const promotionID = membersIDList[index]
+      console.log(promotionID, myID, channelKey); 
+      const response = await fetch('/api/admin-promotion', {
+        method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ promotingID: promotionID, promoterID: myID, channelKey: channelKey }),
+      });
+
+      if (response.ok) {
+        switch (response.status) {
+          case 200:
+            showNotification({
+              title: 'Admin Promotion Success',
+              message: `The user is now an admin of the text channel`,
+              color: 'green',
+            });
+            break;
+          case 201:
+            showNotification ({
+              title: 'Admin Promotion Unsuccessful',
+              message: 'The user is already an admin of the text channel',
+              color: 'red',
+            });
+            break;
+          case 202:
+            showNotification ({
+              title: 'Admin Promotion Unsuccessful',
+              message: 'The user is the owner of the text channel',
+              color: 'red',
+            });
+            break;
+          case 203:
+            showNotification ({
+              title: 'Admin Promotion Unsuccessful',
+              message: 'You cant grant yourself more admin-ness',
+              color: 'red',
+            });
+            break;
+          default:
+            showNotification ({
+              title: 'Uncaught error',
+              message: 'API did not response with a specified status',
+              color: 'yellow',
+            });
+        }
+      } else {
+        showNotification ({
+          title: 'Admin Promotion Unsuccessful',
+          message: 'Admin promotion for the user is unsuccessful - due to uncaught errors',
+          color: 'red',
+        });
+      }
+    } catch (error) {
+      console.log('Failed admin promotion', error);
+      showNotification ({
+        title: 'Caught error',
+        message: 'For some reason, the function did not work properly',
+        color: 'purple',
+      });
+    }
+  }  
+
   const removeMember = async(member: String, index: any) => {
     const memberToRemove = membersIDList[index];
     // No need to generate a newChannelKey here since the backend will handle this
@@ -205,7 +272,7 @@ export function MemberList({ chatID }: any) {
               isAdmin && <Menu.Dropdown>
                 <Menu.Label>Manage User</Menu.Label>
                 <Menu.Item color="green" leftSection={<IconUserUp style={{ width: rem(16)  , height: rem(16) }}/>}>
-                  <Button color='green' c="white" fullWidth onClick={() => removeMember(member, index)}>Promote to Admin</Button>
+                  <Button color='green' c="white" fullWidth onClick={() => adminPromotion(index, myID, channelKey)}>Promote to Admin</Button>
                 </Menu.Item>
 
                 <Menu.Item color="red" leftSection={<IconTrash style={{ width: rem(14)  , height: rem(14) }}/>}>
