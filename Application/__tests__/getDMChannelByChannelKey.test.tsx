@@ -45,7 +45,7 @@ jest.mock('mongodb', () => ({
 }));
 
 jest.mock('@/lib/dbConfig', () => ({
-  getMongoDbUri: jest.fn().mockReturnValue('your-mongo-uri')
+  getMongoDbUri: jest.fn().mockReturnValue('accord-systems')
 }));
 
 describe("Direct Message Channel Retrieval Mock Test", () => {
