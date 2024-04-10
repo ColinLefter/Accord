@@ -4,24 +4,35 @@ name: Accord test runner
 on:
   push:
     branches: main
+
+env:
+  MONGODB_USERNAME: baopham
+  MONGODB_PASSWORD: Yjs12l26LZegm0VH
+  MONGODB_URI: mongodb+srv://<username>:<password>@accord-systems.umbugbv.mongodb.net/?retryWrites=true&w=majority&appName=Accord-Systems
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_Z2xvcmlvdXMtYmVhZ2xlLTM2LmNsZXJrLmFjY291bnRzLmRldiQ
+  CLERK_SECRET_KEY: sk_test_FbrDn6DyesXidciZhj5LVyMUgjyh08hAC9H6X7q6m1
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: /accord
+  NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: /accord
+  WEBHOOK_SECRET: whsec_2xyhjvv+4f1DxvoowVCy/KqktzHIAGrq
+  ABLY_API_KEY_PUBLISH_SUBSCRIBE: pCCwMA.ZM2nUg:83eVMGKAQuAxbo6uVgNCjThALEYbEwgRZPPBOqMssfY
+  
 defaults:
   run:
     working-directory: ./Application
+    
 jobs:
-  build:
+  run-test:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-node@v3
       with:
         node-version: "20.x"
+    - name: Checking the existence of the .env variables
+      run:  echo "$MONGDODB_USERNAME"
     - name: Installing node_modules for the workflow
       run: npm install -g npm
     - name: Force installing Jest for the workflow
       run: npm install --save-dev jest
-    - name: Run tests suite with Jest and manually added env
-      env:  # Adding environment variable here
-        MONGODB_USERNAME: baopham
-        MONGODB_PASSWORD: Yjs12l26LZegm0VH
-        MONGODO_URI: mongodb+srv://baopham:Yjs12l26LZegm0VH@accord-systems.umbugbv.mongodb.net/?retryWrites=true&w=majority&appName=Accord-Systems
+    - name: Run tests suite with Jest
       run: npm run test:jest
