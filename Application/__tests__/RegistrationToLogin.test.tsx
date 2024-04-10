@@ -2,6 +2,19 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import { Registration } from '@/components/Accounts/Registration';
 import { MantineProvider } from '@mantine/core';
 
+/**
+ * Ensures the Login button on the Registration Page correctly navigates users to the Login Page.
+ *
+ * By simulating a user clicking the Login button on the registration page, this test checks that the application
+ * facilitates straightforward navigation back to the login page for users who might decide to log in instead of
+ * creating a new account. The Registration component is tested within the MantineProvider context using
+ * `@testing-library/react` to render and interact with the UI as a user would. The test verifies the correct route
+ * is assigned to the Login button for expected user flow.
+ *
+ * Key Points:
+ * - Validates the "Log in" button's presence and its navigational role within the Registration component.
+ * - Confirms navigation intent by checking the href attribute of the encompassing <a> tag points to '/log-in'.
+ */
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
 }));

@@ -2,6 +2,24 @@ import { MongoClient } from 'mongodb';
 import handler from '@/pages/api/get-ids-of-friends'; 
 import { NextApiRequest, NextApiResponse } from 'next';
 
+/**
+ * Tests the API endpoint that retrieves the IDs of friends for a given user.
+ *
+ * This unit test suite focuses on the `get-ids-of-friends` API handler, ensuring it
+ * processes POST requests correctly and returns the expected friend list from the
+ * user's account information stored in MongoDB. The MongoDB client and specific
+ * collection methods are mocked to isolate the test environment from actual database
+ * operations, allowing for testing the handler's logic without requiring a live database.
+ *
+ * Key Behaviors Tested:
+ * - Correct handling of a POST request with a specified userName in the request body.
+ * - Retrieval of user information from the mocked "Accounts" collection in MongoDB,
+ *   focusing on extracting the friendList.
+ * - Response behavior, including status code and JSON payload, when a user exists
+ *   and has a populated friendList.
+ * - Verification that the database connection is properly closed after the handler
+ *   execution.
+ */
 // Mock MongoClient and dbCollection
 jest.mock('mongodb', () => ({
   MongoClient: jest.fn()

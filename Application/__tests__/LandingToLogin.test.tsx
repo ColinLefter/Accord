@@ -3,6 +3,19 @@ import { render, screen } from '@testing-library/react';
 import { Navbar } from '@/components/Navbar/Navbar';
 import { MantineProvider } from '@mantine/core';
 
+/**
+ * Validates the navigation from the Landing Page to the Login Page via the login button in the Navbar component.
+ *
+ * This test simulates a user interaction scenario where a visitor on the landing page clicks the login button
+ * to navigate to the login page. The test utilizes `@testing-library/react` to render the Navbar component
+ * within the context of the MantineProvider for consistent styling. The navigation action is mocked using
+ * the `next/router` and `@clerk/nextjs` libraries to simulate application state and user actions without
+ * an active user session.
+ *
+ * Key Points:
+ * - Ensures the login button correctly points to the '/accord' route as expected for user navigation.
+ * - Verifies that the login button is present and interactive within the Navbar component.
+ */
 jest.mock('next/router', () => ({
   useRouter: jest.fn(),
 }));

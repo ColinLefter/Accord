@@ -34,7 +34,7 @@ jest.mock('mongodb', () => ({
 }));
 
 jest.mock('@/lib/dbConfig', () => ({
-  getMongoDbUri: jest.fn().mockReturnValue('your-mongo-uri')
+  getMongoDbUri: jest.fn().mockReturnValue('accord-systems')
 }));
 jest.mock('@/utility', () => ({
   generateHash: jest.fn().mockReturnValue('mock-channel-key')
