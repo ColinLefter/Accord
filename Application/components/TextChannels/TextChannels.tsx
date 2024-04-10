@@ -9,6 +9,7 @@ import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 import { useEffect, useState, useCallback } from 'react';
 import { ChannelLoading } from "@/components/TextChannels/ChannelLoading";
+import { Types } from 'ably'; // This is an example; actual path may vary
 
 function reorder(list: TextChannel[], startIndex: number, endIndex: number): TextChannel[] {
   const result = Array.from(list);
@@ -62,9 +63,9 @@ export function TextChannels() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [selectedChannelId, setSelectedChannelId] = useState('');
 
-  useChannel(getSystemsChannelID(), (message) => {
-    const handleChannelMessage = (message: string) => {
-      switch (message) {
+  useChannel(getSystemsChannelID(), (messageEvent) => {
+    const handleChannelMessage = (message: Types.Message) => {
+      switch (message.name) {
         case "text-channel-created":
           fetchUserChats();
           break;
@@ -75,7 +76,10 @@ export function TextChannels() {
         default:
           break;
       }
-  }});
+    };
+  
+    handleChannelMessage(messageEvent);
+  });
 
   const fetchUserChats = useCallback(async () => {
     setIsLoading(true); // Start loading
