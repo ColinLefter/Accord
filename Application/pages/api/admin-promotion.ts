@@ -19,7 +19,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
       // Find entries that the member already exists in, or is already the owner of the server
       const promotingIsAdmin = await chatsCollection.findOne({ channelKey : channelKey, adminIDs : promotingID })
-      const promotingIsOwner = await chatsCollection.findOne({ channelKey : channelKey, ownerIDs : promotingID })
+      const promotingIsOwner = await chatsCollection.findOne({ channelKey : channelKey, ownerID : promotingID })
+
+      if ( promoterID == promotingID ) {
+        return res.status(203).json({ message: 'You cant grant yourself more admin-ness' })
+      }
 
       if (promotingIsAdmin) {
         return res.status(201).json({ message: 'The user is already an admin of the text channel'})
@@ -29,11 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(202).json({ message: 'The user is the owner of the text channel'})
       }
 
-      if ( promoterID == promotingID ) {
-        return res.status(203).json({ message: 'You cant grant yourself more admin-ness' })
-      }
-
-      await chatsCollection.updateOne({ channelKey: channelKey}, { $addToSet: { adminID: promotingID }})
+      await chatsCollection.updateOne({ channelKey: channelKey}, { $addToSet: { adminIDs: promotingID }})
       return res.status(200).json({ message: 'Promoted user to admin successfully' });
 
     } catch (error) {
