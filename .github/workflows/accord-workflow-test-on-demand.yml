@@ -5,15 +5,15 @@ name: Accord On Demand Demo
 on: workflow_dispatch
 
 env:
-  MONGODB_USERNAME: ${{ secrets.MONGODB_USERNAME }}
-  MONGODB_PASSWORD: ${{ secrets.MONGODB_PASSWORD }}
-  MONGODB_URI: ${{ secrets.MONGODB_URI }}
-  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ secrets.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
-  CLERK_SECRET_KEY: ${{ secrets.CLERK_SECRET_KEY }}
+  MONGODB_USERNAME: ${{ vars.MONGODB_USERNAME }}
+  MONGODB_PASSWORD: ${{ vars.MONGODB_PASSWORD }}
+  MONGODB_URI: ${{ vars.MONGODB_URI }}
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: ${{ vars.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY }}
+  CLERK_SECRET_KEY: ${{ vars.CLERK_SECRET_KEY }}
   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL: /accord
   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL: /accord
-  WEBHOOK_SECRET: ${{ secrets.WEBHOOK_SECRET }}
-  ABLY_API_KEY_PUBLISH_SUBSCRIBE: ${{ secrets.ABLY_API_KEY_PUBLISH_SUBSCRIBE }}
+  WEBHOOK_SECRET: ${{ vars.WEBHOOK_SECRET }}
+  ABLY_API_KEY_PUBLISH_SUBSCRIBE: ${{ vars.ABLY_API_KEY_PUBLISH_SUBSCRIBE }}
   
 defaults:
   run:
@@ -29,5 +29,3 @@ jobs:
         node-version: "20.x"
     - name: Installing node_modules for the workflow
       run: npm install -g npm
-    - name: Printing out the .env variables for existence checking (totally not a security breach)
-      run: echo "$MONGODB_USERNAME"
