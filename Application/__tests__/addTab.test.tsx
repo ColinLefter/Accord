@@ -1,5 +1,5 @@
 import { Db, MongoClient, ObjectId } from "mongodb";
-import { getMongoDbUri } from "@/lib/dbConfig";
+import { getMongoDbUri } from "@/lib/DbConfig";
 
 /**
  * Test suite for document insertion and cleanup in the Accord.Servers collection.

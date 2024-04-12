@@ -4,7 +4,7 @@ import { IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
 import { useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 
@@ -104,7 +104,7 @@ export function MemberList({ chatID }: any) {
     const memberToRemove = membersIDList[index];
     // No need to generate a newChannelKey here since the backend will handle this
     try {
-      const response = await fetch('/api/removeMember', {
+      const response = await fetch('/api/remove-member', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,7 +139,7 @@ export function MemberList({ chatID }: any) {
 
   const fetchUserName = async (memberIDs: String[]) => {
     try {
-      const response = await fetch('/api/ID-to-User-Name', {
+      const response = await fetch('/api/id-to-username', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -222,7 +222,7 @@ export function MemberList({ chatID }: any) {
     if (user && chatID !== null) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
       const fetchData = async () => {
         try {
-          const response = await fetch('/api/memberListInitializing', {
+          const response = await fetch('/api/member-list-initializing', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',

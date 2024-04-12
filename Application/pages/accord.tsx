@@ -19,11 +19,11 @@ import { Chat } from "@/components/Messaging/Chat";
 import React, { useEffect, useState } from 'react';
 import { NewTextChannelModal } from '@/components/Messaging/NewTextChannelModal';
 import { useUser } from '@clerk/nextjs';
-import { useCache } from '@/contexts/queryCacheContext';
+import { useCache } from '@/contexts/QueryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
 import { MemberList } from "@/components/Server/MemberList";
 import { TextChannels } from "@/components/TextChannels/TextChannels";
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 import { RemoveFriendModal } from '@/components/FriendsColumn/RemoveFriendModal';
 /**
  * Represents the central structure of the application interface, organizing the layout into

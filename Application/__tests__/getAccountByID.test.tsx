@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { getMongoDbUri } from "@/lib/dbConfig";
+import { getMongoDbUri } from "@/lib/DbConfig";
 
 /**
  * Tests the retrieval of account documents by ID from the "Accounts" collection using mocked MongoDB operations.

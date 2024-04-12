@@ -4,7 +4,7 @@ import { TextChannelItem } from "@/components/TextChannels/TextChannelItem"
 import { useUser } from '@clerk/nextjs';
 import { truncateText } from "@/utility"
 import { TextChannel } from "@/accordTypes";
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 import { useEffect, useState, useCallback } from 'react';

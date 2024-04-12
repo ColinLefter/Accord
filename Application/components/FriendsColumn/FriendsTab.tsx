@@ -12,12 +12,12 @@ import {
 } from '@mantine/core';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
 import { useState } from "react";
-import { useFriendList } from '@/hooks/useFriendList';
+import { useFriendList } from '@/hooks/UseFriendList';
 import { FriendsTabProps } from '@/accordTypes';
 import { FriendsLoading } from '@/components/FriendsColumn/FriendsLoading';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 import classes from './FriendsColumn.module.css';
 import cx from 'clsx';
 

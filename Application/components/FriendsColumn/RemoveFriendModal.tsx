@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Modal, Text, Stack, Button, useMantineTheme, MultiSelect, Paper } from '@mantine/core';
 import { IconUserMinus } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
-import { useCache } from '@/contexts/queryCacheContext';
-import { useFriendList } from '@/hooks/useFriendList';
+import { useCache } from '@/contexts/QueryCacheContext';
+import { useFriendList } from '@/hooks/UseFriendList';
 import { showNotification } from '@mantine/notifications';
 
 interface Friend {
@@ -48,7 +48,7 @@ export function RemoveFriendModal(): JSX.Element {
     }
 
     try {
-      const response = await fetch('/api/Remove-friend', {
+      const response = await fetch('/api/remove-friend', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

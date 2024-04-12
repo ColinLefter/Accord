@@ -63,7 +63,7 @@ export function ServerList() {
     let serverObj = {}
     //alert(ServerIDArray)
     console.log(serverIDsList)
-    const response = await fetch('/api/initializingServerList', {
+    const response = await fetch('/api/initializing-server-list', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

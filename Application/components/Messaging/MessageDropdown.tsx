@@ -6,7 +6,7 @@ import {
 import { MessageDropdownProps } from '@/accordTypes';
 import { useState, useEffect, forwardRef, ReactNode } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 
 /**
  * Renders a dropdown menu associated with a message, providing options to edit or delete the message. 

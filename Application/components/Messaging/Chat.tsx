@@ -2,7 +2,7 @@
 
 import { MessagingInterface } from '@/components/Messaging/MessagingInterface';
 import { ChatProps } from '@/accordTypes';
-import { useChat } from "@/contexts/chatContext";
+import { useChat } from "@/contexts/ChatContext";
 /**
  * The Chat component sets up a communication channel between two users
  * and provides an interface for message exchange.

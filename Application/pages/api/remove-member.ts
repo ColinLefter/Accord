@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 import { generateChannelKey } from '@/utility';
 /**
  * Handles the POST request for user registration, receiving the user's username, and find ONE entry that contains its username

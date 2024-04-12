@@ -13,8 +13,8 @@ import {
 } from '@mantine/core';
 import { IconPlus } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
-import { useCache } from '@/contexts/queryCacheContext';
-import { useFriendList } from '@/hooks/useFriendList';
+import { useCache } from '@/contexts/QueryCacheContext';
+import { useFriendList } from '@/hooks/UseFriendList';
 import { notifications } from '@mantine/notifications';
 import { useUser } from '@clerk/nextjs';
 import { useChannel } from "ably/react";
