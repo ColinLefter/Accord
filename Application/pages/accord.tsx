@@ -71,7 +71,6 @@ export default function Accord() {
     if (activeView === 'chat' && chatProps) {
       // Log to ensure chatProps are as expected
       setAsideWidth(0)
-      console.log(chatProps);
     }
     if(activeView === 'textChannel'){
       setAsideWidth(250)

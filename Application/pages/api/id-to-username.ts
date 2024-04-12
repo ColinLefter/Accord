@@ -17,7 +17,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     const { memberIDs } = req.body; // Intaking the data that has been sent from the client-side
     let client: MongoClient | null = null; // We need to assign something to the client so TypeScript is aware that it can be null if the connection fails 
     memberIDs.forEach((item: String) => {
-      //console.log(item); // Prints each element of the array
   });
     try { //creating and establishing connections to the DB
       client = new MongoClient(getMongoDbUri());
@@ -30,15 +29,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       let user;
       let userArray:String[] = [];
       for(const id of memberIDs){
-        //console.log(item);
         user = await accountsCollection.findOne({ id: id });// IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
         // now user variable contains these data from the table
         if (user){
           userArray.push(user.userName)
-          //console.log(user.userName + " this is the key")
         }
       }
-      console.log(userArray)
       if (user) { // Check if the user existed 
         return res.status(200).json({ userArray: userArray}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {

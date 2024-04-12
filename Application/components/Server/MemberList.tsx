@@ -36,7 +36,6 @@ export function MemberList({ chatID }: any) {
   const adminPromotion = async ( index: any, myID: any, channelKey: String, ) => {
     try {
       const promotionID = membersIDList[index]
-      console.log(promotionID, myID, channelKey); 
       const response = await fetch('/api/admin-promotion', {
         method: 'POST',
           headers: {
@@ -91,7 +90,6 @@ export function MemberList({ chatID }: any) {
         });
       }
     } catch (error) {
-      console.log('Failed admin promotion', error);
       showNotification ({
         title: 'Caught error',
         message: 'For some reason, the function did not work properly',

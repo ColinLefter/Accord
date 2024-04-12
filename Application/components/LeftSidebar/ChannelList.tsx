@@ -3,10 +3,6 @@ import { Tabs, rem , Button, px, em, Text, Paper, Container , TextInput} from '@
 import React, { useState } from 'react';
 
 export function ChannelList() {
-  const iconStyle = { width: rem(12), height: rem(12) };
-
-  
-  
   const [tabs, setTabs] = useState([
     {_id: "",  serverName: 'Server 1', serverID: '1', serverDesc: "This is server 1" },
     {_id: "",  serverName: 'Server 2', serverID: '2', serverDesc: "This is server 2" },
@@ -15,17 +11,6 @@ export function ChannelList() {
   const [tabCounter, setTabCounter] = useState(3);
   const [newTabName, setNewTabName] = useState('');
   const [isAdding, setIsAdding] = useState(true);
-  
- 
-
-  
-//   const [tabs, setTabs] = useState(async () => {
-//     const initialState = await getServersFromServerIDList();
-//     console.log(initialState)
-//     return initialState;
-// });
-
-
 const addTab = () => {
 
   const newTabCounter = tabCounter + 1;
@@ -40,21 +25,12 @@ const addTab = () => {
   setTabCounter(newTabCounter);
   setNewTabName('');
   setIsAdding(!isAdding)
-  console.log(tabs)
 
   alert(JSON.stringify(newTabs, null, 2));
 };
 const Adding = () => {
-  console.log(isAdding)
   setIsAdding(!isAdding)
 }
-//   useEffect(() => {
-//     getServersOfLoggedInUser()
-//     getServersFromServerIDList()
-//     console.log("loaded");
-//  });
-
-
   return (    
     <div>
       
