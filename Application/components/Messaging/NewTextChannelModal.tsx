@@ -21,7 +21,7 @@ import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 
 /**
- * NewChatModal facilitates the creation of new chat sessions, allowing users to select friends for group chats or direct messages (DMs).
+ * NewTextChannelModal facilitates the creation of new chat sessions, allowing users to select friends for group chats or direct messages (DMs).
  * This component integrates with the platform's friend list retrieval and chat creation functionalities, offering a seamless interface for
  * initiating conversations.
  *
@@ -39,8 +39,7 @@ import { getSystemsChannelID} from "@/utility";
  * Additionally, it uses the application's caching mechanism to refresh the friends list upon chat creation, ensuring that users have access to the
  * most up-to-date information.
  *
- * @param {NewChatModalProps} props The properties received by the NewChatModal component, including the sender's ID and the onCreateChat callback function.
- * @returns {JSX.Element} The rendered NewChatModal component, providing an interactive interface for creating new chat sessions.
+ * @returns {JSX.Element} The rendered NewTextChannelModal component, providing an interactive interface for creating new chat sessions.
  */
 export function NewTextChannelModal() {
   const { user } = useUser();

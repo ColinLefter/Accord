@@ -14,8 +14,9 @@ export interface MessageProps {
 }
 
 export interface DisplayedMessageProps extends MessageProps, PrivacySettingsProps {
-  id: string; // ABSOLUTELY CRITICAL: The reason this is an OPTIONAL paramter is because we only have the ID when we receive a message, not when we send one
+  id: string;
   clientID: string;
+  isAdmin: boolean;
 }
 
 export interface MessageDropdownProps extends PrivacySettingsProps {

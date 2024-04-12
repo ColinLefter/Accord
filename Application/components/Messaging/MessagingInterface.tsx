@@ -43,6 +43,7 @@ export function MessagingInterface({
   captureHistory,
   onMessageExchange,
   channelKey: providedChannelKey,
+  isAdmin,
   channelName, // Accept the channelName here
 }: ChatProps) {
   const { user } = useUser();
@@ -96,6 +97,7 @@ export function MessagingInterface({
           date: date,
           connectionID: clientID,
           userProfileURL: messageData.data.userProfileURL,
+          isAdmin: isAdmin,
           onDeleteMessage: () => deleteMessage(id)
         };
       
@@ -180,6 +182,7 @@ export function MessagingInterface({
       message: messageText,
       date: dateStr,
       userProfileURL: userProfileURL,
+      isAdmin: isAdmin,
       onDeleteMessage: deleteMessage, // replace with the actual function
     };
   
@@ -188,7 +191,7 @@ export function MessagingInterface({
     // That means when we publish a message to a channel, we need to subscribe the other user who we are targeting to that channel.
     await channel.publish({ // Notice how we are not including the message ID when we publish a message. That is because it is set by Ably implicitly.
       name: senderUsername,
-      data: { text: messageText, date: dateStr, userProfileURL: userProfileURL, clientID: senderID }
+      data: { text: messageText, date: dateStr, userProfileURL: userProfileURL, clientID: senderID, isAdmin: isAdmin }
     });
   
     // Update the local state for the sender's UI. The message for the receiver
@@ -268,6 +271,7 @@ export function MessagingInterface({
       acc.push(
         <Stack key={index} gap="0" justify="flex-start">
           <Message
+            isAdmin={isAdmin}
             clientID={message.clientID} // Get the clientID of the user who sent the message. This is used to ensure that users can only delete their messages.
             id={message.id}
             captureHistory={captureHistory}
@@ -288,6 +292,7 @@ export function MessagingInterface({
         {},
         React.Children.toArray(acc[acc.length - 1].props.children).concat(
           <Message
+            isAdmin={isAdmin}
             clientID={message.clientID}
             id={message.id}
             captureHistory={captureHistory}

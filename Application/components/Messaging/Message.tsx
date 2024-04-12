@@ -36,7 +36,8 @@ export function Message({
   firstMessage,
   date,
   userProfileURL,
-  privateChat,
+  captureHistory,
+  isAdmin,
   onMessageExchange,
   onDeleteMessage}: DisplayedMessageProps) {
 
@@ -80,9 +81,10 @@ export function Message({
       </Group>
       <div style={{ visibility: isHovered ? 'visible' : 'hidden' }}>
         <MessageDropdown
+          isAdmin={isAdmin}
           clientID={clientID}
           onDelete={() => onDeleteMessage(id)}
-          privateChat={privateChat}
+          captureHistory={captureHistory}
           onMessageExchange={onMessageExchange}
           />
       </div>

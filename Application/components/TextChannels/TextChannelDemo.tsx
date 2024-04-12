@@ -98,11 +98,14 @@ export function TextChannelDemo() {
 
   const items = state.map((item, index) => (
     <TextChannelItem
-      key={item.id} // Ensure you have a unique key for each item
       id={item.id}
       index={index}
+      key={item.id}
       channelName={item.channelName}
-      members={item.members}
+      numberOfMembers={item.members.length}
+      captureHistory={item.captureHistory}
+      onClick={() => {}}
+      isSelected={item.isSelected}
     />
   ));
 
