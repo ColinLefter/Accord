@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 
 /**
  * Handles the POST request to update or create the message history in the database.

@@ -1,5 +1,4 @@
 import { Webhook } from 'svix'
-import { headers } from 'next/headers'
 import { WebhookEvent, UserJSON } from '@clerk/nextjs/server'
 
 interface SvixHeaders {
@@ -108,13 +107,7 @@ export default async function POST(req: Request) {
       })
     }
   
-    // Get the ID and type
-    const { id } = evt.data; // This is from the Clerk provider, so it is guaranteed to be unique as it is how they internally identify users
     const eventType = evt.type;
-  
-    console.log(`Webhook with and ID of ${id} and type of ${eventType}`)
-    console.log('Webhook body:', body)
-
     if (eventType === "user.created" || eventType === "user.updated" || eventType === "user.deleted") {
       // Assuming evt.data can be safely cast to UserJSON for these event types
       let userData = evt.data as UserJSON;
@@ -134,7 +127,6 @@ export default async function POST(req: Request) {
         switch (eventType) {
           case 'user.created':
             // Create user in MongoDB
-            console.log(`Creating user: ${postData.firstName} ${postData.lastName}`);
             try {
               const response = await fetch('http://localhost:3000/api/registration', {
                 method: 'POST',
@@ -146,8 +138,6 @@ export default async function POST(req: Request) {
           
               if (!response.ok) {
                 console.error('Failed to register user through API:', await response.text());
-              } else {
-                console.log('User registered successfully through API');
               }
             } catch (error) {
               console.error('Error calling registration API:', error);
@@ -155,7 +145,6 @@ export default async function POST(req: Request) {
             break;
           case 'user.updated':
             // Update user data in MongoDB
-            console.log(`Updating user: ${postData.firstName} ${postData.lastName}`);
             try {
               const response = await fetch('http://localhost:3000/api/update-user-data', {
                 method: 'POST',
@@ -167,8 +156,6 @@ export default async function POST(req: Request) {
           
               if (!response.ok) {
                 console.error('Failed to update user through API:', await response.text());
-              } else {
-                console.log('User updated successfully through API');
               }
             } catch (error) {
               console.error('Error calling update user data API:', error);
@@ -176,7 +163,6 @@ export default async function POST(req: Request) {
             break;
           case 'user.deleted':
             // Delete user in MongoDB
-            console.log(`Deleting user: ${postData.firstName} ${postData.lastName}`);
             try {
               const response = await fetch('http://localhost:3000/api/delete-user', {
                 method: 'POST',
@@ -189,8 +175,6 @@ export default async function POST(req: Request) {
               
               if (!response.ok) {
                 console.error('Failed to update user through API:', await response.text());
-              } else {
-                console.log('User updated successfully through API');
               }
             } catch (error) {
               console.error('Error calling update user data API:', error);

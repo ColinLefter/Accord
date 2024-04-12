@@ -19,12 +19,11 @@ import { Chat } from "@/components/Messaging/Chat";
 import React, { useEffect, useState } from 'react';
 import { NewTextChannelModal } from '@/components/Messaging/NewTextChannelModal';
 import { useUser } from '@clerk/nextjs';
-import { useCache } from '@/contexts/queryCacheContext';
+import { useCache } from '@/contexts/QueryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
-import { RelinquishAdminModal } from '@/components/Server/RelinquishAdminModal';
 import { MemberList } from "@/components/Server/MemberList";
 import { TextChannels } from "@/components/TextChannels/TextChannels";
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 import { RemoveFriendModal } from '@/components/FriendsColumn/RemoveFriendModal';
 /**
  * Represents the central structure of the application interface, organizing the layout into
@@ -72,7 +71,6 @@ export default function Accord() {
     if (activeView === 'chat' && chatProps) {
       // Log to ensure chatProps are as expected
       setAsideWidth(0)
-      console.log(chatProps);
     }
     if(activeView === 'textChannel'){
       setAsideWidth(250)
@@ -125,7 +123,6 @@ export default function Accord() {
             </Button>
             <AddFriendModal senderID={senderID} lastFetched={lastFetched} setLastFetched={setLastFetched} />
             {/* For testing out the Modal - whenever you can succesfully use it and the changes correctly reflects on Mongo, request a change*/}
-            {/* <RelinquishAdminModal senderID={senderID} currentChannelKey = {'0735906bd282dcca9f00d2872b9e57b4a7675245eab16bfa17555df4720147b3'} lastFetched={lastFetched} setLastFetched={setLastFetched} /> */}
             <RemoveFriendModal/>
             <Group justify="space-between">
               <Text py="md">Text Channels</Text>

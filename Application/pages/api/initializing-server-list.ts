@@ -1,17 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 
-// const client = new MongoClient("mongodb+srv://tobyn:QY8jZcEhoNBzdGOu@accord-systems.umbugbv.mongodb.net/?retryWrites=true&w=majority&appName=Accord-Systems", {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
 let client: MongoClient | null = null;
 async function connectToDatabase() {
   try {
     const client = new MongoClient(getMongoDbUri());
     await client.connect();
-    console.log('Connected to MongoDB');
     return client.db('Accord');
   } catch (error) {
     console.error('Error connecting to MongoDB:', error);
@@ -34,10 +29,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       for(let i in serverIDList){
         listOfServers = await serversCollection.findOne({serverID: serverIDList[i]}) // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
         returnedServerObj.push(listOfServers)
-        console.log(returnedServerObj)
       }
-
-        //console.log(listOfServers)
         if (listOfServers) {
           return res.status(200).json({returnedServerObj: returnedServerObj});
         } else {

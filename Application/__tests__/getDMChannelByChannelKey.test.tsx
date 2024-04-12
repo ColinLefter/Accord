@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { getMongoDbUri } from "@/lib/dbConfig";
+import { getMongoDbUri } from "@/lib/DbConfig";
 
 /**
  * Tests the retrieval process of a direct message channel document by its channelKey from the "Chats" collection.

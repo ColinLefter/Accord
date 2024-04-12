@@ -1,5 +1,5 @@
 
-import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
+import { Tabs, rem , Button, px, em, Avatar, Text, Paper, Container , TextInput} from '@mantine/core';
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 
@@ -20,8 +20,6 @@ export function ServerList() {
       setUsername(user.username);
     }
   }, [user]); // Dependency array ensures this runs whenever `user` changes
-
-  console.log("Username: " + username);
   
   const getServersOfLoggedInUser = async ()  => {
     const response = await fetch('/api/get-server-members', {
@@ -34,36 +32,20 @@ export function ServerList() {
     }),
   });
   const data = await response.json(); 
-  if (!response.ok) {
-    console.log(response.statusText);
-  }
-
-  // Handle success
-  // Reset form fields, update UI, etc.
-  //alert(data.listOfServerIDs)
-  // console.log(data.listOfServerIDs)
   setServerIDsList(data.listOfServerIDs)
-  //alert(data.listOfServerIDs)
-  //alert(serverIDsList)
   return data.listOfServerIDs;
 }
   
   const [serverIDsList, setServerIDsList] = useState(async () => {
     const initialState = await getServersOfLoggedInUser();
-    console.log(initialState)
     return initialState;})
-    //console.log(getServersOfLoggedInUser())
-   
   let xd:any
   const getServersFromServerIDList = async () => {
     if (user) {
       getServersOfLoggedInUser()
     }
     let serverArray = []
-    let serverObj = {}
-    //alert(ServerIDArray)
-    console.log(serverIDsList)
-    const response = await fetch('/api/initializingServerList', {
+    const response = await fetch('/api/initializing-server-list', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -72,29 +54,14 @@ export function ServerList() {
     });
     const data = await response.json(); 
     serverArray = data.returnedServerObj;
-    console.log("hello");
-    console.log(tabs)
-    console.log(serverArray);
-    // const newTabs = [...tabs, serverArray];
     xd = serverArray
     setTabs(serverArray);
     return data.returnedServerObj;
   }
-
-  
-//   const [tabs, setTabs] = useState(async () => {
-//     const initialState = await getServersFromServerIDList();
-//     console.log(initialState)
-//     return initialState;
-// });
-
-
 const addTab = async () => {
 
   const newTabCounter = tabCounter + 1;
   const newServerID = `${newTabCounter}`;
-  //const newTabs = [...tabs, { serverName: `Tab ${newTabCounter}`, serverID: newserverID }];
-  const newServerName = newTabName || `Server ${newTabCounter}`
   const newServerDesc = `Content of ${newTabName || `Tab ${newTabCounter}`}`
   const newTabs = [...tabs, { _id: "", serverName: newTabName || `Server ${newTabCounter}`, serverID: newServerID, serverDesc: `Content of ${newTabName || `Tab ${newTabCounter}`}` }];
 
@@ -103,7 +70,6 @@ const addTab = async () => {
   setTabCounter(newTabCounter);
   setNewTabName('');
   setIsAdding(!isAdding)
-  console.log(tabs)
 
   try {
     const response = await fetch('/api/servers', {
@@ -112,7 +78,6 @@ const addTab = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ serverName: newTabName, serverID: newServerID, serverDesc: newServerDesc }),
-      //body: JSON.stringify(tabs),
     });
     const data = await response.json(); 
     if (!response.ok) {
@@ -128,16 +93,8 @@ const addTab = async () => {
   alert(JSON.stringify(newTabs, null, 2));
 };
 const Adding = () => {
-  console.log(isAdding)
   setIsAdding(!isAdding)
 }
-//   useEffect(() => {
-//     getServersOfLoggedInUser()
-//     getServersFromServerIDList()
-//     console.log("loaded");
-//  });
-
-
   return (    
     <div>
       <Button style={{ height: em(50), border: px(32) }} onClick={getServersFromServerIDList} radius="xl">
@@ -198,11 +155,6 @@ const Adding = () => {
                     +
       </Button>
       }
-      {/* <Button style={{ height: em(50), border: px(32) }} onClick={getServersOfLoggedInUser} radius="xl">
-                    Check User Server
-      </Button> */}
-      
     </div>
-    // </>
   );
 }

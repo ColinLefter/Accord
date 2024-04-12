@@ -2,7 +2,7 @@
 
 import React from "react";
 import { ClerkProvider } from '@clerk/nextjs';
-import { CacheProvider } from '@/contexts/queryCacheContext';
+import { CacheProvider } from '@/contexts/QueryCacheContext';
 import { MantineProvider, useComputedColorScheme, createTheme, getThemeColor, MantineGradient, virtualColor } from "@mantine/core";
 import * as Ably from 'ably';
 import { AppProps } from "next/app";
@@ -10,7 +10,7 @@ import { dark } from '@clerk/themes';
 import { AblyProvider } from 'ably/react';
 import { useState, useEffect } from 'react';
 import { Notifications } from '@mantine/notifications';
-import { ChatProvider } from "@/contexts/chatContext";
+import { ChatProvider } from "@/contexts/ChatContext";
 import '@mantine/notifications/styles.css';
 
 /**
@@ -73,7 +73,6 @@ export default function RootLayout({ children }: any) { // The one time where 'a
       const theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
       setThemePreference(theme);
     }, []);
-  
   
     return (
       <ClerkProvider

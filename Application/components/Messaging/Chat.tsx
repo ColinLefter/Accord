@@ -1,10 +1,8 @@
 "use client";
 
-import * as Ably from 'ably';
-import { AblyProvider } from 'ably/react';
 import { MessagingInterface } from '@/components/Messaging/MessagingInterface';
 import { ChatProps } from '@/accordTypes';
-
+import { useChat } from "@/contexts/ChatContext";
 /**
  * The Chat component sets up a communication channel between two users
  * and provides an interface for message exchange.
@@ -26,15 +24,18 @@ export function Chat({
   senderID,
   senderUsername,
   receiverIDs,
-  captureHistory, // Renamed from privateChat
+  captureHistory,
   lastFetched,
   setLastFetched,
   onMessageExchange,
   channelKey,
   channelName,
 }: ChatProps) {
+  
+  const { chatProps } = useChat();
   return (
     <MessagingInterface
+      isAdmin={chatProps?.isAdmin as boolean}
       senderID={senderID}
       senderUsername={senderUsername}
       receiverIDs={receiverIDs}

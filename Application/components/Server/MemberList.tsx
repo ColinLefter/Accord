@@ -4,7 +4,7 @@ import { IconTrash, IconPlus, IconUserUp } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
 import { useDisclosure } from '@mantine/hooks';
 import { showNotification } from '@mantine/notifications';
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
 
@@ -36,7 +36,6 @@ export function MemberList({ chatID }: any) {
   const adminPromotion = async ( index: any, myID: any, channelKey: String, ) => {
     try {
       const promotionID = membersIDList[index]
-      console.log(promotionID, myID, channelKey); 
       const response = await fetch('/api/admin-promotion', {
         method: 'POST',
           headers: {
@@ -91,7 +90,6 @@ export function MemberList({ chatID }: any) {
         });
       }
     } catch (error) {
-      console.log('Failed admin promotion', error);
       showNotification ({
         title: 'Caught error',
         message: 'For some reason, the function did not work properly',
@@ -104,7 +102,7 @@ export function MemberList({ chatID }: any) {
     const memberToRemove = membersIDList[index];
     // No need to generate a newChannelKey here since the backend will handle this
     try {
-      const response = await fetch('/api/removeMember', {
+      const response = await fetch('/api/remove-member', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -139,12 +137,12 @@ export function MemberList({ chatID }: any) {
 
   const fetchUserName = async (memberIDs: String[]) => {
     try {
-      const response = await fetch('/api/ID-to-User-Name', {
+      const response = await fetch('/api/id-to-username', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ memberIDs: memberIDs}),                              // Change this when we put in the Appshell (It is a String NOT int)
+        body: JSON.stringify({ memberIDs: memberIDs}),
       });
 
       if (response.ok) {
@@ -172,7 +170,6 @@ export function MemberList({ chatID }: any) {
 
         if (response.ok) {
           setFriendUsername('');
-          // Use Mantine's showNotification for success message
           showNotification({
             title: 'Success',
             message: `${friendUsername} was added to the chat!`,
@@ -183,7 +180,6 @@ export function MemberList({ chatID }: any) {
           setMembersIDList([...membersIDList, data.memberID]);
         } else {
           console.error('Failed to add member');
-          // Use Mantine's showNotification for error message
           showNotification({
             title: 'Error',
             message: 'Failed to send friend request.',
@@ -192,7 +188,6 @@ export function MemberList({ chatID }: any) {
         }
       } catch (error) {
         console.error('Error adding member:', error);
-        // Use Mantine's showNotification for network or server errors
         showNotification({
           title: 'Error',
           message: 'An error occurred while sending the member request.',
@@ -212,7 +207,6 @@ export function MemberList({ chatID }: any) {
       default:
         if (searchResult !== null) {
           setErrorMessage('');
-          // setLastFetched(Date.now());
           close();
         }
     }
@@ -222,14 +216,12 @@ export function MemberList({ chatID }: any) {
     if (user && chatID !== null) { // IMPORTANT: There is a slight delay in the user object being available after login, so we need to wait for it to not be null
       const fetchData = async () => {
         try {
-          const response = await fetch('/api/memberListInitializing', {
+          const response = await fetch('/api/member-list-initializing', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
             },
-            //-----------------------------------------------------------------------------------------------------------------------------------------------
-            body: JSON.stringify({ channelKey: chatID }),                              // Change this when we put in the Appshell (It is a String NOT int)
-            //------------------------------------------------------------------------------------------------------------------------------------------------
+            body: JSON.stringify({ channelKey: chatID }),
           });
 
           if (response.ok) {
@@ -250,7 +242,6 @@ export function MemberList({ chatID }: any) {
       });
     }
   }, [user, chatID, isAdmin]);
-
 
   return (
     <Stack>

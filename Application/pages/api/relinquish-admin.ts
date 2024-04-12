@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 import { sendError } from 'next/dist/server/api-utils';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {

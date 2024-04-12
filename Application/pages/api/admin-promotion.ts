@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 
 /**
  * This API communicates with the MongoDB, intakes in promotingID, promoterID, and a channelKey

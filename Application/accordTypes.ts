@@ -14,8 +14,9 @@ export interface MessageProps {
 }
 
 export interface DisplayedMessageProps extends MessageProps, PrivacySettingsProps {
-  id: string; // ABSOLUTELY CRITICAL: The reason this is an OPTIONAL paramter is because we only have the ID when we receive a message, not when we send one
+  id: string;
   clientID: string;
+  isAdmin: boolean;
 }
 
 export interface MessageDropdownProps extends PrivacySettingsProps {
@@ -41,8 +42,8 @@ export interface ChatProps extends FriendsTabProps {
   receiverIDs: string[];
   channelKey?: string;
   isAdmin: boolean;
-  channelName?: string; // Adding channelName as optional
-  captureHistory: boolean; // Renamed and now required
+  channelName?: string;
+  captureHistory: boolean;
 }
 
 export interface IconProps {
@@ -54,7 +55,7 @@ export interface NewChatModalProps extends NewFriendModalProps {
 }
 
 export interface PrivacySettingsProps {
-  captureHistory: boolean; // Renamed from privateChat
+  captureHistory: boolean;
   onMessageExchange: () => void;
 }
 
@@ -88,7 +89,7 @@ export interface TextChannel {
   memberIDs: string[];
   adminIDs: string[];
   ownerID: string;
-  captureHistory: boolean; // Ensure this field is included
+  captureHistory: boolean;
 }
 
 export interface ChannelLoadingProps {

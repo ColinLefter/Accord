@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-const { run } = require("@/lib/mongodb"); // From the utility file
+const { run } = require("@/lib/mongodb");
 
 type Data = {
   message: string;

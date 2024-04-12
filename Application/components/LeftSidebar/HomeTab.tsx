@@ -1,8 +1,6 @@
 
-import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
-import React, { useState } from 'react';
-import { IconPhoto, IconMessageCircle, IconSettings, IconPinInvoke } from '@tabler/icons-react';
-import { Registration } from '../Accounts/Registration';
+import { Tabs, Avatar, Text } from '@mantine/core';
+import React from 'react';
 
 export function HomeTab() {
 
@@ -26,9 +24,6 @@ export function HomeTab() {
               <Text size='xl'>The content of Home</Text> 
             </Tabs.Panel>
       </Tabs>
-      
-      
     </div>
-    //</>
   );
 }

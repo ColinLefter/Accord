@@ -1,5 +1,5 @@
 import { Text, Container, ActionIcon, Group, rem } from '@mantine/core';
-import { IconBrandTwitter, IconBrandYoutube, IconBrandInstagram, IconBrandGithub } from '@tabler/icons-react';
+import { IconBrandGithub } from '@tabler/icons-react';
 import { Logo } from '@/components/Logo';
 import classes from './FooterLinks.module.css';
 import Link from "next/link";

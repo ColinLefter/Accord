@@ -1,5 +1,5 @@
 const { MongoClient, ServerApiVersion } = require("mongodb");
-import { getMongoDbUri } from "@/lib/dbConfig";
+import { getMongoDbUri } from "@/lib/DbConfig";
 
 /**
  * This module establishes a connection to MongoDB using the MongoDB Node.js driver. It defines

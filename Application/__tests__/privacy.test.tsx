@@ -1,5 +1,5 @@
 import { MongoClient, Db } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 
 /**
  * MessageData interface defines the structure of a message object

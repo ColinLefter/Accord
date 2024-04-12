@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 
 /**
  * Handles the POST request for user registration, receiving the user's username, and find ONE entry that contains its username
@@ -28,13 +28,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const channel = await accountsCollection.findOne({ channelKey: channelKey }); // IMPORTANT: The findOne method returns a promise, so we need to await the resolution of the promise first
       // now user variable contains these data from the table
       if (channel) { // Check if the user existed 
-        // console.log(channel.channelKey + " this is the key")
-        // console.log(channel.memberIDs + " this is the key")
         return res.status(200).json({ memberIDs: channel.memberIDs, adminIDs: channel.adminIDs}); // Return the array friendList of this user                                                                                                                    // Now the JSON string of above ^ will be sent back to UserSettings
       } else {
         return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
       }
-    } catch (error) { // Copy paste from this point - just error catching, method detecting and closing the clients - back to UserSettings.tsx in components
+    } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });
     } finally {

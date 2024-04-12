@@ -1,8 +1,6 @@
-import { Avatar, Group, Card, Tooltip, Text, Stack, ActionIcon } from '@mantine/core';
-import { IconSettings } from '@tabler/icons-react';
-import { AppLink } from  "@/components/AppLink";
+import { Group, Card, Text } from '@mantine/core';
 import { useRouter } from 'next/router';
-import { useUser, UserButton, UserProfile } from '@clerk/nextjs';
+import { useUser, UserButton } from '@clerk/nextjs';
 import { useEffect, useState } from 'react';
 import InboxDropdown from '@/components/FriendsColumn/FriendRequestManager';
 /**

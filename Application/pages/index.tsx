@@ -1,5 +1,4 @@
 "use client";
-// import "../global.css";
 
 /**
  * HomePage is the root page component of the application. Currently, it primarily consists of

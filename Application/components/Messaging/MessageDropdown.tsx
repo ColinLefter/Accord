@@ -1,13 +1,12 @@
-import { Menu, Button, Text, rem, ActionIcon, useComputedColorScheme, Tooltip, MantineTransition } from '@mantine/core';
+import { Menu, ActionIcon, useComputedColorScheme, Tooltip, MantineTransition } from '@mantine/core';
 import {
   IconTrash,
-  IconDotsVertical,
-  IconCursorText
+  IconDotsVertical
 } from '@tabler/icons-react';
 import { MessageDropdownProps } from '@/accordTypes';
 import { useState, useEffect, forwardRef, ReactNode } from 'react';
 import { useUser } from '@clerk/nextjs';
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 
 /**
  * Renders a dropdown menu associated with a message, providing options to edit or delete the message. 
@@ -44,9 +43,6 @@ export function MessageDropdown({ captureHistory, clientID, onDelete, isAdmin  }
     if(isAdmin){
       setDeleteable(false)
     }
-    // if(isAdmin1){
-    //   setDeleteable(false)
-    // }
   }, [user?.id, isAdmin]);
 
   // Check if it's the current user's message

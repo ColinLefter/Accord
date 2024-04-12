@@ -12,12 +12,12 @@ import {
 } from '@mantine/core';
 import { IconSearch, IconArrowRight } from '@tabler/icons-react';
 import { useState } from "react";
-import { useFriendList } from '@/hooks/useFriendList';
+import { useFriendList } from '@/hooks/UseFriendList';
 import { FriendsTabProps } from '@/accordTypes';
 import { FriendsLoading } from '@/components/FriendsColumn/FriendsLoading';
 import { useChannel } from "ably/react";
 import { getSystemsChannelID} from "@/utility";
-import { useChat } from '@/contexts/chatContext';
+import { useChat } from '@/contexts/ChatContext';
 import classes from './FriendsColumn.module.css';
 import cx from 'clsx';
 
@@ -51,7 +51,6 @@ export function FriendsTab({senderUsername, senderID, captureHistory, onMessageE
           const [senderId, receiverId] = message.data.split("-");
           if (senderId === senderID || receiverId === senderID) {
             // If the current user is involved in the friend request, refresh the friend list
-            console.log("Friend request accepted, refreshing friend list.");
             setLastFetched(Date.now());
           }
         }
@@ -64,10 +63,6 @@ export function FriendsTab({senderUsername, senderID, captureHistory, onMessageE
     );
 
     const handleFriendClick = (friendUsername: string, friendID: string) => {
-        console.log("IN FRIENDS TAB:");
-        console.log("Friend ID: ", friendID);
-        console.log("Friend Username: ", friendUsername);
-
         updateContext(null, { // Set selectedChannelId to null since this is a DM, not a channel message
           senderID,
           senderUsername,

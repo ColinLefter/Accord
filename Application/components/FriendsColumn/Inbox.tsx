@@ -22,12 +22,12 @@ export const Inbox: FC<FriendRequestManagerProps> = ({ userId }) => {
   const fetchFriendRequests = async () => {
     setLoading(true);
     try {
-      const sentResponse = await fetch('/api/Get-Sent-Friend-Request', {
+      const sentResponse = await fetch('/api/get-sent-friend-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),
       });
-      const receivedResponse = await fetch('/api/Get-pending-Friend-Request', {
+      const receivedResponse = await fetch('/api/fet-pending-friend-request', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: userId }),

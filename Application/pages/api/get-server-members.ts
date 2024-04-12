@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 
 let client: MongoClient | null = null;
 
@@ -41,7 +41,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const serversCollection = db.collection("ServersOfUsers");
       // Here, you can safely use username because you've already checked if user is null.
       const listOfServerIDs = await serversCollection.findOne({ userName: username });
-      console.log(listOfServerIDs);
       if (listOfServerIDs) {
         return res.status(200).json({ listOfServerIDs: listOfServerIDs.serverIDList });
       } else {

@@ -1,13 +1,8 @@
 
-import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
-import React, { useState, useEffect } from 'react';
-import { IconPhoto, IconMessageCircle, IconSettings, IconPinInvoke } from '@tabler/icons-react';
+import { Tabs, Button, px, em, Text, Paper, Container , TextInput} from '@mantine/core';
+import React, { useState } from 'react';
 
 export function ChannelList() {
-  const iconStyle = { width: rem(12), height: rem(12) };
-
-  
-  
   const [tabs, setTabs] = useState([
     {_id: "",  serverName: 'Server 1', serverID: '1', serverDesc: "This is server 1" },
     {_id: "",  serverName: 'Server 2', serverID: '2', serverDesc: "This is server 2" },
@@ -16,24 +11,10 @@ export function ChannelList() {
   const [tabCounter, setTabCounter] = useState(3);
   const [newTabName, setNewTabName] = useState('');
   const [isAdding, setIsAdding] = useState(true);
-  
- 
-
-  
-//   const [tabs, setTabs] = useState(async () => {
-//     const initialState = await getServersFromServerIDList();
-//     console.log(initialState)
-//     return initialState;
-// });
-
-
 const addTab = () => {
 
   const newTabCounter = tabCounter + 1;
   const newServerID = `${newTabCounter}`;
-  //const newTabs = [...tabs, { serverName: `Tab ${newTabCounter}`, serverID: newserverID }];
-  const newServerName = newTabName || `Server ${newTabCounter}`
-  const newServerDesc = `Content of ${newTabName || `Tab ${newTabCounter}`}`
   const newTabs = [...tabs, { _id: "", serverName: newTabName || `Server ${newTabCounter}`, serverID: newServerID, serverDesc: `Content of ${newTabName || `Tab ${newTabCounter}`}` }];
 
   setTabs(newTabs);
@@ -41,21 +22,12 @@ const addTab = () => {
   setTabCounter(newTabCounter);
   setNewTabName('');
   setIsAdding(!isAdding)
-  console.log(tabs)
 
   alert(JSON.stringify(newTabs, null, 2));
 };
 const Adding = () => {
-  console.log(isAdding)
   setIsAdding(!isAdding)
 }
-//   useEffect(() => {
-//     getServersOfLoggedInUser()
-//     getServersFromServerIDList()
-//     console.log("loaded");
-//  });
-
-
   return (    
     <div>
       
@@ -112,8 +84,6 @@ const Adding = () => {
         </Paper>
       </Container>
       } 
-      
     </div>
-    // </>
   );
 }

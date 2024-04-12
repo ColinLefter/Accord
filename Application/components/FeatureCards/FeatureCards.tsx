@@ -3,13 +3,8 @@ import {
   Group,
   Title,
   Text,
-  Card,
-  SimpleGrid,
-  Container,
-  rem,
-  useMantineTheme,
+  Container
 } from '@mantine/core';
-import { IconGauge, IconUser, IconCookie } from '@tabler/icons-react';
 import classes from './FeatureCards.module.css';
 import { TextChannelDemo } from "@/components/TextChannels/TextChannelDemo"
 

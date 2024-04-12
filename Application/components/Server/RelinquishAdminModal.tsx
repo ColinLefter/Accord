@@ -1,14 +1,11 @@
 import { useState, useEffect } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tooltip, ActionIcon, Text, Stack, Button, TextInput, useMantineTheme } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { Modal, Text, Stack, Button, TextInput, useMantineTheme } from '@mantine/core';
 import { RelinquishAdminModalProps } from '@/accordTypes';
-import { notifications, showNotification } from '@mantine/notifications';
+import { notifications } from '@mantine/notifications';
 
 export function RelinquishAdminModal({ senderID, currentChannelKey, setLastFetched } : RelinquishAdminModalProps) {
   const [opened, { open, close }] = useDisclosure(false);
-  // Hardcoded version of the channelKey
-  // const [currentChannelKey, setCurrentChannelKey] = useState('0735906bd282dcca9f00d2872b9e57b4a7675245eab16bfa17555df4720147b3');
   const [searchResult, setSearchResult] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
   const [confirmationInput, setConfirmationInput] = useState('');
@@ -21,7 +18,6 @@ export function RelinquishAdminModal({ senderID, currentChannelKey, setLastFetch
    * removing admin's privilege from the user with a notification if the user is an admin within the channel of the provided channelKey,
    * and reply with errors accordingly
    */
-
   const handleRelinquishAdminClick = async () => {
     // Communicating with the API
     if (confirmationInput != 'Accord') {

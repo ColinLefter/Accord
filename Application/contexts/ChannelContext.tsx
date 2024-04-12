@@ -5,7 +5,6 @@ interface ChannelContextType {
   setSelectedChannelId: Dispatch<SetStateAction<string | null>>;
 }
 
-// Providing a more specific type for the context's default value
 const defaultContextValue: ChannelContextType = {
   selectedChannelId: null,
   setSelectedChannelId: () => {} // Placeholder function

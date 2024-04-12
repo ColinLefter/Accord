@@ -1,7 +1,6 @@
-// pages/api/delete-user.tsx
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
-import { getMongoDbUri } from '@/lib/dbConfig';
+import { getMongoDbUri } from '@/lib/DbConfig';
 
 /**
  * Deletes a user from the Accord database. This endpoint requires a POST request with a user ID.

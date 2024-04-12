@@ -1,5 +1,5 @@
 import { MongoClient } from "mongodb";
-import { getMongoDbUri } from "@/lib/dbConfig";
+import { getMongoDbUri } from "@/lib/DbConfig";
 
 /**
  * Tests the retrieval of a channel document by channelKey from the "Chats" collection with mocked MongoDB operations.
