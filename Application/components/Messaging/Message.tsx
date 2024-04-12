@@ -1,8 +1,7 @@
 "use client";
 
-import { Group, Stack, Avatar, Text, Box, useMantineTheme, useComputedColorScheme } from '@mantine/core';
+import { Group, Stack, Avatar, Text, useMantineTheme, useComputedColorScheme } from '@mantine/core';
 import { useHover } from '@mantine/hooks';
-import { useUser } from '@clerk/nextjs';
 import { useState, useEffect } from 'react';
 import { DisplayedMessageProps } from "@/accordTypes";
 import { MessageDropdown } from "@/components/Messaging/MessageDropdown";

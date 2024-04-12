@@ -1,7 +1,6 @@
 
-import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
-import React, { useState, useEffect } from 'react';
-import { IconPhoto, IconMessageCircle, IconSettings, IconPinInvoke } from '@tabler/icons-react';
+import { Tabs, rem , Button, px, em, Text, Paper, Container , TextInput} from '@mantine/core';
+import React, { useState } from 'react';
 
 export function ChannelList() {
   const iconStyle = { width: rem(12), height: rem(12) };

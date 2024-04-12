@@ -1,6 +1,6 @@
 import "@mantine/core/styles.css";
 import { AppProps } from "next/app";
-import RootLayout from '@/app/RootLayout'; // Make sure the path is correct
+import RootLayout from '@/app/RootLayout';
 import "../custom.css";
 
 /**

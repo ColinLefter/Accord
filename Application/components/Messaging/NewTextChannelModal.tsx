@@ -5,7 +5,7 @@ import {
   ActionIcon,
   Text,
   MultiSelect,
-  Stack, Group,
+  Stack,
   Button,
   useMantineTheme,
   TextInput,

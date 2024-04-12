@@ -1,19 +1,5 @@
-import {
-    Container,
-    Paper,
-    Text,
-    TextInput,
-    PasswordInput,
-    Button,
-    Group,
-    Select,
-    Title,
-    Center,
-  } from "@mantine/core";
-  import { FormEvent, useEffect, useState } from "react";
-  import Link from "next/link";
-  import { useRouter } from 'next/router';
-  import { useUser } from '@clerk/nextjs';
+import { FormEvent, useEffect, useState } from "react";
+import { useUser } from '@clerk/nextjs';
 
 export function UserSetting() {
   const { user } = useUser();

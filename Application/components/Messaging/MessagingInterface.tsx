@@ -1,11 +1,11 @@
 "use client";
 
 import { Message } from "@/components/Messaging/Message";
-import { Stack, Group, Container, Flex, Textarea, Button, ScrollArea } from '@mantine/core';
+import { Stack, Flex, Textarea, ScrollArea } from '@mantine/core';
 import React, { useEffect, useState, useRef } from 'react';
 import { useChannel } from "ably/react";
 import { useChat } from "@/contexts/chatContext";
-import { ChatProps, MessageProps, DisplayedMessageProps } from "@/accordTypes";
+import { ChatProps, DisplayedMessageProps } from "@/accordTypes";
 import { useUser } from '@clerk/nextjs';
 import { generateChannelKey } from "@/utility";
 

@@ -1,5 +1,3 @@
-// globals.d.ts
-
 import { MongoClient } from "mongodb";
 
 declare global {

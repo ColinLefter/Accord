@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tooltip, ActionIcon, Text, Stack, Button, TextInput, useMantineTheme } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { Modal, Text, Stack, Button, TextInput, useMantineTheme } from '@mantine/core';
 import { RelinquishAdminModalProps } from '@/accordTypes';
-import { notifications, showNotification } from '@mantine/notifications';
+import { notifications } from '@mantine/notifications';
 
 export function RelinquishAdminModal({ senderID, currentChannelKey, setLastFetched } : RelinquishAdminModalProps) {
   const [opened, { open, close }] = useDisclosure(false);

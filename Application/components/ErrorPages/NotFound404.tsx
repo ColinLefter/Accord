@@ -1,4 +1,4 @@
-import { Image, Container, Title, Text, Button, SimpleGrid, Center } from '@mantine/core';
+import { Image, Container, Title, Text, Button, SimpleGrid } from '@mantine/core';
 import classes from './NotFound404.module.css';
 import Link from "next/link";
 

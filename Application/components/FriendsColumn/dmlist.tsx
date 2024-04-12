@@ -1,4 +1,3 @@
-// components/FriendList.tsx
 import React, { useState, useEffect } from 'react';
 import FriendComponent from '../FriendProfile/FriendComponent';
 

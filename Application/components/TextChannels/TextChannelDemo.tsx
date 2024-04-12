@@ -1,9 +1,6 @@
-import cx from 'clsx';
-import { Text } from '@mantine/core';
 import { useListState } from '@mantine/hooks';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { DragDropContext, Droppable } from '@hello-pangea/dnd';
 import { TextChannelItem } from "@/components/TextChannels/TextChannelItem"
-import classes from './TextChannelItem.module.css';
 
 // Function to format the current date in the following format "1st January 2024"
 const formatDate = (date: Date) => {

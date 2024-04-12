@@ -21,7 +21,6 @@ import { NewTextChannelModal } from '@/components/Messaging/NewTextChannelModal'
 import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';
 import { AddFriendModal } from '@/components/FriendsColumn/AddFriendModal';
-import { RelinquishAdminModal } from '@/components/Server/RelinquishAdminModal';
 import { MemberList } from "@/components/Server/MemberList";
 import { TextChannels } from "@/components/TextChannels/TextChannels";
 import { useChat } from '@/contexts/chatContext';

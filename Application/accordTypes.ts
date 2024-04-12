@@ -42,8 +42,8 @@ export interface ChatProps extends FriendsTabProps {
   receiverIDs: string[];
   channelKey?: string;
   isAdmin: boolean;
-  channelName?: string; // Adding channelName as optional
-  captureHistory: boolean; // Renamed and now required
+  channelName?: string;
+  captureHistory: boolean;
 }
 
 export interface IconProps {
@@ -55,7 +55,7 @@ export interface NewChatModalProps extends NewFriendModalProps {
 }
 
 export interface PrivacySettingsProps {
-  captureHistory: boolean; // Renamed from privateChat
+  captureHistory: boolean;
   onMessageExchange: () => void;
 }
 
@@ -89,7 +89,7 @@ export interface TextChannel {
   memberIDs: string[];
   adminIDs: string[];
   ownerID: string;
-  captureHistory: boolean; // Ensure this field is included
+  captureHistory: boolean;
 }
 
 export interface ChannelLoadingProps {

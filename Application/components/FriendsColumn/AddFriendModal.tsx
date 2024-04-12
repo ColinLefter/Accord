@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useDisclosure } from '@mantine/hooks';
-import { Modal, Tooltip, ActionIcon, Text, Stack, Button, TextInput, useMantineTheme } from '@mantine/core';
-import { IconPlus } from '@tabler/icons-react';
+import { Modal, Text, Stack, Button, TextInput, useMantineTheme } from '@mantine/core';
 import { NewFriendModalProps } from '@/accordTypes';
-import { notifications, showNotification } from '@mantine/notifications';
+import { notifications } from '@mantine/notifications';
 import { useUser } from '@clerk/nextjs';
 import { IconUserPlus } from '@tabler/icons-react';
 
@@ -13,7 +12,6 @@ export function AddFriendModal({ senderID, setLastFetched }: NewFriendModalProps
   const [opened, { open, close }] = useDisclosure(false);
   const [myUsername, setMyUsername] = useState<string>('');
   const [friendUsername, setFriendUsername] = useState('');
-  const [searchResult, setSearchResult] = useState<number | null>(null);
   const [errorMessage, setErrorMessage] = useState('');
 
   const theme = useMantineTheme();

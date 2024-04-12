@@ -1,5 +1,5 @@
 
-import { Tabs, rem , Button, px, em, Avatar, Text, Image, Paper, Container , TextInput} from '@mantine/core';
+import { Tabs, rem , Button, px, em, Avatar, Text, Paper, Container , TextInput} from '@mantine/core';
 import React, { useState, useEffect } from 'react';
 import { useUser } from '@clerk/nextjs';
 

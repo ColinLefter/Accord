@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal, Text, Stack, Button, useMantineTheme, MultiSelect, Tooltip, Paper } from '@mantine/core';
+import { Modal, Text, Stack, Button, useMantineTheme, MultiSelect, Paper } from '@mantine/core';
 import { IconUserMinus } from '@tabler/icons-react';
 import { useUser } from '@clerk/nextjs';
 import { useCache } from '@/contexts/queryCacheContext';

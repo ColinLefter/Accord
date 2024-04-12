@@ -1,8 +1,7 @@
-import { Menu, Button, Text, rem, ActionIcon, useComputedColorScheme, Tooltip, MantineTransition } from '@mantine/core';
+import { Menu, ActionIcon, useComputedColorScheme, Tooltip, MantineTransition } from '@mantine/core';
 import {
   IconTrash,
-  IconDotsVertical,
-  IconCursorText
+  IconDotsVertical
 } from '@tabler/icons-react';
 import { MessageDropdownProps } from '@/accordTypes';
 import { useState, useEffect, forwardRef, ReactNode } from 'react';

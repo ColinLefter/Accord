@@ -1,8 +1,6 @@
 import cx from 'clsx';
-import { rem, Text, Stack } from '@mantine/core';
-import { IconGripVertical } from '@tabler/icons-react';
-import { useListState } from '@mantine/hooks';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { Text } from '@mantine/core';
+import { Draggable } from '@hello-pangea/dnd';
 import { TextChannelItemProps } from '@/accordTypes';
 import classes from './TextChannelItem.module.css';
 import { useChat } from '@/contexts/chatContext';

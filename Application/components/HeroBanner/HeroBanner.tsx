@@ -1,11 +1,9 @@
 import { Title, Text, Button, Container, Group, Stack, Center } from '@mantine/core';
-import { FooterLinks } from "@/components/Footer/FooterLinks";
 import { Dots } from './Dots';
 import classes from './HeroBanner.module.css';
 import Link from "next/link";
 import { useComputedColorScheme, useMantineTheme } from "@mantine/core";
-import React, { useState, useEffect } from 'react';
-import { FeatureCards } from "@/components/FeatureCards/FeatureCards";
+import React from 'react';
 
 /**
  * Displays a hero banner featuring a dynamic background video, an opacity mask for readability,
