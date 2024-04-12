@@ -24,7 +24,7 @@ export function Chat({
   senderID,
   senderUsername,
   receiverIDs,
-  captureHistory, // Renamed from privateChat
+  captureHistory,
   lastFetched,
   setLastFetched,
   onMessageExchange,

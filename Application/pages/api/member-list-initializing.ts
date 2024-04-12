@@ -32,7 +32,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else {
         return res.status(401).json({ error: 'Not fetchable' }); // Returns error if not fetchable
       }
-    } catch (error) { // Copy paste from this point - just error catching, method detecting and closing the clients - back to UserSettings.tsx in components
+    } catch (error) {
       console.error(error);
       return res.status(500).json({ error: 'Internal server error' });
     } finally {

@@ -62,8 +62,6 @@ const addTab = async () => {
 
   const newTabCounter = tabCounter + 1;
   const newServerID = `${newTabCounter}`;
-  //const newTabs = [...tabs, { serverName: `Tab ${newTabCounter}`, serverID: newserverID }];
-  const newServerName = newTabName || `Server ${newTabCounter}`
   const newServerDesc = `Content of ${newTabName || `Tab ${newTabCounter}`}`
   const newTabs = [...tabs, { _id: "", serverName: newTabName || `Server ${newTabCounter}`, serverID: newServerID, serverDesc: `Content of ${newTabName || `Tab ${newTabCounter}`}` }];
 
@@ -80,7 +78,6 @@ const addTab = async () => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ serverName: newTabName, serverID: newServerID, serverDesc: newServerDesc }),
-      //body: JSON.stringify(tabs),
     });
     const data = await response.json(); 
     if (!response.ok) {
@@ -158,11 +155,6 @@ const Adding = () => {
                     +
       </Button>
       }
-      {/* <Button style={{ height: em(50), border: px(32) }} onClick={getServersOfLoggedInUser} radius="xl">
-                    Check User Server
-      </Button> */}
-      
     </div>
-    // </>
   );
 }

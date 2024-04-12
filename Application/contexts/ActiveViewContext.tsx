@@ -1,12 +1,10 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
-// Define a type for the context value
 type ActiveViewContextType = {
   activeView: string;
-  setActiveView: (view: string) => void; // Correct the type to match useState
+  setActiveView: (view: string) => void;
 };
 
-// Create context with an initial value that matches the type
 const ActiveViewContext = createContext<ActiveViewContextType>({
   activeView: 'friends',
   setActiveView: () => {}, // This is a placeholder function
@@ -14,9 +12,8 @@ const ActiveViewContext = createContext<ActiveViewContextType>({
 
 export const useActiveView = () => useContext(ActiveViewContext);
 
-// Define a type for the provider props
 type ActiveViewProviderProps = {
-  children: ReactNode; // Correct type for children
+  children: ReactNode;
 };
 
 export const ActiveViewProvider: React.FC<ActiveViewProviderProps> = ({ children }) => {

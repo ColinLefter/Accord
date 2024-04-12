@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, ReactNode } from 'react';
-import { DisplayedMessageProps, ChatProps } from "@/accordTypes"; // Consolidated import
+import { DisplayedMessageProps, ChatProps } from "@/accordTypes";
 
 interface ChatContextType {
   chatHistory: DisplayedMessageProps[];
@@ -8,7 +8,7 @@ interface ChatContextType {
   setChatProps: (props: ChatProps | null) => void;
   selectedChannelId: string | null;
   setSelectedChannelId: (id: string | null) => void;
-  updateContext: (channelId: string | null, props: ChatProps | null) => void; // New method
+  updateContext: (channelId: string | null, props: ChatProps | null) => void;
   activeView: string;
   setActiveView: (view: string) => void;
 }
@@ -25,7 +25,6 @@ export const ChatProvider = ({ children }: { children: ReactNode }) => {
     setChatHistory(messages);
   };
 
-  // New method to update both selectedChannelId and chatProps
   const updateContext = (channelId: string | null, props: ChatProps | null) => {
     setSelectedChannelId(channelId);
     setChatProps(props); // This updates chatProps, including isAdmin

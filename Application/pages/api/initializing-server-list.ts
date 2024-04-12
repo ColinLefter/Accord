@@ -2,10 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import { MongoClient } from 'mongodb';
 import { getMongoDbUri } from '@/lib/DbConfig';
 
-// const client = new MongoClient("mongodb+srv://tobyn:QY8jZcEhoNBzdGOu@accord-systems.umbugbv.mongodb.net/?retryWrites=true&w=majority&appName=Accord-Systems", {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-// });
 let client: MongoClient | null = null;
 async function connectToDatabase() {
   try {

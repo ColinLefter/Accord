@@ -1,5 +1,5 @@
 
-import { Tabs, rem , Button, px, em, Text, Paper, Container , TextInput} from '@mantine/core';
+import { Tabs, Button, px, em, Text, Paper, Container , TextInput} from '@mantine/core';
 import React, { useState } from 'react';
 
 export function ChannelList() {
@@ -15,9 +15,6 @@ const addTab = () => {
 
   const newTabCounter = tabCounter + 1;
   const newServerID = `${newTabCounter}`;
-  //const newTabs = [...tabs, { serverName: `Tab ${newTabCounter}`, serverID: newserverID }];
-  const newServerName = newTabName || `Server ${newTabCounter}`
-  const newServerDesc = `Content of ${newTabName || `Tab ${newTabCounter}`}`
   const newTabs = [...tabs, { _id: "", serverName: newTabName || `Server ${newTabCounter}`, serverID: newServerID, serverDesc: `Content of ${newTabName || `Tab ${newTabCounter}`}` }];
 
   setTabs(newTabs);
@@ -87,8 +84,6 @@ const Adding = () => {
         </Paper>
       </Container>
       } 
-      
     </div>
-    // </>
   );
 }

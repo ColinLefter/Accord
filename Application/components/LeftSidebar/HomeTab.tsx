@@ -24,9 +24,6 @@ export function HomeTab() {
               <Text size='xl'>The content of Home</Text> 
             </Tabs.Panel>
       </Tabs>
-      
-      
     </div>
-    //</>
   );
 }

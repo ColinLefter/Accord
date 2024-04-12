@@ -74,7 +74,6 @@ export default function RootLayout({ children }: any) { // The one time where 'a
       setThemePreference(theme);
     }, []);
   
-  
     return (
       <ClerkProvider
         appearance={{

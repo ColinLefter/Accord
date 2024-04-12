@@ -43,9 +43,6 @@ export function MessageDropdown({ captureHistory, clientID, onDelete, isAdmin  }
     if(isAdmin){
       setDeleteable(false)
     }
-    // if(isAdmin1){
-    //   setDeleteable(false)
-    // }
   }, [user?.id, isAdmin]);
 
   // Check if it's the current user's message

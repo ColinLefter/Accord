@@ -33,16 +33,12 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
   // CRITICAL: Notice how we are not including setLastFetched as part of the props here. If you use it here, you get an INFINITE LOOP. BE WARNED.
   const [friends, setFriends] = useState<{ username: string; id: string; }[]>([]);
   const [IDs, setIDs] = useState<string[]>([]);
-  const [usernames, setUsernames] = useState<string[]>([]);
   const { user } = useUser();
   const [loading, setLoading] = useState(true);
 
-  const CACHE_DURATION = 5 * 1000; // Establishing a 5-second cache duration
-
   // Fetch IDs of friends
   useEffect(() => {
-    // Cachine is temporarily disabled
-    if (user) { // && (lastFetched === null || Date.now() - lastFetched >= CACHE_DURATION)
+    if (user) {
       const fetchData = async () => {
         try {
           const response = await fetch('/api/get-ids-of-friends', {
@@ -68,7 +64,7 @@ export function useFriendList({ lastFetched }: FetchStatusProps) {
 
       fetchData();
     }
-  }, [user, lastFetched]); // Dependencies listed here are correct
+  }, [user, lastFetched]);
 
   useEffect(() => {
     if (user && IDs.length > 0) {

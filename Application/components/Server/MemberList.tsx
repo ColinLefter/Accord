@@ -142,7 +142,7 @@ export function MemberList({ chatID }: any) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ memberIDs: memberIDs}),                              // Change this when we put in the Appshell (It is a String NOT int)
+        body: JSON.stringify({ memberIDs: memberIDs}),
       });
 
       if (response.ok) {
@@ -170,7 +170,6 @@ export function MemberList({ chatID }: any) {
 
         if (response.ok) {
           setFriendUsername('');
-          // Use Mantine's showNotification for success message
           showNotification({
             title: 'Success',
             message: `${friendUsername} was added to the chat!`,
@@ -181,7 +180,6 @@ export function MemberList({ chatID }: any) {
           setMembersIDList([...membersIDList, data.memberID]);
         } else {
           console.error('Failed to add member');
-          // Use Mantine's showNotification for error message
           showNotification({
             title: 'Error',
             message: 'Failed to send friend request.',
@@ -190,7 +188,6 @@ export function MemberList({ chatID }: any) {
         }
       } catch (error) {
         console.error('Error adding member:', error);
-        // Use Mantine's showNotification for network or server errors
         showNotification({
           title: 'Error',
           message: 'An error occurred while sending the member request.',
@@ -210,7 +207,6 @@ export function MemberList({ chatID }: any) {
       default:
         if (searchResult !== null) {
           setErrorMessage('');
-          // setLastFetched(Date.now());
           close();
         }
     }
@@ -225,9 +221,7 @@ export function MemberList({ chatID }: any) {
             headers: {
               'Content-Type': 'application/json',
             },
-            //-----------------------------------------------------------------------------------------------------------------------------------------------
-            body: JSON.stringify({ channelKey: chatID }),                              // Change this when we put in the Appshell (It is a String NOT int)
-            //------------------------------------------------------------------------------------------------------------------------------------------------
+            body: JSON.stringify({ channelKey: chatID }),
           });
 
           if (response.ok) {
@@ -248,7 +242,6 @@ export function MemberList({ chatID }: any) {
       });
     }
   }, [user, chatID, isAdmin]);
-
 
   return (
     <Stack>
