@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "next": "^14.2.1",
     "ngrok": "ngrok http --domain=ant-inspired-bass.ngrok-free.app 3001",
     "dev": "next dev",
     "proxy": "ts-node -P tsconfig.node.json proxyServer.ts",
