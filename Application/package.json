@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
+    "next": "^14.2.1",
     "ngrok": "ngrok http --domain=ant-inspired-bass.ngrok-free.app 3001",
     "dev": "next dev",
     "proxy": "ts-node -P tsconfig.node.json proxyServer.ts",
@@ -34,7 +35,7 @@
     "dotenv": "^16.4.5",
     "eslint-config-next": "^14.1.0",
     "mongodb": "^6.3.0",
-    "next": "^14.1.4",
+    "next": "^14.2.1",
     "next-connect": "^1.0.0-next.4",
     "ngrok": "^5.0.0-beta.2",
     "r3dy": "^1.1.0",
