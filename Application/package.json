@@ -42,6 +42,7 @@
     "react-dom": "^18.2.0"
   },
   "devDependencies": {
+    "next": "^14.2.1",
     "@babel/core": "^7.23.2",
     "@clerk/nextjs": "^4.29.9",
     "@clerk/themes": "^1.7.10",
