@@ -44,7 +44,7 @@ jest.mock('mongodb', () => ({
   }))
 }));
 
-jest.mock('@/lib/dbConfig', () => ({
+jest.mock('@/lib/DbConfig', () => ({
   getMongoDbUri: jest.fn().mockReturnValue('accord-systems')
 }));
 
