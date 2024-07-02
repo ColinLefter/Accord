@@ -1,22 +1,24 @@
-# COSC-310-Group-Project
-## M2 Update
-### Introduction
+# Accord: Real-Time Privacy-First Direct Messaging | UBC Software Engineering
+
+![LandingHero](https://github.com/ColinLefter/Accord/assets/68645918/e64df04b-f998-4fb2-8458-3bcbaa72fb25)
+![HomePage](https://github.com/ColinLefter/Accord/assets/68645918/6604eaf7-a111-4673-90fc-c31a417cda7e)
+![FriendsAddition](https://github.com/ColinLefter/Accord/assets/68645918/3b3ff3f4-c61d-43df-ab97-0010abe6be4d)
+![Application](https://github.com/ColinLefter/Accord/assets/68645918/985809d1-33bf-44da-a901-6bb526ba8b95)
+
+### About
 
 Accord is an engaging social platform where users can leverage our feature-rich instant
-messaging interface to chat and hang out with friends and communities. We are building a
-full-stack web application that uses React and TypeScript for the front-end and Python for
-the back-end, along with a MySQL database. In addition, we are using Next.js as the React
-framework for our front-end and Django as our Python-based web framework for our
-back-end.
+messaging interface to chat and hang out with friends and communities. We are building a web application that uses TypeScript and Next.js
+as the full-stack framework for our application development alongside MongoDB Atlas as our database.
 
-Our front-end tech stack aligns with the increasing popularity of Next.js as the top choice
+Our tech stack aligns with the increasing popularity of Next.js as the top choice
 for full-stack web development while leveraging the strict type-checking properties of
 TypeScript that improve our development workflow by simplifying the process of
-test-driven development. Our choice to use Django for our back-end enables us to develop
-the encryption-oriented peer-to-peer direct messaging feature that is central to our
-application. Furthermore, it allows us to store our site-wide database on the same server.
+test-driven development.
 
-### High-level description
+## Milestone 2 Update
+
+### High-level overview
 
 Our platform will support peer-to-peer direct messaging as well as group conversations.
 
@@ -33,7 +35,6 @@ engage with communities through server roles. Owners of discussion servers can a
 roles to participating users to drive user engagement. Users design these servers with
 purpose by organizing discussions through text channels that act as individual conversation
 threads.
-
 
 ### Requirements:
 1. Allow users to create an account on the platform.
